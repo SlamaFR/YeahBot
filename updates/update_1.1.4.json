@@ -1,0 +1,32 @@
+{
+  "version": "1.1.4",
+  "date": 1545001200000,
+  "fr": {
+    "title": "Bulletin de mise à jour",
+    "adds": [
+      "La quantité maximale de résultats d'une recherche peut désormais être choisie entre 1 et 5."
+    ],
+    "removes": [],
+    "changes": [
+      "Résolution d'un bug avec l'application des sanctions par les protections.",
+      "Amélioration drastique de la recherche à résultats multiples."
+    ],
+    "coming": [
+      "Création de playlists instantanées."
+    ]
+  },
+  "en": {
+    "title": "Update report",
+    "adds": [
+      "The maximal search results amount can now be chosen between 1 and 5."
+    ],
+    "removes": [],
+    "changes": [
+      "Fixed a bug with sanction application by protections.",
+      "Drastically improved multiple results search."
+    ],
+    "coming": [
+      "Instant playlist creation."
+    ]
+  }
+}

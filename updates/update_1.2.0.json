@@ -1,0 +1,44 @@
+{
+  "version": "1.2.0",
+  "date": 1545606000000,
+  "fr": {
+    "title": "Bulletin de mise à jour",
+    "adds": [
+      "Ajout de la commande 'seek'.",
+      "Ajout d'un paramètre pour activer/désactiver la recherche à résultats multiples.",
+      "Ajout de la détection des réactions à l'anti-spam."
+    ],
+    "removes": [],
+    "changes": [
+      "L'anarchie avec la musique, c'est fini ! Désormais, chaque utilisateur ne peut intéragir que sur les pistes qu'il a demandées.",
+      "Si un utilisateur tente de passer une piste qu'il n'as pas demandée, un vote démarre.",
+      "La commande 'queue' est désormais dotée de réactions pour naviguer entre les pages.",
+      "L'anti-spam de majuscules ne réagit plus aux messages courts.",
+      "Refonte totale du système de configuration.",
+      "Nettoyage du code."
+    ],
+    "coming": [
+      "Création de playlists instantannées."
+    ]
+  },
+  "en": {
+    "title": "Update report",
+    "adds": [
+      "Added command 'seek'.",
+      "Added a setting to enable/disable multiple results search.",
+      "Added reactions detection to the anti-spam."
+    ],
+    "removes": [],
+    "changes": [
+      "Anarchy with music, it's over! Now, every user can only interact on tracks they requested.",
+      "If an user try to skip a track they didn't asked, a vote starts.",
+      "The 'queue' command now has reactions to navigate between pages.",
+      "The caps anti-spam no longer reacts to short message.",
+      "Total rework of configuration system.",
+      "Code cleaning."
+    ],
+    "coming": [
+      "Instant playlist creation."
+    ]
+  }
+}

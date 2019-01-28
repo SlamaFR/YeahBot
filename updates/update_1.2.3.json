@@ -1,0 +1,42 @@
+{
+  "version": "1.2.3",
+  "date": 1548111600000,
+  "fr": {
+    "title": "Bulletin de mise à jour",
+    "adds": [
+      "Ajout de l'alias 'unpause' à la commande 'pause'.",
+      "Ajout d'un bouton pour fermer la commande 'queue'.",
+      "Ajout du mode 'Liste en boucle'.",
+      "Ajout du mode 'Liste aléatoire en boucle'.",
+      "Site internet désormais ouvert à tous.\n  https://www.yeahbot.net/"
+    ],
+    "removes": [],
+    "changes": [
+      "Modification graphiques mineures."
+    ],
+    "coming": [
+      "Système de retour (très prochainement)",
+      "Panneau de contrôle en ligne.",
+      "Envoi de suggestion/rapport de bug."
+    ]
+  },
+  "en": {
+    "title": "Update report",
+    "adds": [
+      "Added 'unpause' alias to 'pause' command.",
+      "Added a button to close 'queue' command.",
+      "Added 'Looping queue' mode",
+      "Added 'Looping shuffle queue' mode",
+      "Website now open to everyone.\n  https://www.yeahbot.net/"
+    ],
+    "removes": [],
+    "changes": [
+      "Minor graphical enhancement."
+    ],
+    "coming": [
+      "Feedback system (very soon)",
+      "Online dashboard.",
+      "Sending suggestion/bug report."
+    ]
+  }
+}

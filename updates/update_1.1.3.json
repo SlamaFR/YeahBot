@@ -1,0 +1,42 @@
+{
+  "version": "1.1.3",
+  "date": 1544223600000,
+  "fr": {
+    "title": "Bulletin de mise à jour",
+    "adds": [
+      "Ajout de la commande 'clearsins'"
+    ],
+    "removes": [],
+    "changes": [
+      "Résolution d'un bug avec l'anti-insulte.",
+      "Résolution d'un bug avec l'anti-spam.",
+      "Résolution d'un bug avec la recherche à résultats multiples.",
+      "L'anti-spam n'agit plus sur plusieurs facteurs simultanément.",
+      "La demande d'aide sur une commande disparaît maintenant après 30 secondes.",
+      "Corrections orthographiques.",
+      "Modifications graphiques mineures."
+    ],
+    "coming": [
+      "Création de playlists instantanées."
+    ]
+  },
+  "en": {
+    "title": "Update report",
+    "adds": [
+      "Added command 'clearsins'.",
+      "Added terms to the anti-swearing dictionary."
+    ],
+    "removes": [],
+    "changes": [
+      "Fixed a bug with anti-swearing.",
+      "Fixed a bug with anti-spam.",
+      "Fixed a bug with multiple results search.",
+      "Anti-spam no longer react to multiple factors at the same time.",
+      "Command help demand now disappears within 30 seconds.",
+      "Minors graphical modifications."
+    ],
+    "coming": [
+      "Instant playlist creation."
+    ]
+  }
+}

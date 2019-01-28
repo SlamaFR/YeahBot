@@ -1,0 +1,42 @@
+{
+  "version": "1.2.1",
+  "date": 1546038000000,
+  "fr": {
+    "title": "Bulletin de mise à jour",
+    "adds": [
+      "YeahBot est désormais en phase d'Alpha Ouverte et est disponible publiquement sur discordbots.org !",
+      "En cas d'oubli du préfixe, mentionner le bot lui fera envoyer le préfixe actuel.",
+      "Les mises à jour seront maintenant annoncées dans un certain salon. N'oubliez pas choisir le salon via la configuration !",
+      "Ajout de statistiques dans la présence Discord."
+    ],
+    "removes": [],
+    "changes": [
+      "Résolution d'un bug avec les protections.",
+      "Résolution d'un bug avec le réglage des booléens."
+    ],
+    "coming": [
+      "Ouverture d'un serveur de support.",
+      "Nettoyage intense du code.",
+      "Site internet."
+    ]
+  },
+  "en": {
+    "title": "Update report",
+    "adds": [
+      "YeahBot is now in Open Alpha phase and is publicly available on discordbots.org!",
+      "If you forget the prefix, mention the bot will make it send the current prefix.",
+      "Updates will now be broadcasted in a certain channel. Don't forget to choose your channel via configuration!",
+      "Added stats in Discord presence."
+    ],
+    "removes": [],
+    "changes": [
+      "Fixed a bug with protections.",
+      "Fixed a bug with booleans configuration."
+    ],
+    "coming": [
+      "Opening a support server.",
+      "Intense code cleaning.",
+      "Website."
+    ]
+  }
+}

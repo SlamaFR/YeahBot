@@ -1,0 +1,26 @@
+{
+  "version": "1.2.2",
+  "date": 1547074800000,
+  "fr": {
+    "title": "Bulletin de mise à jour",
+    "adds": [],
+    "removes": [],
+    "changes": [
+      "Résolution d'une faille de sécurité critique."
+    ],
+    "coming": [
+      "Site internet en cours de création..."
+    ]
+  },
+  "en": {
+    "title": "Update report",
+    "adds": [],
+    "removes": [],
+    "changes": [
+      "Fixed a critical security breach."
+    ],
+    "coming": [
+      "Creating website..."
+    ]
+  }
+}

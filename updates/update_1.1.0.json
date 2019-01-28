@@ -1,0 +1,40 @@
+{
+  "version": "1.1.0",
+  "date": 1543878000000,
+  "fr": {
+    "title": "Bulletin de mise à jour",
+    "adds": [
+      "Ajout de la commande 'config'.",
+      "Ajout des commandes 'repeat', 'shuffle' et 'normal'.",
+      "Ajout des messages de bienvenue et de départ, customisables avec des variables."
+    ],
+    "removes": [
+      "Retrait de la commande 'sequence'."
+    ],
+    "changes": [
+      "Résolution d'un bug avec la commande 'prune'.",
+      "Les messages d'avertissement sont désormais customisables.",
+      "La recherche de musique peut désormais accepter plusieurs choix.",
+      "La commande 'queue' est désormais paginée.",
+      "Le nombre de pistes restantes est désormais affiché lorsqu'une nouvelle piste démarre."
+    ]
+  },
+  "en": {
+    "title": "Update report",
+    "adds": [
+      "Added command 'config'.",
+      "Added commands 'repeat', 'shuffle' et 'normal'.",
+      "Added welcome and goodbye message, customizables with variables."
+    ],
+    "removes": [
+      "Removed command 'sequence'."
+    ],
+    "changes": [
+      "Fixed a bug with the commande 'prune'.",
+      "Warning messages are now customizables.",
+      "The music search can now handle multiple choice.",
+      "The command 'queue' is now paginated.",
+      "Amount of remaining tracks is now displayed when a new track starts."
+    ]
+  }
+}

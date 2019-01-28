@@ -1,0 +1,42 @@
+{
+  "version": "1.2.4",
+  "date": 1548284400000,
+  "fr": {
+    "title": "Bulletin de mise à jour",
+    "adds": [
+      "Ajout des descriptions de commande manquantes.",
+      "Ajout des playlist instantanées.",
+      "Ajout de la commande 'playlist'.",
+      "Ajout de la commande 'addplaylist'.",
+      "Ajout de la commande 'delplaylist'.",
+      "Ajout d'une page 'Mises à jour' sur le site."
+    ],
+    "removes": [],
+    "changes": [
+      "Changement des alias de la commande 'repeatshufflequeue'",
+      "Changement des alias de la commande 'repeatqueue'",
+      "Modifications graphiques mineures.",
+      "Résolution de problème de mise en cache."
+    ],
+    "coming": []
+  },
+  "en": {
+    "title": "Update report",
+    "adds": [
+      "Added missing command descriptions.",
+      "Added instant playlists.",
+      "Added 'playlist' command.",
+      "Added 'addplaylist' command.",
+      "Added 'delplaylist' command.",
+      "Added 'Updates' page on website."
+    ],
+    "removes": [],
+    "changes": [
+      "Changed aliases of 'repeatshufflequeue' command.",
+      "Changed aliases of 'repeatqueue' command.",
+      "Minor graphical modifications.",
+      "Fixed some caching issues."
+    ],
+    "coming": []
+  }
+}

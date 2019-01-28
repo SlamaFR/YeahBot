@@ -1,0 +1,32 @@
+{
+  "version": "1.1.2",
+  "date": 1544050800000,
+  "fr": {
+    "title": "Bulletin de mise à jour",
+    "adds": [
+      "Les protections anti-spam, anti-insultes et anti-pub peuvent maintenant ignorer des salons indépendemment.",
+      "Ajout de la commande 'nowplaying' dans la version précédente."
+    ],
+    "removes": [],
+    "changes": [
+      "Résolution d'un bug avec le commande 'nowplaying'."
+    ],
+    "coming": [
+      "Création de playlists instantanées."
+    ]
+  },
+  "en": {
+    "title": "Update report",
+    "adds": [
+      "Anti-spam, anti-insult and anti-ad protections can now ignore channels independently.",
+      "Added command 'nowplaying' in previous version."
+    ],
+    "removes": [],
+    "changes": [
+      "Fixed a bug with the command 'nowplaying'."
+    ],
+    "coming": [
+      "Instant playlist creation."
+    ]
+  }
+}

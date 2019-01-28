@@ -1,0 +1,22 @@
+{
+  "version": "1.1.1",
+  "date": 1543964400000,
+  "fr": {
+    "title": "Bulletin de mise à jour",
+    "adds": [
+    ],
+    "removes": [],
+    "changes": [
+      "Résolution d'un bug majeur."
+    ]
+  },
+  "en": {
+    "title": "Update report",
+    "adds": [
+    ],
+    "removes": [],
+    "changes": [
+      "Résolution d'un bug majeur."
+    ]
+  }
+}
