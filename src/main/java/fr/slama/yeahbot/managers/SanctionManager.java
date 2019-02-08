@@ -10,6 +10,7 @@ import fr.slama.yeahbot.utilities.TaskScheduler;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,28 +32,31 @@ public class SanctionManager {
 
         long timeout = System.currentTimeMillis() + unit.toMillis(i);
 
-        Mutes mutes = RedisData.getMutes(target.getGuild());
-        mutes.getMutesMap().put(target.getUser().getIdLong(), timeout);
-        RedisData.setMutes(target.getGuild(), mutes);
-
-        textChannel.getGuild().getController().addRolesToMember(target, GuildUtil.getMutedRole(textChannel.getGuild(), true)).queue();
-
-        textChannel.sendMessage(new EmbedBuilder()
-                .setColor(new Color(231, 76, 60))
-                .setTitle(LanguageUtil.getString(target.getGuild(), Bundle.CAPTION, "sanction_application"))
-                .setDescription(LanguageUtil.getArguedString(target.getGuild(), Bundle.STRINGS, "user_muted", target.getAsMention(), i,
-                        LanguageUtil.getString(target.getGuild(), Bundle.UNIT, unit.toString().toLowerCase())))
-                .build()).queue();
-
-        TaskScheduler.scheduleRepeating(() -> {
-            textChannel.getGuild().getController()
-                    .removeRolesFromMember(target, GuildUtil.getMutedRole(target.getGuild(), false))
-                    .queue();
-            mutes.getMutesMap().remove(target.getUser().getIdLong());
+        try {
+            Mutes mutes = RedisData.getMutes(target.getGuild());
+            mutes.getMutesMap().put(target.getUser().getIdLong(), timeout);
             RedisData.setMutes(target.getGuild(), mutes);
-        }, unit.toMillis(i));
 
-        logger.info(String.format("%s Muted %s", target.getGuild(), target.getUser()));
+            textChannel.getGuild().getController().addRolesToMember(target, GuildUtil.getMutedRole(textChannel.getGuild(), true)).queue();
+
+            textChannel.sendMessage(new EmbedBuilder()
+                    .setColor(new Color(231, 76, 60))
+                    .setTitle(LanguageUtil.getString(target.getGuild(), Bundle.CAPTION, "sanction_application"))
+                    .setDescription(LanguageUtil.getArguedString(target.getGuild(), Bundle.STRINGS, "user_muted", target.getAsMention(), i,
+                            LanguageUtil.getString(target.getGuild(), Bundle.UNIT, unit.toString().toLowerCase())))
+                    .build()).queue();
+
+            TaskScheduler.scheduleRepeating(() -> {
+                textChannel.getGuild().getController()
+                        .removeRolesFromMember(target, GuildUtil.getMutedRole(target.getGuild(), false))
+                        .queue();
+                mutes.getMutesMap().remove(target.getUser().getIdLong());
+                RedisData.setMutes(target.getGuild(), mutes);
+            }, unit.toMillis(i));
+
+            logger.info(String.format("%s Muted %s", target.getGuild(), target.getUser()));
+        } catch (InsufficientPermissionException ignored) {
+        }
     }
 
     public static void registerKick(Member target, TextChannel textChannel, String reason) {

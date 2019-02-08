@@ -8,6 +8,7 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.exceptions.ErrorResponseException;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 
 /**
@@ -35,6 +36,12 @@ public class GuildUtil {
                 if (needed)
                     guild.getDefaultChannel().sendMessage(LanguageUtil.getString(guild, Bundle.ERROR, "cannot_create_mute_role")).queue();
             } catch (InsufficientPermissionException ignored) {
+            }
+            return null;
+        } catch (ErrorResponseException e) {
+            assert guild.getDefaultChannel() != null;
+            if (e.getErrorCode() == 30005 && needed) {
+                guild.getDefaultChannel().sendMessage(LanguageUtil.getString(guild, Bundle.ERROR, "cannot_create_mute_role_max_reached")).queue();
             }
             return null;
         }
