@@ -1,0 +1,24 @@
+{
+  "version": "1.2.5",
+  "date": 1550876400000,
+  "fr": {
+    "title": "Bulletin de mise à jour",
+    "adds": [],
+    "removes": [],
+    "changes": [
+      "Résolution d'un bug lors de la création du rôle 'Muet' alors que le nombre maximal de rôles est atteint.",
+      "Résolution d'un bug avec la commande 'random'."
+    ],
+    "coming": []
+  },
+  "en": {
+    "title": "Update report",
+    "adds": [],
+    "removes": [],
+    "changes": [
+      "Fixed a bug when creating the 'Muted' role while max roles amount is reached.",
+      "Fixed a bug with the 'random' command."
+    ],
+    "coming": []
+  }
+}
