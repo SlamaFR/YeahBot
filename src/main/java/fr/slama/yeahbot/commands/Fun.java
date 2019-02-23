@@ -95,7 +95,7 @@ public class Fun {
                     textChannel.sendMessage(LanguageUtil.getString(guild, Bundle.STRINGS, "check_your_values")).queue();
                     return;
                 }
-                textChannel.sendMessage(LanguageUtil.getArguedString(guild, Bundle.STRINGS, "random_number", new Random().nextInt(maximum) + minimum)).queue();
+                textChannel.sendMessage(LanguageUtil.getArguedString(guild, Bundle.STRINGS, "random_number", new Random().nextInt(maximum - minimum) + minimum)).queue();
             } catch (NumberFormatException e) {
                 textChannel.sendMessage(new CommandError(cmd.getArguments(guild)[0], guild, CommandError.ErrorType.INTEGER).toEmbed()).queue();
             }
