@@ -17,7 +17,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Created on 28/09/2018.
@@ -40,7 +39,7 @@ public class SwearingListener extends ListenerAdapter {
 
         File file;
         try {
-            file = new File(Objects.requireNonNull(getClass().getClassLoader().getResource("bad_words.json")).getFile());
+            file = new File("bad_words.json");
             if (!file.exists()) return;
         } catch (NullPointerException e) {
             logger.warn("(SWR) Dictionary not found!");
@@ -74,8 +73,6 @@ public class SwearingListener extends ListenerAdapter {
                     return;
                 }
             }
-
-            System.out.println(SwearingTask.idSwearingMap.get(event.getGuild().getIdLong()).get(event.getMember().getUser().getIdLong()));
 
         } catch (IOException e) {
             logger.error("(SWR) Error while fetching data!");

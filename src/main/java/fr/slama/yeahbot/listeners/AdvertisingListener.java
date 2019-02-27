@@ -47,7 +47,7 @@ public class AdvertisingListener extends ListenerAdapter {
 
         File file;
         try {
-            file = new File(getClass().getClassLoader().getResource("ad_keywords.json").getFile());
+            file = new File("ad_keywords.json");
             if (!file.exists()) return;
         } catch (NullPointerException e) {
             logger.warn("(AD) Dictionary not found!");
