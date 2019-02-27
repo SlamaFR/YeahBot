@@ -83,19 +83,7 @@ public class AdvertisingListener extends ListenerAdapter {
             logger.error("(AD) Error while parsing data!");
         }
 
-        for (String s : event.getMessage().getContentRaw().split(" ")) {
-            try {
-                URL url = new URL(s);
-                if (url.getHost().equals("discord.gg")) {
-                    rate += 50;
-                    hasInvite = true;
-                } else rate += 10;
-            } catch (MalformedURLException ignored) {
-
-            }
-        }
-
-        for (String s : event.getMessage().getContentRaw().split("\n")) {
+        for (String s : event.getMessage().getContentRaw().split("\\W")) {
             try {
                 URL url = new URL(s);
                 if (url.getHost().equals("discord.gg")) {

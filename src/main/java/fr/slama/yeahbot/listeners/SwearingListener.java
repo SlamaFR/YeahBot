@@ -63,7 +63,6 @@ public class SwearingListener extends ListenerAdapter {
             for (Object s : badWords) {
                 int occurence = event.getMessage().getContentRaw().split((String) s, -1).length - 1;
                 if (occurence > 0) {
-                    System.out.println(s + " - " + occurence);
                     SwearingTask.idSwearingMap.get(event.getGuild().getIdLong()).merge(event.getMember().getUser().getIdLong(), occurence, Integer::sum);
                 }
                 else continue;
