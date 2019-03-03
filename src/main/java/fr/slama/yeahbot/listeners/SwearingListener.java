@@ -39,7 +39,7 @@ public class SwearingListener extends ListenerAdapter {
 
         File file;
         try {
-            file = new File("bad_words.json");
+            file = new File("./bad_words.json");
             if (!file.exists()) return;
         } catch (NullPointerException e) {
             logger.warn("(SWR) Dictionary not found!");
