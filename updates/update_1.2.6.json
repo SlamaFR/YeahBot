@@ -1,0 +1,22 @@
+{
+  "version": "1.2.6",
+  "date": 1551308400000,
+  "fr": {
+    "title": "Bulletin de mise à jour",
+    "adds": [],
+    "removes": [],
+    "changes": [
+      "Résolution d'un bug avec l'anti-insulte et l'anti-publicité, les rendant inopérants. Désolé pour les désagréments."
+    ],
+    "coming": []
+  },
+  "en": {
+    "title": "Update report",
+    "adds": [],
+    "removes": [],
+    "changes": [
+      "Fixed a bug with anti-insult and anti-advertising, making them inoperative. Sorry for the inconvenience."
+    ],
+    "coming": []
+  }
+}
