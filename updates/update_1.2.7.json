@@ -1,0 +1,22 @@
+{
+  "version": "1.2.7",
+  "date": 1553036400000,
+  "fr": {
+    "title": "Bulletin de mise à jour",
+    "adds": [],
+    "removes": [],
+    "changes": [
+      "Résolution d'un bug avec les modes de lecture en boucle."
+    ],
+    "coming": []
+  },
+  "en": {
+    "title": "Update report",
+    "adds": [],
+    "removes": [],
+    "changes": [
+      "Fixed a bug with looping playback sequences."
+    ],
+    "coming": []
+  }
+}

@@ -75,7 +75,6 @@ public class TrackScheduler extends AudioEventAdapter {
                 currentRequesterId = exRequesterId;
                 currentTrack = exTrack;
             } else {
-                //skip
                 if (isLoopingQueue() && !noInterrupt)
                     addToQueue(new Track(currentTrack.getAudioTrack().makeClone(), currentRequesterId), false, false);
             }
@@ -104,14 +103,7 @@ public class TrackScheduler extends AudioEventAdapter {
 
     @Override
     public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
-        if (endReason.mayStartNext) {
-            if (RedisData.getSettings(guild).playerSequence.equals(PlayerSequence.LOOP)) {
-                addToQueue(new Track(track.makeClone(), currentRequesterId), true, false);
-            } else if (isLoopingQueue()) {
-                addToQueue(new Track(track.makeClone(), currentRequesterId), false, false);
-            }
-            startNextTrack(true);
-        }
+        if (endReason.mayStartNext) startNextTrack(true);
     }
 
     @Override
@@ -133,8 +125,12 @@ public class TrackScheduler extends AudioEventAdapter {
 
         logger.info(String.format("%s Now playing %s", guild, track.getInfo().title));
 
-        if (RedisData.getSettings(guild).playerSequence.equals(PlayerSequence.LOOP) && nowPlayingMessageId > 0L)
-            return;
+        if (RedisData.getSettings(guild).playerSequence.equals(PlayerSequence.LOOP)) {
+            addToQueue(new Track(track.makeClone(), currentRequesterId), true, false);
+            if (nowPlayingMessageId > 0L) return;
+        } else if (isLoopingQueue()) {
+            addToQueue(new Track(track.makeClone(), currentRequesterId), false, false);
+        }
 
         votingUsers = new ArrayList<>();
 
