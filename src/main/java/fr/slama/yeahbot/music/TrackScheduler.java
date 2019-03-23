@@ -54,7 +54,8 @@ public class TrackScheduler extends AudioEventAdapter {
                 Collections.shuffle(queue);
             }
         }
-        startNextTrack(true);
+        if (currentTrack == null)
+            startNextTrack(true);
     }
 
     void skip() {
@@ -63,23 +64,26 @@ public class TrackScheduler extends AudioEventAdapter {
 
     private void startNextTrack(boolean noInterrupt) {
 
+        Track exTrack = currentTrack;
+
+        if (isLoopingQueue() && !noInterrupt) {
+            addToQueue(new Track(exTrack.getAudioTrack().makeClone(), currentRequesterId), false, false);
+        }
+
         Track track = queue.pollFirst();
 
         if (track != null) {
             long exRequesterId = currentRequesterId;
-            Track exTrack = currentTrack;
             currentRequesterId = track.getRequesterId();
             currentTrack = track;
             if (!musicPlayer.getAudioPlayer().startTrack(track.getAudioTrack(), noInterrupt)) {
                 queue.offerFirst(track);
                 currentRequesterId = exRequesterId;
                 currentTrack = exTrack;
-            } else {
-                if (isLoopingQueue() && !noInterrupt)
-                    addToQueue(new Track(currentTrack.getAudioTrack().makeClone(), currentRequesterId), false, false);
             }
             return;
         }
+
         musicPlayer.getTextChannel().sendMessage(
                 new EmbedBuilder()
                         .setColor(new Color(230, 126, 34))
@@ -103,7 +107,14 @@ public class TrackScheduler extends AudioEventAdapter {
 
     @Override
     public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
-        if (endReason.mayStartNext) startNextTrack(true);
+        if (endReason.mayStartNext) {
+            if (RedisData.getSettings(guild).playerSequence.equals(PlayerSequence.LOOP)) {
+                addToQueue(new Track(track.makeClone(), currentRequesterId), true, false);
+            } else if (isLoopingQueue()) {
+                addToQueue(new Track(track.makeClone(), currentRequesterId), false, false);
+            }
+            startNextTrack(true);
+        }
     }
 
     @Override
@@ -125,14 +136,10 @@ public class TrackScheduler extends AudioEventAdapter {
 
         logger.info(String.format("%s Now playing %s", guild, track.getInfo().title));
 
-        if (RedisData.getSettings(guild).playerSequence.equals(PlayerSequence.LOOP)) {
-            addToQueue(new Track(track.makeClone(), currentRequesterId), true, false);
-            if (nowPlayingMessageId > 0L) return;
-        } else if (isLoopingQueue()) {
-            addToQueue(new Track(track.makeClone(), currentRequesterId), false, false);
-        }
-
         votingUsers = new ArrayList<>();
+
+        if (RedisData.getSettings(guild).playerSequence.equals(PlayerSequence.LOOP) && nowPlayingMessageId > 0L)
+            return;
 
         if (nowPlayingMessageId > 0L)
             musicPlayer.getTextChannel().getMessageById(nowPlayingMessageId).queue(message -> message.delete().queue());

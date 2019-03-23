@@ -139,6 +139,8 @@ public class MusicManager {
                                 return;
                             }
 
+                            if (r.isEmpty()) return;
+
                             if (r.size() == 1) {
                                 textChannel.sendMessage(
                                         new EmbedBuilder()
