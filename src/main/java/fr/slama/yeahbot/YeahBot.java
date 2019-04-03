@@ -106,7 +106,7 @@ public class YeahBot extends ListenerAdapter implements Runnable {
         TaskScheduler.scheduleRepeating(new SpamTask(), 10L * 1000, 5L * 1000);
         TaskScheduler.scheduleRepeating(new SwearingTask(), 10L * 1000, 60L * 1000);
 
-        TaskScheduler.async(() -> Jooby.run(Application::new, "application.port=8080"));
+        TaskScheduler.async(() -> Jooby.run(Application::new, "application.port=" + CONFIG.apiPort));
 
         try {
             Thread.sleep(500);

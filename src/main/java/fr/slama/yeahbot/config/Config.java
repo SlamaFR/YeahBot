@@ -29,6 +29,8 @@ public class Config {
     @JsonProperty
     public String[] owners = new String[0];
     @JsonProperty
+    public int apiPort = 8081;
+    @JsonProperty
     public Database database = new Database();
     @JsonProperty
     public Redis redis = new Redis();
