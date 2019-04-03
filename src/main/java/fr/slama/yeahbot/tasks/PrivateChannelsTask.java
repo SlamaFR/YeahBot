@@ -7,6 +7,8 @@ import net.dv8tion.jda.core.entities.Guild;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.TimerTask;
 
 /**
@@ -23,11 +25,15 @@ public class PrivateChannelsTask extends TimerTask {
 
             PrivateChannels channels = RedisData.getPrivateChannels(guild);
 
+            List<Long> toDelete = new ArrayList<>();
+
             for (long id : channels.getChannels()) {
                 if (guild.getVoiceChannelById(id) == null)
-                    channels.getChannels().remove(id);
+                    toDelete.add(id);
                 logger.info("Private channel " + id + " expired");
             }
+
+            channels.getChannels().removeAll(toDelete);
 
         }
 
