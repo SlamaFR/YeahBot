@@ -92,7 +92,6 @@ public final class JSONReader {
             JSONReader reader = new JSONReader(bufferedReader);
             JSONObject object = reader.toJSONObject();
             for (String key : object.keySet()) {
-                Object obj = object.get(key);
                 try {
                     map.put(key, (V) object.get(key));
                 } catch (ClassCastException ignored) {

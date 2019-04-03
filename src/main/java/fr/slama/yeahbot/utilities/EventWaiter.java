@@ -19,7 +19,6 @@ public class EventWaiter implements EventListener, Closeable {
     private final Consumer action;
 
     private final EventWaiter INSTANCE;
-    private Runnable future;
 
     public <T extends Event> EventWaiter(Class<T> classType, Predicate<T> condition, Consumer<T> action) {
         this(classType, condition, action, -1, null, null);

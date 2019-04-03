@@ -3,9 +3,7 @@ package fr.slama.yeahbot.redis.buckets;
 import com.google.gson.Gson;
 import fr.slama.yeahbot.music.Playlist;
 
-import java.net.URL;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -16,7 +14,6 @@ public class Playlists {
     private Map<String, Playlist> playlists = new HashMap<>();
 
     public Playlists() {
-
     }
 
     @Override

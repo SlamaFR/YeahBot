@@ -262,7 +262,7 @@ public class Music {
             discordPermission = Permission.MESSAGE_ADD_REACTION,
             category = Command.CommandCategory.MUSIC,
             executor = Command.CommandExecutor.USER)
-    private void queue(Guild guild, TextChannel textChannel, User user, Message message, String[] args, BotCommand cmd) {
+    private void queue(Guild guild, TextChannel textChannel, User user, Message message, String[] args) {
 
         LinkedList<Track> queue = manager.getPlayer(guild).getTrackScheduler().getQueue();
 
