@@ -140,6 +140,7 @@ public class PaginationManager<T> {
                                     selectionResult.accept(objectList.get(index));
                                     msg.delete().queue();
                                 } else init();
+                                break;
                         }
                     }, timeout, unit,
                     () -> {

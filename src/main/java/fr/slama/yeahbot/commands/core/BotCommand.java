@@ -75,7 +75,7 @@ public final class BotCommand {
 
     public String getDescription(Guild guild) {
         String value = LanguageUtil.getString(guild, Bundle.DESCRIPTION, name);
-        if (value.equals("")) return LanguageUtil.getString(guild, Bundle.DESCRIPTION, "NONE");
+        if ("".equals(value)) return LanguageUtil.getString(guild, Bundle.DESCRIPTION, "NONE");
         else return value;
     }
 

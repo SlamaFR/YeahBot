@@ -660,4 +660,15 @@ public class Music {
         ).queue();
 
     }
+
+    private boolean isConnected(Guild guild, Member member, TextChannel textChannel) {
+        if (!guild.getAudioManager().isConnected() && !guild.getAudioManager().isAttemptingToConnect()) {
+            VoiceChannel channel = member.getVoiceState().getChannel();
+            if (channel == null) {
+                textChannel.sendMessage(LanguageUtil.getString(guild, Bundle.STRINGS, "must_be_connected")).queue();
+                return false;
+            }
+        }
+        return true;
+    }
 }

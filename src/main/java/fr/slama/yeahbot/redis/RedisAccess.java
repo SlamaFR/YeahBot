@@ -14,10 +14,10 @@ import org.slf4j.LoggerFactory;
 public class RedisAccess {
 
     private static final Logger logger = LoggerFactory.getLogger(RedisAccess.class);
-    public static RedisAccess INSTANCE;
+    static RedisAccess INSTANCE;
     private RedissonClient redissonClient;
 
-    public RedisAccess(RedisCredentials credentials) {
+    private RedisAccess(RedisCredentials credentials) {
         INSTANCE = this;
         this.redissonClient = initRedisson(credentials);
     }
@@ -32,7 +32,7 @@ public class RedisAccess {
         RedisAccess.INSTANCE.getRedissonClient().shutdown();
     }
 
-    public RedissonClient initRedisson(RedisCredentials credentials) {
+    private RedissonClient initRedisson(RedisCredentials credentials) {
         final Config config = new Config();
 
         config.setCodec(new JsonJacksonCodec());
@@ -48,7 +48,7 @@ public class RedisAccess {
         return Redisson.create(config);
     }
 
-    public RedissonClient getRedissonClient() {
+    RedissonClient getRedissonClient() {
         return redissonClient;
     }
 }
