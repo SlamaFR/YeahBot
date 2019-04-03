@@ -1,0 +1,24 @@
+{
+  "version": "1.2.8",
+  "date": 1554328800000,
+  "fr": {
+    "title": "Bulletin de mise à jour",
+    "adds": [],
+    "removes": [],
+    "changes": [
+      "Nettoyage du code.",
+      "Résolution d'une panne majeure avec le lecteur audio."
+    ],
+    "coming": []
+  },
+  "en": {
+    "title": "Update report",
+    "adds": [],
+    "removes": [],
+    "changes": [
+      "Code cleaning.",
+      "Fixed major outage with audio player."
+    ],
+    "coming": []
+  }
+}
