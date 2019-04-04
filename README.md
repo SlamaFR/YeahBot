@@ -1,5 +1,6 @@
 [![Codacy grade](https://img.shields.io/codacy/grade/666c4d8750df410499a09a9d741567b8.svg?logo=codacy)](https://app.codacy.com/project/SlamaFR/YeahBot/dashboard)
 [![Website](https://img.shields.io/website/https/yeahbot.net.svg?down_color=red&down_message=Offline&up_color=brightgreen&up_message=Online)](https://yeahbot.net)
+[![Discord](https://img.shields.io/discord/528352274146394112.svg?color=7289DA&label=discord)](https://discord.gg/m7FmBBd)
 
 # YeahBot
 
