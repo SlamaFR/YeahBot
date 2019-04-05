@@ -86,7 +86,8 @@ public class CommandMap {
                 botCommand = new BotCommand(command.name(), command.aliases(), command.displayInHelp(), command.permission(), command.discordPermission(), command.category(), command.executor(), object, method);
                 for (String name : command.aliases()) commands.put(name, botCommand);
                 commands.put(command.name(), botCommand);
-                if (!registry.contains(botCommand)) registry.add(botCommand);
+                if (!registry.contains(botCommand) && !botCommand.getExecutor().equals(Command.CommandExecutor.CONSOLE))
+                    registry.add(botCommand);
             }
         }
     }
