@@ -1,0 +1,40 @@
+{
+  "version": "1.3.0",
+  "date": 1554415200000,
+  "fr": {
+    "title": "Bulletin de mise à jour",
+    "adds": [
+      "Ajout d'une page de statut des services.\nhttps://status.yeahbot.net/",
+      "Ajout d'une page de documentation.\nhttps://docs.yeahbot.net/",
+      "Ajout d'un formulaire de feedback.\nhttps://feedback.yeahbot.net/",
+      "Ajout d'une API publique.\nhttps://api.yeahbot.net/"
+    ],
+    "removes": [],
+    "changes": [
+      "Nettoyage du code."
+    ],
+    "coming": [
+      "Guides dans la documentation.",
+      "Explication détaillée et avec des exemple de toutes les commandes sur la documentation.",
+      "Mise à jour du site."
+    ]
+  },
+  "en": {
+    "title": "Update report",
+    "adds": [
+      "Added a services status page.\nhttps://status.yeahbot.net/",
+      "Added a documentation page.\nhttps://docs.yeahbot.net/",
+      "Added a feedback survey.\nhttps://feedback.yeahbot.net/",
+      "Added a public API.\nhttps://api.yeahbot.net/"
+    ],
+    "removes": [],
+    "changes": [
+      "Code cleaning."
+    ],
+    "coming": [
+      "Guides in documentation.",
+      "Fancy explanation with examples of every commands on the documentation.",
+      "Website update."
+    ]
+  }
+}
