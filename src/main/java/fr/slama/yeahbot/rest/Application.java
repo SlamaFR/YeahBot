@@ -175,7 +175,11 @@ public class Application extends Jooby {
 
                 array.put(object.toMap());
             }
-            rsp.send(array.toList());
+            rsp.send(new JSONObject()
+                    .put("code", 200)
+                    .put("message", "OK")
+                    .put("content", array.toList())
+                    .toMap());
         });
         get("/categories", (req, rsp) -> rsp.send(new JSONObject()
                 .put("code", 200)
@@ -193,6 +197,10 @@ public class Application extends Jooby {
                     .put("code", 404)
                     .put("message", "Not found").put("error", "unknown_endpoint").toMap());
         });
+
+        head("/", (req, rsp) -> rsp.send(new JSONObject()
+                .put("code", 200)
+                .put("message", "OK").toMap()));
     }
 
 }
