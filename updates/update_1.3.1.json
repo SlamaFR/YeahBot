@@ -1,0 +1,22 @@
+{
+  "version": "1.3.1",
+  "date": 1554415200000,
+  "fr": {
+    "title": "Bulletin de mise à jour",
+    "adds": [],
+    "removes": [],
+    "changes": [
+      "Résolution de bug dans la nouvelle API."
+    ],
+    "coming": []
+  },
+  "en": {
+    "title": "Update report",
+    "adds": [],
+    "removes": [],
+    "changes": [
+      "Fixed bug in new API."
+    ],
+    "coming": []
+  }
+}
