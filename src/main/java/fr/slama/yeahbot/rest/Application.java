@@ -34,30 +34,24 @@ public class Application extends Jooby {
 
         use(new Jackson());
 
-        // Statuses
-        JSONObject ok = new JSONObject()
-                .put("code", 200)
-                .put("message", "OK");
-        JSONObject not_found = new JSONObject()
-                .put("code", 404)
-                .put("message", "Not found");
-
-        JSONObject badge = new JSONObject()
-                .put("schemaVersion", 1)
-                .put("color", "brightgreen");
-
         // STATS
         get("/guildCount", (req, rsp) -> rsp.send(
-                ok.put("content", yeahBot.getShardManager().getGuildCache().size())
+                new JSONObject()
+                        .put("code", 200)
+                        .put("message", "OK").put("content", yeahBot.getShardManager().getGuildCache().size())
                         .toMap())
         );
         get("/userCount", (req, rsp) -> rsp.send(
-                ok.put("content", yeahBot.getShardManager().getUserCache().stream().filter(u ->
+                new JSONObject()
+                        .put("code", 200)
+                        .put("message", "OK").put("content", yeahBot.getShardManager().getUserCache().stream().filter(u ->
                         !u.isBot()).toArray().length)
                         .toMap())
         );
         get("/channelCount", (req, rsp) -> rsp.send(
-                ok.put("content", yeahBot.getShardManager().getTextChannelCache().size())
+                new JSONObject()
+                        .put("code", 200)
+                        .put("message", "OK").put("content", yeahBot.getShardManager().getTextChannelCache().size())
                         .toMap())
         );
 
@@ -67,7 +61,9 @@ public class Application extends Jooby {
 
             if (guild == null) {
                 rsp.status(Status.NOT_FOUND);
-                rsp.send(not_found.put("error", "unknown_guild").toMap());
+                rsp.send(new JSONObject()
+                        .put("code", 404)
+                        .put("message", "Not found").put("error", "unknown_guild").toMap());
                 return;
             }
 
@@ -108,13 +104,17 @@ public class Application extends Jooby {
             Guild guild = yeahBot.getShardManager().getGuildById(req.param("guildId").longValue());
             if (guild == null) {
                 rsp.status(Status.NOT_FOUND);
-                rsp.send(not_found.put("error", "unknown_guild").toMap());
+                rsp.send(new JSONObject()
+                        .put("code", 404)
+                        .put("message", "Not found").put("error", "unknown_guild").toMap());
                 return;
             }
             User user = yeahBot.getShardManager().getUserById(req.param("userId").longValue());
             if (user == null || guild.getMember(user) == null) {
                 rsp.status(Status.NOT_FOUND);
-                rsp.send(not_found.put("error", "unknown_member").toMap());
+                rsp.send(new JSONObject()
+                        .put("code", 404)
+                        .put("message", "Not found").put("error", "unknown_member").toMap());
                 return;
             }
 
@@ -177,56 +177,21 @@ public class Application extends Jooby {
             }
             rsp.send(array.toList());
         });
-        get("/categories", (req, rsp) -> rsp.send(Command.CommandCategory.values()));
-
-        // BADGES
-        get("/badges", ((req, rsp) -> rsp.send(ok.put("content", AVAILABLE_BADGES).toMap())));
-        get("/badges/:name", (req, rsp) -> {
-            switch (req.param("name").to(String.class)) {
-                case "guildCount":
-                    rsp.send(ok.put("content", badge
-                            .put("label", "Guilds")
-                            .put("message", yeahBot.getShardManager().getGuildCache().size()))
-                            .toMap());
-                    break;
-                case "userCount":
-                    rsp.send(ok.put("content", badge
-                            .put("label", "Users")
-                            .put("message", yeahBot.getShardManager().getUserCache().stream().filter(u ->
-                                    !u.isBot()).toArray().length))
-                            .toMap());
-                    break;
-                case "channelCount":
-                    rsp.send(ok.put("content", badge
-                            .put("label", "Channels")
-                            .put("message", yeahBot.getShardManager().getTextChannelCache().size() +
-                                    yeahBot.getShardManager().getVoiceChannelCache().size()))
-                            .toMap());
-                    break;
-                case "commandCount":
-                    rsp.send(ok.put("content", badge
-                            .put("label", "Commands")
-                            .put("message", yeahBot.getCommandMap().getRegistry().size()))
-                            .toMap());
-                    break;
-                case "availableLocales":
-                    rsp.send(ok.put("content", badge
-                            .put("label", "Available languages")
-                            .put("message", Language.languages.size()))
-                            .toMap());
-                    break;
-                default:
-                    rsp.status(Status.NOT_FOUND);
-                    rsp.send(not_found.put("error", "unknown_badge").toMap());
-                    break;
-            }
-        });
+        get("/categories", (req, rsp) -> rsp.send(new JSONObject()
+                .put("code", 200)
+                .put("message", "OK")
+                .put("content", Command.CommandCategory.values())
+                .toMap()));
 
         // DEFAULT
-        get("/", (req, rsp) -> rsp.send(ok.toMap()));
+        get("/", (req, rsp) -> rsp.send(new JSONObject()
+                .put("code", 200)
+                .put("message", "OK").toMap()));
         get("*", (req, rsp) -> {
             rsp.status(Status.NOT_FOUND);
-            rsp.send(not_found.put("error", "unknown_endpoint").toMap());
+            rsp.send(new JSONObject()
+                    .put("code", 404)
+                    .put("message", "Not found").put("error", "unknown_endpoint").toMap());
         });
     }
 
