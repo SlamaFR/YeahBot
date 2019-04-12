@@ -1,3 +1,11 @@
+.idea/
+.gradle/
+build/
+classes/
+gradle/
+log/
+out/
+
 ad_keywords.json
 bad_words.json
 
@@ -6,3 +14,6 @@ config.yml
 build.gradle
 
 .DS_Store
+settings.gradle
+gradlew.bat
+gradlew
