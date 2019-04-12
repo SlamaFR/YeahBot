@@ -17,6 +17,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created on 28/09/2018.
@@ -61,11 +63,14 @@ public class SwearingListener extends ListenerAdapter {
             List<Object> badWords = array.toList();
 
             for (Object s : badWords) {
-                int occurence = event.getMessage().getContentRaw().split((String) s, -1).length - 1;
-                if (occurence > 0) {
+                Matcher matcher = Pattern
+                        .compile("\\b(" + s + "[^ ]*)\\b", Pattern.CASE_INSENSITIVE)
+                        .matcher(event.getMessage().getContentRaw());
+                if (matcher.find()) {
+                    int occurence = 1;
+                    while (matcher.find()) occurence++;
                     SwearingTask.idSwearingMap.get(event.getGuild().getIdLong()).merge(event.getMember().getUser().getIdLong(), occurence, Integer::sum);
-                }
-                else continue;
+                } else continue;
                 if (SwearingTask.idSwearingMap.get(event.getGuild().getIdLong()).get(event.getMember().getUser().getIdLong()) >= settings.timeScaleSwearingTrigger) {
                     ReportsManager.reportSwearing(event.getMessage(), event.getChannel());
                     SwearingTask.idSwearingMap.get(event.getGuild().getIdLong()).remove(event.getMember().getUser().getIdLong());
