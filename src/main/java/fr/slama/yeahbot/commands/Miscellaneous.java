@@ -286,8 +286,6 @@ public class Miscellaneous {
             permission = Command.CommandPermission.OWNER)
     private void toggle(String[] args, TextChannel textChannel) {
 
-        System.out.println(YeahBot.getInstance().getCommandMap().getRegistry().size());
-
         if (args.length == 0) {
 
             StringBuilder builder = new StringBuilder();
@@ -308,7 +306,7 @@ public class Miscellaneous {
 
                 for (BotCommand command : YeahBot.getInstance().getCommandMap().getRegistry()) {
 
-                    if (command.getName().equals("toggle")) return;
+                    if (command.getName().equals("toggle")) continue;
 
                     if (!YeahBot.getInstance().getCommandMap().getDisabledCommands().contains(command)) {
                         YeahBot.getInstance().getCommandMap().getDisabledCommands().add(command);
