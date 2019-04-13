@@ -35,6 +35,9 @@ public class Config {
     @JsonProperty
     public Redis redis = new Redis();
 
+    @JsonProperty
+    public int maxTracks = 150;
+
     public static Config parseFile(String path) {
         final ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
 

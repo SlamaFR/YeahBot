@@ -5,6 +5,7 @@ import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
+import fr.slama.yeahbot.YeahBot;
 import fr.slama.yeahbot.language.Bundle;
 import fr.slama.yeahbot.language.LanguageUtil;
 import fr.slama.yeahbot.redis.RedisData;
@@ -34,6 +35,8 @@ public class TrackScheduler extends AudioEventAdapter {
     private long currentRequesterId = 0L;
     private Track currentTrack;
     private List<Long> votingUsers;
+
+    private int playedTrack = 0;
 
     TrackScheduler(MusicPlayer musicPlayer, Map<Long, MusicPlayer> players) {
         this.musicPlayer = musicPlayer;
@@ -97,17 +100,28 @@ public class TrackScheduler extends AudioEventAdapter {
     public void stop() {
         musicPlayer.getAudioPlayer().stopTrack();
         musicPlayer.getAudioPlayer().destroy();
+        musicPlayer.getAudioPlayer().removeListener(this);
         musicPlayer.setTextChannel(null);
         players.remove(guild.getIdLong());
         guild.getAudioManager().closeAudioConnection();
         currentTrack = null;
         currentRequesterId = 0L;
         nowPlayingMessageId = 0L;
+        playedTrack = 0;
     }
 
     @Override
     public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
         if (endReason.mayStartNext) {
+
+            if (playedTrack >= YeahBot.CONFIG.maxTracks) {
+                musicPlayer.getTextChannel().sendMessage(
+                        LanguageUtil.getArguedString(guild, Bundle.STRINGS, "audio_player_limit_reached", YeahBot.CONFIG.maxTracks)
+                ).queue();
+                stop();
+                return;
+            }
+
             if (RedisData.getSettings(guild).playerSequence.equals(PlayerSequence.LOOP)) {
                 addToQueue(new Track(track.makeClone(), currentRequesterId), true, false);
             } else if (isLoopingQueue()) {
@@ -134,6 +148,15 @@ public class TrackScheduler extends AudioEventAdapter {
     @Override
     public void onTrackStart(AudioPlayer player, AudioTrack track) {
 
+        if (playedTrack >= YeahBot.CONFIG.maxTracks) {
+            musicPlayer.getTextChannel().sendMessage(
+                    LanguageUtil.getArguedString(guild, Bundle.STRINGS, "audio_player_limit_reached", YeahBot.CONFIG.maxTracks)
+            ).queue();
+            stop();
+            return;
+        }
+
+        playedTrack++;
         logger.info(String.format("%s Now playing %s", guild, track.getInfo().title));
 
         votingUsers = new ArrayList<>();
