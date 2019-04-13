@@ -11,9 +11,4 @@ bad_words.json
 
 config.yml
 
-build.gradle
-
 .DS_Store
-settings.gradle
-gradlew.bat
-gradlew
