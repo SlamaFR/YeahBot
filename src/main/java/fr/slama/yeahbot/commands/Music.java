@@ -66,7 +66,7 @@ public class Music {
         }
 
         try {
-            new URL(query);
+            new URL(query.trim());
         } catch (MalformedURLException e) {
             query = "ytsearch:" + query;
         }
