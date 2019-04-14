@@ -82,12 +82,7 @@ public class Music {
     private void skip(Guild guild, TextChannel textChannel, Member member, String[] args, BotCommand cmd) {
 
         if (guild == null) return;
-
-        if (member.getVoiceState().getChannel().getIdLong() !=
-                guild.getSelfMember().getVoiceState().getChannel().getIdLong()) {
-            textChannel.sendMessage(LanguageUtil.getString(guild, Bundle.STRINGS, "must_be_connected")).queue();
-            return;
-        }
+        if (isDisconnected(guild, member, textChannel)) return;
 
         MusicPlayer player = manager.getPlayer(guild);
 
@@ -148,12 +143,7 @@ public class Music {
     private void stop(Guild guild, TextChannel textChannel, Member member) {
 
         if (guild == null) return;
-
-        if (member.getVoiceState().getChannel().getIdLong() !=
-                guild.getSelfMember().getVoiceState().getChannel().getIdLong()) {
-            textChannel.sendMessage(LanguageUtil.getString(guild, Bundle.STRINGS, "must_be_connected")).queue();
-            return;
-        }
+        if (isDisconnected(guild, member, textChannel)) return;
 
         MusicPlayer player = manager.getPlayer(guild);
 
@@ -182,12 +172,7 @@ public class Music {
     private void pause(Guild guild, TextChannel textChannel, Member member) {
 
         if (guild == null) return;
-
-        if (member.getVoiceState().getChannel().getIdLong() !=
-                guild.getSelfMember().getVoiceState().getChannel().getIdLong()) {
-            textChannel.sendMessage(LanguageUtil.getString(guild, Bundle.STRINGS, "must_be_connected")).queue();
-            return;
-        }
+        if (isDisconnected(guild, member, textChannel)) return;
 
         MusicPlayer player = manager.getPlayer(guild);
 
@@ -204,7 +189,6 @@ public class Music {
     private void nowplaying(Guild guild, TextChannel textChannel) {
 
         if (guild == null) return;
-
         if (manager.getPlayer(guild).getTrackScheduler().getCurrentTrack() == null) return;
 
         Track track = manager.getPlayer(guild).getTrackScheduler().getCurrentTrack();
@@ -303,25 +287,11 @@ public class Music {
     private void clear(Guild guild, TextChannel textChannel, Member member) {
 
         if (guild == null) return;
-
-        if (member.getVoiceState().getChannel().getIdLong() !=
-                guild.getSelfMember().getVoiceState().getChannel().getIdLong()) {
-            textChannel.sendMessage(LanguageUtil.getString(guild, Bundle.STRINGS, "must_be_connected")).queue();
-            return;
-        }
+        if (isDisconnected(guild, member, textChannel)) return;
 
         MusicPlayer player = manager.getPlayer(guild);
 
-        if (!Command.CommandPermission.STAFF.test(member)) for (Track track : player.getTrackScheduler().getQueue()) {
-            if (track.getRequesterId() != member.getUser().getIdLong()) {
-                textChannel.sendMessage(new EmbedBuilder()
-                        .setColor(new Color(231, 76, 60))
-                        .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "error"))
-                        .setDescription(LanguageUtil.getString(guild, Bundle.CAPTION, "no_permission"))
-                        .build()).queue();
-                return;
-            }
-        }
+        if (hasNotPermission(guild, member, textChannel, player)) return;
 
         manager.getPlayer(guild).getTrackScheduler().getQueue().clear();
         textChannel.sendMessage(LanguageUtil.getString(guild, Bundle.STRINGS, "music_queue_cleared")).queue();
@@ -453,12 +423,7 @@ public class Music {
     private void seek(Guild guild, TextChannel textChannel, Member member, String[] args, BotCommand cmd) {
 
         if (guild == null) return;
-
-        if (member.getVoiceState().getChannel().getIdLong() !=
-                guild.getSelfMember().getVoiceState().getChannel().getIdLong()) {
-            textChannel.sendMessage(LanguageUtil.getString(guild, Bundle.STRINGS, "must_be_connected")).queue();
-            return;
-        }
+        if (isDisconnected(guild, member, textChannel)) return;
 
         MusicPlayer player = manager.getPlayer(guild);
 
@@ -522,21 +487,8 @@ public class Music {
     private void playlist(Guild guild, TextChannel textChannel, Member member, String[] args, BotCommand cmd) {
 
         if (guild == null) return;
-
-        if (!guild.getAudioManager().isConnected() && !guild.getAudioManager().isAttemptingToConnect()) {
-            VoiceChannel channel = member.getVoiceState().getChannel();
-            if (channel == null) {
-                textChannel.sendMessage(LanguageUtil.getString(guild, Bundle.STRINGS, "must_be_connected")).queue();
-                return;
-            }
-        }
-
-        if (args.length == 0) {
-            textChannel.sendMessage(
-                    new CommandError(cmd.getArguments(guild)[0], guild, CommandError.ErrorType.MISSING_VALUE).toEmbed()
-            ).queue();
-            return;
-        }
+        if (isDisconnected(guild, member, textChannel)) return;
+        if (hasNotValue(guild, textChannel, cmd, args)) return;
 
         Playlists playlists = RedisData.getPlaylists(guild);
         String name = String.join(" ", args).toLowerCase();
@@ -621,13 +573,7 @@ public class Music {
     private void delPlaylist(Guild guild, TextChannel textChannel, Member member, String[] args, BotCommand cmd) {
 
         if (guild == null) return;
-
-        if (args.length == 0) {
-            textChannel.sendMessage(
-                    new CommandError(cmd.getArguments(guild)[0], guild, CommandError.ErrorType.MISSING_VALUE).toEmbed()
-            ).queue();
-            return;
-        }
+        if (hasNotValue(guild, textChannel, cmd, args)) return;
 
         Playlists playlists = RedisData.getPlaylists(guild);
         String name = String.join(" ", args).toLowerCase();
@@ -661,14 +607,38 @@ public class Music {
 
     }
 
-    private boolean isConnected(Guild guild, Member member, TextChannel textChannel) {
+    private boolean isDisconnected(Guild guild, Member member, TextChannel textChannel) {
         if (!guild.getAudioManager().isConnected() && !guild.getAudioManager().isAttemptingToConnect()) {
             VoiceChannel channel = member.getVoiceState().getChannel();
             if (channel == null) {
                 textChannel.sendMessage(LanguageUtil.getString(guild, Bundle.STRINGS, "must_be_connected")).queue();
-                return false;
+                return true;
             }
         }
-        return true;
+        return false;
+    }
+
+    private boolean hasNotPermission(Guild guild, Member member, TextChannel textChannel, MusicPlayer player) {
+        if (!Command.CommandPermission.STAFF.test(member)) for (Track track : player.getTrackScheduler().getQueue()) {
+            if (track.getRequesterId() != member.getUser().getIdLong()) {
+                textChannel.sendMessage(new EmbedBuilder()
+                        .setColor(new Color(231, 76, 60))
+                        .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "error"))
+                        .setDescription(LanguageUtil.getString(guild, Bundle.CAPTION, "no_permission"))
+                        .build()).queue();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean hasNotValue(Guild guild, TextChannel textChannel, BotCommand cmd, String[] args) {
+        if (args.length == 0) {
+            textChannel.sendMessage(
+                    new CommandError(cmd.getArguments(guild)[0], guild, CommandError.ErrorType.MISSING_VALUE).toEmbed()
+            ).queue();
+            return true;
+        }
+        return false;
     }
 }
