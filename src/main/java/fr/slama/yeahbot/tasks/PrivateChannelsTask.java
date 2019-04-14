@@ -34,6 +34,7 @@ public class PrivateChannelsTask extends TimerTask {
             }
 
             channels.getChannels().removeAll(toDelete);
+            RedisData.setPrivateChannels(guild, channels);
 
         }
 
