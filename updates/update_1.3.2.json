@@ -44,7 +44,6 @@
       "Changed category of the 'ignore' command.",
       "Fixed a bug with the track skipping vote.",
       "Fixed a bug with 'addplaylist' command when name is missing.",
-      ,
       "Fixed a bug with insult detecting.",
       "Fixed a bug with music playing via URL that returns an error caused by extra spaces."
     ],
