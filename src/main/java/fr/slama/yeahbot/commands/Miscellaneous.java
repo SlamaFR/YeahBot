@@ -91,19 +91,10 @@ public class Miscellaneous {
             }
 
             if (guild.getSelfMember().hasPermission(Permission.MESSAGE_WRITE)) {
-                textChannel.sendMessage(
-                        new EmbedBuilder()
-                                .setColor(new Color(22, 160, 133))
-                                .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "important"))
-                                .setDescription(LanguageUtil.getString(guild, Bundle.STRINGS, "currently_alpha"))
-                                .build()
-                ).queue(important -> {
-                    textChannel.sendMessage(embed.build()).queue(
-                            help -> help.delete().queueAfter(1, TimeUnit.MINUTES)
-                    );
-                    important.delete().queueAfter(1, TimeUnit.MINUTES);
-                    message.delete().queueAfter(1, TimeUnit.MINUTES);
-                });
+                textChannel.sendMessage(embed.build()).queue(
+                        help -> help.delete().queueAfter(1, TimeUnit.MINUTES)
+                );
+                message.delete().queueAfter(1, TimeUnit.MINUTES);
             }
 
         } else if (args.length == 1) {
