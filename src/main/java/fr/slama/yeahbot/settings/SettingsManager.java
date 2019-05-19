@@ -135,7 +135,7 @@ public class SettingsManager {
                 new EmbedBuilder()
                         .setTitle(LanguageUtil.getString(guild, Bundle.SETTINGS, getSettingKey(field)))
                         .setDescription(LanguageUtil.getArguedString(guild, Bundle.STRINGS, "current_value",
-                                LanguageUtil.getState(LanguageUtil.State.BOOLEAN, guild, field.getBoolean(settings))))
+                                LanguageUtil.getState(guild, field.getBoolean(settings))))
                         .setFooter(LanguageUtil.getString(guild, Bundle.CAPTION, "thirty_seconds_expiration"), null)
                         .build()
         ).queue(message -> {

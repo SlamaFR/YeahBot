@@ -65,20 +65,7 @@ public class LanguageUtil {
         return getArguedString(RedisData.getSettings(guild).locale, bundle, key, arguments);
     }
 
-    public static String getState(State state, Guild guild, Object object) {
-        switch (state) {
-            case BOOLEAN:
-                if ((boolean) object) return getString(guild, Bundle.CAPTION, "state_enabled");
-                return getString(guild, Bundle.CAPTION, "state_disabled");
-            default:
-                return null;
-        }
+    public static String getState(Guild guild, boolean bool) {
+        return getString(guild, Bundle.CAPTION, bool ? "state_enabled" : "state_disabled");
     }
-
-    public enum State {
-
-        BOOLEAN
-
-    }
-
 }
