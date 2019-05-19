@@ -26,6 +26,10 @@ public class Settings {
     public int playerVolume = 50;
     @IgnoreSetting
     public PlayerSequence playerSequence = PlayerSequence.NORMAL;
+    @IgnoreSetting
+    public boolean shuffle = false;
+    @IgnoreSetting
+    public byte loop = 0;
     public int maxSearchResults = 5;
     public boolean multipleResultsSearch = true;
 
