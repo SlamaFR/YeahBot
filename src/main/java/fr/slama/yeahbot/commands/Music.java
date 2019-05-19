@@ -14,7 +14,6 @@ import fr.slama.yeahbot.redis.buckets.Settings;
 import fr.slama.yeahbot.utilities.EmoteUtil;
 import fr.slama.yeahbot.utilities.TimeUtil;
 import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 
@@ -247,7 +246,7 @@ public class Music {
             discordPermission = Permission.MESSAGE_ADD_REACTION,
             category = Command.CommandCategory.MUSIC,
             executor = Command.CommandExecutor.USER)
-    private void queue(Guild guild, TextChannel textChannel, User user, Message message, String[] args) {
+    private void queue(Guild guild, TextChannel textChannel, User user, Message message) {
 
         LinkedList<Track> queue = manager.getPlayer(guild).getTrackScheduler().getQueue();
 
@@ -302,7 +301,7 @@ public class Music {
     @Command(name = "shuffle",
             category = Command.CommandCategory.MUSIC,
             executor = Command.CommandExecutor.USER)
-    private void shuffle(Guild guild, TextChannel textChannel, JDA jda, String[] args, BotCommand cmd) {
+    private void shuffle(Guild guild, TextChannel textChannel, String[] args, BotCommand cmd) {
 
         if (guild == null) return;
 
@@ -348,7 +347,7 @@ public class Music {
             aliases = {"loop"},
             category = Command.CommandCategory.MUSIC,
             executor = Command.CommandExecutor.USER)
-    private void loop(Guild guild, TextChannel textChannel, JDA jda, String[] args, BotCommand cmd) {
+    private void loop(Guild guild, TextChannel textChannel, String[] args, BotCommand cmd) {
 
         if (guild == null) return;
 

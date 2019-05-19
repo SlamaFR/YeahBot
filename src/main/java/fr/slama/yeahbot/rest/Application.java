@@ -22,13 +22,6 @@ import org.json.JSONObject;
 public class Application extends Jooby {
 
     private YeahBot yeahBot = YeahBot.getInstance();
-    private final String[] AVAILABLE_BADGES = new String[]{
-            "guildCount",
-            "userCount",
-            "channelCount",
-            "commandCount",
-            "availableLocales"
-    };
 
     {
 
