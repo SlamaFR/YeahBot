@@ -14,6 +14,7 @@ import fr.slama.yeahbot.redis.buckets.Settings;
 import fr.slama.yeahbot.utilities.EmoteUtil;
 import fr.slama.yeahbot.utilities.TimeUtil;
 import net.dv8tion.jda.core.EmbedBuilder;
+import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 
@@ -51,7 +52,7 @@ public class Music {
 
         if (args.length == 0) {
             textChannel.sendMessage(
-                    new CommandError(cmd.getArguments(guild)[0], guild, CommandError.ErrorType.MISSING_VALUE).toEmbed()
+                    new CommandError(cmd, cmd.getArguments(guild)[0], guild, CommandError.ErrorType.MISSING_VALUE).toEmbed()
             ).queue();
             return;
         }
@@ -119,7 +120,7 @@ public class Music {
                 amount = Integer.parseInt(args[0]);
             } catch (NumberFormatException e) {
                 textChannel.sendMessage(
-                        new CommandError(cmd.getArguments(guild)[0], guild, CommandError.ErrorType.INTEGER).toEmbed()
+                        new CommandError(cmd, cmd.getArguments(guild)[0], guild, CommandError.ErrorType.INTEGER).toEmbed()
                 ).queue();
                 return;
             }
@@ -298,81 +299,108 @@ public class Music {
 
     }
 
-    @Command(name = "repeat",
-            aliases = "loop",
-            category = Command.CommandCategory.MUSIC,
-            executor = Command.CommandExecutor.USER)
-    private void repeat(Guild guild, TextChannel textChannel) {
-
-        if (guild == null) return;
-
-        Settings settings = RedisData.getSettings(guild);
-        settings.playerSequence = PlayerSequence.LOOP;
-        RedisData.setSettings(guild, settings);
-        textChannel.sendMessage(LanguageUtil.getArguedString(guild, Bundle.STRINGS, "music_set_sequence",
-                EmoteUtil.getSequenceEmote(PlayerSequence.LOOP), LanguageUtil.getString(guild, Bundle.CAPTION, PlayerSequence.LOOP.toKey()))).queue();
-
-    }
-
-    @Command(name = "repeatqueue",
-            aliases = {"loopqueue", "rq", "lq"},
-            category = Command.CommandCategory.MUSIC,
-            executor = Command.CommandExecutor.USER)
-    private void repeatQueue(Guild guild, TextChannel textChannel) {
-
-        if (guild == null) return;
-
-        Settings settings = RedisData.getSettings(guild);
-        settings.playerSequence = PlayerSequence.QUEUE_LOOP;
-        RedisData.setSettings(guild, settings);
-        textChannel.sendMessage(LanguageUtil.getArguedString(guild, Bundle.STRINGS, "music_set_sequence",
-                EmoteUtil.getSequenceEmote(PlayerSequence.QUEUE_LOOP), LanguageUtil.getString(guild, Bundle.CAPTION, PlayerSequence.QUEUE_LOOP.toKey()))).queue();
-
-    }
-
-    @Command(name = "repeatsufflequeue",
-            aliases = {"loopshufflequeue", "rsq", "lsq"},
-            category = Command.CommandCategory.MUSIC,
-            executor = Command.CommandExecutor.USER)
-    private void repeatShuffleQueue(Guild guild, TextChannel textChannel) {
-
-        if (guild == null) return;
-
-        Settings settings = RedisData.getSettings(guild);
-        settings.playerSequence = PlayerSequence.SHUFFLE_QUEUE_LOOP;
-        RedisData.setSettings(guild, settings);
-        textChannel.sendMessage(LanguageUtil.getArguedString(guild, Bundle.STRINGS, "music_set_sequence",
-                EmoteUtil.getSequenceEmote(PlayerSequence.SHUFFLE_QUEUE_LOOP), LanguageUtil.getString(guild, Bundle.CAPTION, PlayerSequence.SHUFFLE_QUEUE_LOOP.toKey()))).queue();
-
-    }
-
     @Command(name = "shuffle",
             category = Command.CommandCategory.MUSIC,
             executor = Command.CommandExecutor.USER)
-    private void shuffle(Guild guild, TextChannel textChannel) {
+    private void shuffle(Guild guild, TextChannel textChannel, JDA jda, String[] args, BotCommand cmd) {
 
         if (guild == null) return;
 
         Settings settings = RedisData.getSettings(guild);
-        settings.playerSequence = PlayerSequence.SHUFFLE;
-        RedisData.setSettings(guild, settings);
-        textChannel.sendMessage(LanguageUtil.getArguedString(guild, Bundle.STRINGS, "music_set_sequence",
-                EmoteUtil.getSequenceEmote(PlayerSequence.SHUFFLE), LanguageUtil.getString(guild, Bundle.CAPTION, PlayerSequence.SHUFFLE.toKey()))).queue();
+
+        if (args.length > 0) {
+            switch (args[0].toLowerCase()) {
+                case "on":
+                    settings.shuffle = true;
+                    break;
+                case "off":
+                    settings.shuffle = false;
+                    break;
+                default:
+                    textChannel.sendMessage(
+                            new CommandError(cmd, cmd.getArguments(guild)[0], guild, CommandError.ErrorType.MISSING_VALUE).toEmbed()
+                    ).queue();
+                    return;
+            }
+            RedisData.setSettings(guild, settings);
+        }
+
+        String sequence = setNewSequence(settings).toString().toLowerCase();
+
+        textChannel.sendMessage(
+                new EmbedBuilder()
+                        .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "shuffle_mode"))
+                        .setDescription(LanguageUtil.getState(guild, settings.shuffle))
+                        .addField(
+                                LanguageUtil.getString(guild, Bundle.CAPTION, "music_player_sequence"),
+                                String.format("%s %s",
+                                        EmoteUtil.getSequenceEmote(settings.playerSequence),
+                                        LanguageUtil.getString(guild, Bundle.CAPTION, "music_player_sequence_" + sequence)),
+                                false
+                        )
+                        .setColor(settings.shuffle ? new Color(46, 204, 113) : new Color(231, 76, 60))
+                        .build()
+        ).queue();
 
     }
 
-    @Command(name = "normal",
+    @Command(name = "repeat",
+            aliases = {"loop"},
             category = Command.CommandCategory.MUSIC,
             executor = Command.CommandExecutor.USER)
-    private void normal(Guild guild, TextChannel textChannel) {
+    private void loop(Guild guild, TextChannel textChannel, JDA jda, String[] args, BotCommand cmd) {
 
         if (guild == null) return;
 
         Settings settings = RedisData.getSettings(guild);
-        settings.playerSequence = PlayerSequence.NORMAL;
-        RedisData.setSettings(guild, settings);
-        textChannel.sendMessage(LanguageUtil.getArguedString(guild, Bundle.STRINGS, "music_set_sequence",
-                EmoteUtil.getSequenceEmote(PlayerSequence.NORMAL), LanguageUtil.getString(guild, Bundle.CAPTION, PlayerSequence.NORMAL.toKey()))).queue();
+
+        if (args.length > 0) {
+            switch (args[0].toLowerCase()) {
+                case "off":
+                    settings.loop = 0;
+                    break;
+                case "track":
+                case "one":
+                    settings.loop = 1;
+                    break;
+                case "all":
+                case "queue":
+                    settings.loop = 2;
+                    break;
+                default:
+                    textChannel.sendMessage(
+                            new CommandError(cmd, cmd.getArguments(guild)[0], guild, CommandError.ErrorType.MISSING_VALUE).toEmbed()
+                    ).queue();
+                    return;
+            }
+            RedisData.setSettings(guild, settings);
+        }
+
+        String sequence = setNewSequence(settings).toString().toLowerCase();
+
+        String state;
+        if (settings.loop == 0) {
+            state = LanguageUtil.getState(guild, false);
+        } else if (settings.loop == 1) {
+            state = LanguageUtil.getString(guild, Bundle.CAPTION, "track");
+        } else {
+            state = LanguageUtil.getState(guild, true);
+        }
+
+        textChannel.sendMessage(
+                new EmbedBuilder()
+                        .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "loop_mode"))
+                        .setDescription(state)
+                        .addField(
+                                LanguageUtil.getString(guild, Bundle.CAPTION, "music_player_sequence"),
+                                String.format("%s %s",
+                                        EmoteUtil.getSequenceEmote(settings.playerSequence),
+                                        LanguageUtil.getString(guild, Bundle.CAPTION, "music_player_sequence_" + sequence)),
+                                false
+                        )
+                        .setColor(settings.loop > 0 ? new Color(46, 204, 113) : new Color(231, 76, 60))
+                        .build()
+        ).queue();
 
     }
 
@@ -399,7 +427,7 @@ public class Music {
                 volume = Integer.parseInt(args[0]);
             } catch (NumberFormatException e) {
                 textChannel.sendMessage(
-                        new CommandError(cmd.getArguments(guild)[0], guild, CommandError.ErrorType.INTEGER).toEmbed()
+                        new CommandError(cmd, cmd.getArguments(guild)[0], guild, CommandError.ErrorType.INTEGER).toEmbed()
                 ).queue();
                 return;
             }
@@ -431,7 +459,7 @@ public class Music {
 
         if (args.length == 0) {
             textChannel.sendMessage(
-                    new CommandError(cmd.getArguments(guild)[0], guild, CommandError.ErrorType.MISSING_VALUE).toEmbed()
+                    new CommandError(cmd, cmd.getArguments(guild)[0], guild, CommandError.ErrorType.MISSING_VALUE).toEmbed()
             ).queue();
         } else {
             int hours = 0;
@@ -455,7 +483,7 @@ public class Music {
                 }
             } catch (NumberFormatException e) {
                 textChannel.sendMessage(
-                        new CommandError(cmd.getArguments(guild)[0], guild, CommandError.ErrorType.INTEGER).toEmbed()
+                        new CommandError(cmd, cmd.getArguments(guild)[0], guild, CommandError.ErrorType.INTEGER).toEmbed()
                 ).queue();
                 return;
             }
@@ -526,9 +554,18 @@ public class Music {
         URL url = null;
         Playlists playlists = RedisData.getPlaylists(guild);
 
-        for (String s : args) {
+        for (int i = 0; i < args.length; i++) {
+            String s = args[i];
             try {
                 url = new URL(s);
+
+                if (i == args.length - 1) {
+                    textChannel.sendMessage(
+                            new CommandError(cmd, cmd.getArguments(guild)[0], guild, CommandError.ErrorType.MISSING_VALUE).toEmbed()
+                    ).queue();
+                    return;
+                }
+
                 break;
             } catch (MalformedURLException e) {
                 if (builder.length() > 1) builder.append(" ");
@@ -538,14 +575,14 @@ public class Music {
 
         if (args.length == 0) {
             textChannel.sendMessage(
-                    new CommandError(cmd.getArguments(guild)[0], guild, CommandError.ErrorType.MISSING_VALUE).toEmbed()
+                    new CommandError(cmd, cmd.getArguments(guild)[0], guild, CommandError.ErrorType.MISSING_VALUE).toEmbed()
             ).queue();
             return;
         }
 
         if (url == null) {
             textChannel.sendMessage(
-                    new CommandError(cmd.getArguments(guild)[1], guild, CommandError.ErrorType.URL).toEmbed()
+                    new CommandError(cmd, cmd.getArguments(guild)[1], guild, CommandError.ErrorType.URL).toEmbed()
             ).queue();
             return;
         }
@@ -607,6 +644,21 @@ public class Music {
 
     }
 
+    private PlayerSequence setNewSequence(Settings settings) {
+        switch (settings.loop) {
+            case 0:
+                settings.playerSequence = settings.shuffle ? PlayerSequence.SHUFFLE : PlayerSequence.NORMAL;
+                return settings.shuffle ? PlayerSequence.SHUFFLE : PlayerSequence.NORMAL;
+            case 1:
+                settings.playerSequence = PlayerSequence.LOOP;
+                return PlayerSequence.LOOP;
+            case 2:
+                settings.playerSequence = settings.shuffle ? PlayerSequence.SHUFFLE_QUEUE_LOOP : PlayerSequence.QUEUE_LOOP;
+                return settings.shuffle ? PlayerSequence.SHUFFLE_QUEUE_LOOP : PlayerSequence.QUEUE_LOOP;
+        }
+        return PlayerSequence.NORMAL;
+    }
+
     private boolean isDisconnected(Guild guild, Member member, TextChannel textChannel) {
         if (!guild.getAudioManager().isConnected() && !guild.getAudioManager().isAttemptingToConnect()) {
             VoiceChannel channel = member.getVoiceState().getChannel();
@@ -635,7 +687,7 @@ public class Music {
     private boolean hasNotValue(Guild guild, TextChannel textChannel, BotCommand cmd, String[] args) {
         if (args.length == 0) {
             textChannel.sendMessage(
-                    new CommandError(cmd.getArguments(guild)[0], guild, CommandError.ErrorType.MISSING_VALUE).toEmbed()
+                    new CommandError(cmd, cmd.getArguments(guild)[0], guild, CommandError.ErrorType.MISSING_VALUE).toEmbed()
             ).queue();
             return true;
         }

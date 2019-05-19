@@ -9,6 +9,7 @@ import fr.slama.yeahbot.listeners.SelectionListener;
 import fr.slama.yeahbot.managers.SanctionManager;
 import fr.slama.yeahbot.redis.RedisData;
 import fr.slama.yeahbot.redis.buckets.Reports;
+import fr.slama.yeahbot.redis.buckets.Settings;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
@@ -202,6 +203,7 @@ public class Moderation {
         if (message.getMentionedMembers().isEmpty()) {
             textChannel.sendMessage(
                     new CommandError(
+                            cmd,
                             cmd.getArguments(guild)[0],
                             guild,
                             CommandError.ErrorType.MISSING_VALUE
@@ -271,6 +273,247 @@ public class Moderation {
         textChannel.sendMessage(
                 LanguageUtil.getString(guild, Bundle.STRINGS, "locked")
         ).queue();
+
+    }
+
+    @Command(name = "ignore",
+            category = Command.CommandCategory.MODERATION,
+            permission = Command.CommandPermission.STAFF,
+            executor = Command.CommandExecutor.USER)
+    private void ignore(Guild guild, TextChannel textChannel, String[] args, BotCommand cmd, Message message) {
+
+        if (guild == null) return;
+
+        if (args.length == 0) {
+            textChannel.sendMessage(
+                    new CommandError(cmd, cmd.getArguments(guild)[0], guild, CommandError.ErrorType.MISSING_VALUE).toEmbed()
+            ).queue();
+        } else {
+            Settings settings = RedisData.getSettings(guild);
+            switch (args[0]) {
+                case "spam":
+                    if (args.length == 1) {
+                        StringBuilder builder = new StringBuilder();
+
+                        for (Long channel : settings.spamIgnoredChannels) {
+                            if (builder.length() > 1) builder.append(", ");
+                            builder.append(guild.getTextChannelById(channel).getAsMention());
+                        }
+
+                        textChannel.sendMessage(
+                                new EmbedBuilder()
+                                        .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "spam_ignored_channels"))
+                                        .setDescription(builder.length() > 0 ? builder.toString() : LanguageUtil.getString(guild, Bundle.CAPTION, "none"))
+                                        .build()
+                        ).queue();
+                    } else {
+                        switch (args[1]) {
+                            case "add":
+                                if (!message.getMentionedChannels().isEmpty()) {
+                                    for (TextChannel channel : message.getMentionedChannels()) {
+                                        if (!settings.spamIgnoredChannels.contains(channel.getIdLong()))
+                                            settings.spamIgnoredChannels.add(channel.getIdLong());
+                                    }
+                                    textChannel.sendMessage(
+                                            LanguageUtil.getString(guild, Bundle.CAPTION, "setting_updated")
+                                    ).queue();
+                                } else {
+                                    textChannel.sendMessage(
+                                            new CommandError(
+                                                    cmd,
+                                                    cmd.getArguments(guild)[2],
+                                                    guild,
+                                                    CommandError.ErrorType.MISSING_VALUE
+                                            ).toEmbed()
+                                    ).queue();
+                                    return;
+                                }
+                                break;
+                            case "del":
+                                if (!message.getMentionedChannels().isEmpty()) {
+                                    for (TextChannel channel : message.getMentionedChannels())
+                                        settings.spamIgnoredChannels.remove(channel.getIdLong());
+                                    textChannel.sendMessage(
+                                            LanguageUtil.getString(guild, Bundle.CAPTION, "setting_updated")
+                                    ).queue();
+                                } else {
+                                    textChannel.sendMessage(
+                                            new CommandError(
+                                                    cmd,
+                                                    cmd.getArguments(guild)[2],
+                                                    guild,
+                                                    CommandError.ErrorType.MISSING_VALUE
+                                            ).toEmbed()
+                                    ).queue();
+                                    return;
+                                }
+                                break;
+                            default:
+                                textChannel.sendMessage(
+                                        new CommandError(
+                                                cmd,
+                                                cmd.getArguments(guild)[1],
+                                                guild,
+                                                CommandError.ErrorType.MISSING_VALUE
+                                        ).toEmbed()
+                                ).queue();
+                                return;
+                        }
+                    }
+                    break;
+                case "swearing":
+                    if (args.length == 1) {
+                        StringBuilder builder = new StringBuilder();
+
+                        for (Long channel : settings.spamIgnoredChannels) {
+                            if (builder.length() > 1) builder.append(", ");
+                            builder.append(guild.getTextChannelById(channel).getAsMention());
+                        }
+
+                        textChannel.sendMessage(
+                                new EmbedBuilder()
+                                        .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "swearing_ignored_channels"))
+                                        .setDescription(builder.length() > 0 ? builder.toString() : LanguageUtil.getString(guild, Bundle.CAPTION, "none"))
+                                        .build()
+                        ).queue();
+                    } else {
+                        switch (args[1]) {
+                            case "add":
+                                if (!message.getMentionedChannels().isEmpty()) {
+                                    for (TextChannel channel : message.getMentionedChannels()) {
+                                        if (!settings.swearingIgnoredChannels.contains(channel.getIdLong()))
+                                            settings.swearingIgnoredChannels.add(channel.getIdLong());
+                                    }
+                                    textChannel.sendMessage(
+                                            LanguageUtil.getString(guild, Bundle.CAPTION, "setting_updated")
+                                    ).queue();
+                                } else {
+                                    textChannel.sendMessage(
+                                            new CommandError(
+                                                    cmd,
+                                                    cmd.getArguments(guild)[2],
+                                                    guild,
+                                                    CommandError.ErrorType.MISSING_VALUE
+                                            ).toEmbed()
+                                    ).queue();
+                                    return;
+                                }
+                                break;
+                            case "del":
+                                if (!message.getMentionedChannels().isEmpty()) {
+                                    for (TextChannel channel : message.getMentionedChannels())
+                                        settings.swearingIgnoredChannels.remove(channel.getIdLong());
+                                    textChannel.sendMessage(
+                                            LanguageUtil.getString(guild, Bundle.CAPTION, "setting_updated")
+                                    ).queue();
+                                } else {
+                                    textChannel.sendMessage(
+                                            new CommandError(
+                                                    cmd,
+                                                    cmd.getArguments(guild)[2],
+                                                    guild,
+                                                    CommandError.ErrorType.MISSING_VALUE
+                                            ).toEmbed()
+                                    ).queue();
+                                    return;
+                                }
+                                break;
+                            default:
+                                textChannel.sendMessage(
+                                        new CommandError(
+                                                cmd,
+                                                cmd.getArguments(guild)[1],
+                                                guild,
+                                                CommandError.ErrorType.MISSING_VALUE
+                                        ).toEmbed()
+                                ).queue();
+                                return;
+                        }
+                    }
+                    break;
+                case "advertising":
+                case "ad":
+                    if (args.length == 1) {
+                        StringBuilder builder = new StringBuilder();
+
+                        for (Long channel : settings.advertisingIgnoredChannels) {
+                            if (builder.length() > 1) builder.append(", ");
+                            builder.append(guild.getTextChannelById(channel).getAsMention());
+                        }
+
+                        textChannel.sendMessage(
+                                new EmbedBuilder()
+                                        .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "advertising_ignored_channels"))
+                                        .setDescription(builder.length() > 0 ? builder.toString() : LanguageUtil.getString(guild, Bundle.CAPTION, "none"))
+                                        .build()
+                        ).queue();
+                    } else {
+                        switch (args[1]) {
+                            case "add":
+                                if (!message.getMentionedChannels().isEmpty()) {
+                                    for (TextChannel channel : message.getMentionedChannels()) {
+                                        if (!settings.advertisingIgnoredChannels.contains(channel.getIdLong()))
+                                            settings.advertisingIgnoredChannels.add(channel.getIdLong());
+                                    }
+                                    textChannel.sendMessage(
+                                            LanguageUtil.getString(guild, Bundle.CAPTION, "setting_updated")
+                                    ).queue();
+                                } else {
+                                    textChannel.sendMessage(
+                                            new CommandError(
+                                                    cmd,
+                                                    cmd.getArguments(guild)[2],
+                                                    guild,
+                                                    CommandError.ErrorType.MISSING_VALUE
+                                            ).toEmbed()
+                                    ).queue();
+                                    return;
+                                }
+                                break;
+                            case "del":
+                                if (!message.getMentionedChannels().isEmpty()) {
+                                    for (TextChannel channel : message.getMentionedChannels())
+                                        settings.advertisingIgnoredChannels.remove(channel.getIdLong());
+                                    textChannel.sendMessage(
+                                            LanguageUtil.getString(guild, Bundle.CAPTION, "setting_updated")
+                                    ).queue();
+                                } else {
+                                    textChannel.sendMessage(
+                                            new CommandError(
+                                                    cmd,
+                                                    cmd.getArguments(guild)[2],
+                                                    guild,
+                                                    CommandError.ErrorType.MISSING_VALUE
+                                            ).toEmbed()
+                                    ).queue();
+                                    return;
+                                }
+                                break;
+                            default:
+                                textChannel.sendMessage(
+                                        new CommandError(
+                                                cmd,
+                                                cmd.getArguments(guild)[1],
+                                                guild,
+                                                CommandError.ErrorType.MISSING_VALUE
+                                        ).toEmbed()
+                                ).queue();
+                                return;
+                        }
+                    }
+                    break;
+                default:
+                    textChannel.sendMessage(
+                            new CommandError(
+                                    cmd,
+                                    cmd.getArguments(guild)[0],
+                                    guild,
+                                    CommandError.ErrorType.MISSING_VALUE
+                            ).toEmbed()
+                    ).queue();
+            }
+            RedisData.setSettings(guild, settings);
+        }
 
     }
 }

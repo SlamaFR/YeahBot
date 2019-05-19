@@ -26,7 +26,7 @@ public class Fun {
     private void lmgtfy(Guild guild, TextChannel textChannel, Message message, String[] args, BotCommand cmd) {
 
         if (args.length < 1) {
-            textChannel.sendMessage(new CommandError(cmd.getArguments(guild)[0], guild, CommandError.ErrorType.MISSING_VALUE).toEmbed()).queue();
+            textChannel.sendMessage(new CommandError(cmd, cmd.getArguments(guild)[0], guild, CommandError.ErrorType.MISSING_VALUE).toEmbed()).queue();
             return;
         }
 
@@ -78,13 +78,13 @@ public class Fun {
         if (guild == null) return;
 
         if (args.length == 0) {
-            textChannel.sendMessage(new CommandError(cmd.getArguments(guild)[1], guild, CommandError.ErrorType.MISSING_VALUE).toEmbed()).queue();
+            textChannel.sendMessage(new CommandError(cmd, cmd.getArguments(guild)[1], guild, CommandError.ErrorType.MISSING_VALUE).toEmbed()).queue();
         } else if (args.length == 1) {
             try {
                 int maximum = Integer.parseInt(args[0]);
                 textChannel.sendMessage(LanguageUtil.getArguedString(guild, Bundle.STRINGS, "random_number", new Random().nextInt(maximum))).queue();
             } catch (NumberFormatException e) {
-                textChannel.sendMessage(new CommandError(cmd.getArguments(guild)[1], guild, CommandError.ErrorType.INTEGER).toEmbed()).queue();
+                textChannel.sendMessage(new CommandError(cmd, cmd.getArguments(guild)[1], guild, CommandError.ErrorType.INTEGER).toEmbed()).queue();
             }
         } else if (args.length == 2) {
             try {
@@ -97,7 +97,7 @@ public class Fun {
                 }
                 textChannel.sendMessage(LanguageUtil.getArguedString(guild, Bundle.STRINGS, "random_number", new Random().nextInt(maximum - minimum) + minimum)).queue();
             } catch (NumberFormatException e) {
-                textChannel.sendMessage(new CommandError(cmd.getArguments(guild)[0], guild, CommandError.ErrorType.INTEGER).toEmbed()).queue();
+                textChannel.sendMessage(new CommandError(cmd, cmd.getArguments(guild)[0], guild, CommandError.ErrorType.INTEGER).toEmbed()).queue();
             }
         } else {
             cmd.sendUsageEmbed(textChannel);

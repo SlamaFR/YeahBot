@@ -17,8 +17,10 @@ public class CommandError {
     private final Guild guild;
     private final ErrorType type;
     private final String[] args;
+    private BotCommand cmd;
 
-    public CommandError(String argument, Guild guild, ErrorType type, String... args) {
+    public CommandError(BotCommand cmd, String argument, Guild guild, ErrorType type, String... args) {
+        this.cmd = cmd;
         this.argument = argument;
         this.guild = guild;
         this.type = type;
@@ -26,10 +28,12 @@ public class CommandError {
     }
 
     public MessageEmbed toEmbed() {
+        String usageCaption = LanguageUtil.getString(guild, Bundle.CAPTION, "usage");
         return new EmbedBuilder()
                 .setColor(new Color(231, 76, 60))
                 .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "argument_error"))
                 .setDescription(LanguageUtil.getArguedString(guild, Bundle.ERROR, type.toString(), argument, String.join("\n", args)))
+                .addField(usageCaption, cmd.getUsage(guild), false)
                 .build();
     }
 
