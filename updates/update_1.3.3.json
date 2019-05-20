@@ -1,0 +1,24 @@
+{
+  "version": "1.3.3",
+  "date": 1558216800000,
+  "fr": {
+    "title": "Bulletin de mise à jour",
+    "adds": [],
+    "removes": [],
+    "changes": [
+      "Résolution d'un bug critique avec la détection d'autiteurs.",
+      "Résolution d'un bug avec la lecture de musique via URL qui retourne une erreur causée par des espaces en trop."
+    ],
+    "coming": []
+  },
+  "en": {
+    "title": "Update report",
+    "adds": [],
+    "removes": [],
+    "changes": [
+      "Fixed a critical bug with the music listeners detection.",
+      "Fixed a bug with music playing via URL that returns an error caused by extra spaces."
+    ],
+    "coming": []
+  }
+}

@@ -56,7 +56,7 @@ public class Music {
             return;
         }
 
-        String query = String.join(" ", args);
+        String query = String.join(" ", args).trim();
 
         boolean firstPosition = false;
 
@@ -66,7 +66,7 @@ public class Music {
         }
 
         try {
-            new URL(query.trim());
+            new URL(query);
         } catch (MalformedURLException e) {
             query = "ytsearch:" + query;
         }

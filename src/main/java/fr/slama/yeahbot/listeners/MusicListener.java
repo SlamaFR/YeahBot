@@ -21,7 +21,7 @@ public class MusicListener extends ListenerAdapter {
 
         if (!event.getMember().equals(event.getGuild().getSelfMember()) &&
                 event.getChannelLeft().equals(event.getGuild().getSelfMember().getVoiceState().getChannel()) &&
-                event.getChannelLeft().getMembers().stream().filter(m -> !m.getUser().isBot()).toArray().length <= 1) {
+                event.getChannelLeft().getMembers().stream().filter(m -> !m.getUser().isBot()).toArray().length < 1) {
             leave(event.getChannelLeft());
         }
         super.onGuildVoiceLeave(event);
@@ -33,7 +33,7 @@ public class MusicListener extends ListenerAdapter {
 
         if (!event.getMember().equals(event.getGuild().getSelfMember()) &&
                 event.getChannelLeft().equals(event.getGuild().getSelfMember().getVoiceState().getChannel()) &&
-                event.getChannelLeft().getMembers().stream().filter(m -> !m.getUser().isBot()).toArray().length <= 1) {
+                event.getChannelLeft().getMembers().stream().filter(m -> !m.getUser().isBot()).toArray().length < 1) {
             leave(event.getChannelLeft());
         }
         super.onGuildVoiceMove(event);
