@@ -321,10 +321,9 @@ public class Music {
                     ).queue();
                     return;
             }
-            RedisData.setSettings(guild, settings);
         }
 
-        String sequence = setNewSequence(settings).toString().toLowerCase();
+        String sequence = setNewSequence(guild, settings).toString().toLowerCase();
 
         textChannel.sendMessage(
                 new EmbedBuilder()
@@ -372,10 +371,9 @@ public class Music {
                     ).queue();
                     return;
             }
-            RedisData.setSettings(guild, settings);
         }
 
-        String sequence = setNewSequence(settings).toString().toLowerCase();
+        String sequence = setNewSequence(guild, settings).toString().toLowerCase();
 
         String state;
         if (settings.loop == 0) {
@@ -643,16 +641,19 @@ public class Music {
 
     }
 
-    private PlayerSequence setNewSequence(Settings settings) {
+    private PlayerSequence setNewSequence(Guild guild, Settings settings) {
         switch (settings.loop) {
             case 0:
                 settings.playerSequence = settings.shuffle ? PlayerSequence.SHUFFLE : PlayerSequence.NORMAL;
+                RedisData.setSettings(guild, settings);
                 return settings.shuffle ? PlayerSequence.SHUFFLE : PlayerSequence.NORMAL;
             case 1:
                 settings.playerSequence = PlayerSequence.LOOP;
+                RedisData.setSettings(guild, settings);
                 return PlayerSequence.LOOP;
             case 2:
                 settings.playerSequence = settings.shuffle ? PlayerSequence.SHUFFLE_QUEUE_LOOP : PlayerSequence.QUEUE_LOOP;
+                RedisData.setSettings(guild, settings);
                 return settings.shuffle ? PlayerSequence.SHUFFLE_QUEUE_LOOP : PlayerSequence.QUEUE_LOOP;
         }
         return PlayerSequence.NORMAL;
