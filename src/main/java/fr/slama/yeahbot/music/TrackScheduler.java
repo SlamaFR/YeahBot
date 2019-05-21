@@ -172,10 +172,28 @@ public class TrackScheduler extends AudioEventAdapter {
         musicPlayer.getTextChannel().sendMessage(
                 new EmbedBuilder()
                         .setColor(ColorUtil.BLUE)
-                        .addField(LanguageUtil.getString(guild, Bundle.CAPTION, "now_playing"), LanguageUtil.getArguedString(guild, Bundle.STRINGS, "music_track", track.getInfo().title, track.getInfo().uri), false)
-                        .addField(LanguageUtil.getString(guild, Bundle.CAPTION, "music_player_volume"), EmoteUtil.getVolumeEmote(musicPlayer.getAudioPlayer().getVolume()) + " " + musicPlayer.getAudioPlayer().getVolume() + "%", true)
-                        .addField(LanguageUtil.getString(guild, Bundle.CAPTION, "music_player_sequence"), EmoteUtil.getSequenceEmote(RedisData.getSettings(guild).playerSequence) + " " + LanguageUtil.getString(guild, Bundle.CAPTION, "music_player_sequence_" + RedisData.getSettings(guild).playerSequence), true)
-                        .addField(LanguageUtil.getString(guild, Bundle.CAPTION, "music_track_duration"), "⏱ " + TimeUtil.toTime(track.getDuration()), true)
+                        .addField(
+                                LanguageUtil.getString(guild, Bundle.CAPTION, "now_playing"),
+                                LanguageUtil.getArguedString(guild, Bundle.STRINGS, "music_track", track.getInfo().title, track.getInfo().uri),
+                                false)
+                        .addField(
+                                LanguageUtil.getString(guild, Bundle.CAPTION, "music_player_volume"),
+                                String.format("%s %d%%",
+                                        EmoteUtil.getVolumeEmote(musicPlayer.getAudioPlayer().getVolume()),
+                                        musicPlayer.getAudioPlayer().getVolume()
+                                ),
+                                true)
+                        .addField(
+                                LanguageUtil.getString(guild, Bundle.CAPTION, "music_player_sequence"),
+                                String.format("%s %s",
+                                        EmoteUtil.getSequenceEmote(RedisData.getSettings(guild).playerSequence),
+                                        LanguageUtil.getString(guild, Bundle.CAPTION, "music_player_sequence_" + RedisData.getSettings(guild).playerSequence)
+                                ),
+                                true)
+                        .addField(
+                                LanguageUtil.getString(guild, Bundle.CAPTION, "music_track_duration"),
+                                "⏱ " + TimeUtil.toTime(track.getDuration()),
+                                true)
                         .setFooter(LanguageUtil.getArguedString(guild, Bundle.STRINGS, "music_submitted_by", requesterName) + (!queue.isEmpty() && !isLoopingQueue() ? " • " + LanguageUtil.getArguedString(guild, Bundle.CAPTION, "remaining_tracks", queue.size()) : ""), requesterAvatarUrl)
                         .build()
         ).queue(message -> nowPlayingMessageId = message.getIdLong());
