@@ -146,7 +146,7 @@ public class CommandMap {
         }
     }
 
-    private void execute(BotCommand botCommand, String command, String[] args, Message message, Command.CommandExecutor executor) throws Exception {
+    private void execute(BotCommand botCommand, String command, String[] args, Message message, Command.CommandExecutor executor) {
         Parameter[] parameters = botCommand.getMethod().getParameters();
         Object[] objects = new Object[parameters.length];
         for (int i = 0; i < parameters.length; i++) {

@@ -52,6 +52,12 @@ public class SelectionListener extends ListenerAdapter {
             return;
         }
 
+        if (!message.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_ADD_REACTION)) {
+            MessageUtils.sendPermissionEmbed(message.getGuild(), message.getTextChannel(), Permission.MESSAGE_ADD_REACTION);
+            message.delete().queue();
+            return;
+        }
+
         YeahBot.getInstance().getShardManager().addEventListener(this);
 
         if (delay >= 0) {
@@ -62,12 +68,6 @@ public class SelectionListener extends ListenerAdapter {
                     YeahBot.getInstance().getShardManager().removeEventListener(this);
                 }
             }, delay);
-        }
-
-        if (!message.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_ADD_REACTION)) {
-            MessageUtils.sendPermissionEmbed(message.getGuild(), message.getTextChannel(), Permission.MESSAGE_ADD_REACTION);
-            message.delete().queue();
-            return;
         }
 
         if (!message.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_HISTORY)) {
