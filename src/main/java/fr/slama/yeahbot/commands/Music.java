@@ -537,7 +537,7 @@ public class Music {
 
         Playlist playlist = playlists.getPlaylists().get(name);
 
-        manager.loadTrack(textChannel, playlist.getUrl(), member, false);
+        manager.loadTrack(textChannel, playlist.getUrl(), member, false, false);
 
     }
 

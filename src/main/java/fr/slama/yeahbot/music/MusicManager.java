@@ -46,6 +46,10 @@ public class MusicManager {
     }
 
     public void loadTrack(final TextChannel textChannel, final String source, Member member, final boolean firstPosition) {
+        this.loadTrack(textChannel, source, member, firstPosition, true);
+    }
+
+    public void loadTrack(final TextChannel textChannel, final String source, Member member, final boolean firstPosition, final boolean useIndex) {
         MusicPlayer player = getPlayer(textChannel.getGuild());
         textChannel.getGuild().getAudioManager().setSendingHandler(player.getAudioHandler());
 
