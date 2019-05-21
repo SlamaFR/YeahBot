@@ -17,10 +17,8 @@ import org.slf4j.LoggerFactory;
 import java.awt.*;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
+import java.util.*;
 
 /**
  * Created on 15/03/2018.
@@ -34,7 +32,7 @@ public class CommandMap {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final Map<String, BotCommand> commands = new HashMap<>();
     private ArrayList<BotCommand> disabledCommand = new ArrayList<>();
-    private ArrayList<BotCommand> registry = new ArrayList<>();
+    private List<BotCommand> registry = new ArrayList<>();
 
     public CommandMap() {
         registerCommands(new Fun());
@@ -58,7 +56,7 @@ public class CommandMap {
         return disabledCommand;
     }
 
-    public Collection<BotCommand> getRegistry() {
+    public List<BotCommand> getRegistry() {
         return registry;
     }
 
@@ -91,6 +89,7 @@ public class CommandMap {
                     registry.add(botCommand);
             }
         }
+        registry.sort(Comparator.comparing(BotCommand::getName));
     }
 
     public void commandUser(User user, String command, Message message) {
