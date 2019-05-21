@@ -6,6 +6,7 @@ import fr.slama.yeahbot.language.Bundle;
 import fr.slama.yeahbot.language.LanguageUtil;
 import fr.slama.yeahbot.redis.RedisData;
 import fr.slama.yeahbot.redis.buckets.Settings;
+import fr.slama.yeahbot.utilities.ColorUtil;
 import fr.slama.yeahbot.utilities.MessageUtils;
 import net.dv8tion.jda.bot.sharding.ShardManager;
 import net.dv8tion.jda.core.EmbedBuilder;
@@ -14,10 +15,8 @@ import net.dv8tion.jda.core.exceptions.PermissionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.awt.*;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.util.List;
 import java.util.*;
 
 /**
@@ -114,7 +113,7 @@ public class CommandMap {
                     message.getChannel().sendMessage(new EmbedBuilder()
                             .setTitle(LanguageUtil.getString(message.getGuild(), Bundle.CAPTION, "error"))
                             .setDescription(LanguageUtil.getString(message.getGuild(), Bundle.ERROR, "command"))
-                            .setColor(new Color(231, 76, 60))
+                            .setColor(ColorUtil.RED)
                             .build()).queue();
                 }
             } else {
@@ -124,7 +123,7 @@ public class CommandMap {
             message.getChannel().sendMessage(new EmbedBuilder()
                     .setTitle(LanguageUtil.getString(message.getGuild(), Bundle.CAPTION, "maintenance"))
                     .setDescription(LanguageUtil.getString(message.getGuild(), Bundle.STRINGS, "disabled_command"))
-                    .setColor(new Color(231, 76, 60)).build()).queue();
+                    .setColor(ColorUtil.RED).build()).queue();
         }
     }
 

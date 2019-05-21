@@ -6,13 +6,13 @@ import fr.slama.yeahbot.language.LanguageUtil;
 import fr.slama.yeahbot.redis.RedisData;
 import fr.slama.yeahbot.redis.buckets.Reports;
 import fr.slama.yeahbot.redis.buckets.Settings;
+import fr.slama.yeahbot.utilities.ColorUtil;
 import fr.slama.yeahbot.utilities.SpamType;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.TextChannel;
 
-import java.awt.*;
 import java.time.Instant;
 import java.util.concurrent.TimeUnit;
 
@@ -37,7 +37,7 @@ public class ReportsManager {
         }
 
         EmbedBuilder embedBuilder = new EmbedBuilder()
-                .setColor(new Color(241, 196, 15))
+                .setColor(ColorUtil.YELLOW)
                 .setTitle(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "report_spam"))
                 .addField(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "user"), author.getAsMention(), true)
                 .addField(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "text_channel"), textChannel.getAsMention(), true)
@@ -81,20 +81,20 @@ public class ReportsManager {
             case 15:
                 applied = true;
                 embedBuilder.setFooter(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "sanction_applied"), null);
-                embedBuilder.setColor(new Color(230, 126, 34));
+                embedBuilder.setColor(ColorUtil.ORANGE);
                 SanctionManager.registerKick(author, textChannel, LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "reason_spam"));
                 break;
             case 17:
                 applied = true;
                 embedBuilder.setFooter(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "sanction_applied"), null);
-                embedBuilder.setColor(new Color(231, 76, 60));
+                embedBuilder.setColor(ColorUtil.RED);
                 SanctionManager.registerBan(author, textChannel, LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "reason_spam"));
                 break;
             default:
                 if (reports.getSpamReports().get(memberId) > 17) {
                     applied = true;
                     embedBuilder.setFooter(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "sanction_applied"), null);
-                    embedBuilder.setColor(new Color(231, 76, 60));
+                    embedBuilder.setColor(ColorUtil.RED);
                     SanctionManager.registerBan(author, textChannel, LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "reason_advertising"));
                     break;
                 }
@@ -105,7 +105,7 @@ public class ReportsManager {
                         if (warning.isEmpty())
                             warning = LanguageUtil.getString(textChannel.getGuild(), Bundle.STRINGS, "spam_caps_warning_sentence");
                         textChannel.sendMessage(new EmbedBuilder()
-                                .setColor(new Color(230, 126, 34))
+                                .setColor(ColorUtil.ORANGE)
                                 .setAuthor(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "warning"), null, author.getUser().getAvatarUrl())
                                 .setDescription(warning.replace("$user", author.getAsMention()))
                                 .build()).queue();
@@ -115,7 +115,7 @@ public class ReportsManager {
                         if (warning.isEmpty())
                             warning = LanguageUtil.getString(textChannel.getGuild(), Bundle.STRINGS, "flood_warning_sentence");
                         textChannel.sendMessage(new EmbedBuilder()
-                                .setColor(new Color(230, 126, 34))
+                                .setColor(ColorUtil.ORANGE)
                                 .setAuthor(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "warning"), null, author.getUser().getAvatarUrl())
                                 .setDescription(warning.replace("$user", author.getAsMention()))
                                 .build()).queue();
@@ -125,7 +125,7 @@ public class ReportsManager {
                         if (warning.isEmpty())
                             warning = LanguageUtil.getString(textChannel.getGuild(), Bundle.STRINGS, "emojis_spam_warning_sentence");
                         textChannel.sendMessage(new EmbedBuilder()
-                                .setColor(new Color(230, 126, 34))
+                                .setColor(ColorUtil.ORANGE)
                                 .setAuthor(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "warning"), null, author.getUser().getAvatarUrl())
                                 .setDescription(warning.replace("$user", author.getAsMention()))
                                 .build()).queue();
@@ -135,7 +135,7 @@ public class ReportsManager {
                         if (warning.isEmpty())
                             warning = LanguageUtil.getString(textChannel.getGuild(), Bundle.STRINGS, "reactions_spam_warning_sentence");
                         textChannel.sendMessage(new EmbedBuilder()
-                                .setColor(new Color(230, 126, 34))
+                                .setColor(ColorUtil.ORANGE)
                                 .setAuthor(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "warning"), null, author.getUser().getAvatarUrl())
                                 .setDescription(warning.replace("$user", author.getAsMention()))
                                 .build()).queue();
@@ -170,7 +170,7 @@ public class ReportsManager {
         }
 
         EmbedBuilder embedBuilder = new EmbedBuilder()
-                .setColor(new Color(241, 196, 15))
+                .setColor(ColorUtil.YELLOW)
                 .setTitle(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "report_swearing"))
                 .addField(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "user"), author.getAsMention(), true)
                 .addField(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "text_channel"), textChannel.getAsMention(), true)
@@ -208,20 +208,20 @@ public class ReportsManager {
             case 9:
                 applied = true;
                 embedBuilder.setFooter(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "sanction_applied"), null);
-                embedBuilder.setColor(new Color(230, 126, 34));
+                embedBuilder.setColor(ColorUtil.ORANGE);
                 SanctionManager.registerKick(author, textChannel, LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "reason_swearing"));
                 break;
             case 10:
                 applied = true;
                 embedBuilder.setFooter(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "sanction_applied"), null);
-                embedBuilder.setColor(new Color(231, 76, 60));
+                embedBuilder.setColor(ColorUtil.RED);
                 SanctionManager.registerBan(author, textChannel, LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "reason_swearing"));
                 break;
             default:
                 if (reports.getSwearingReports().get(memberId) > 10) {
                     applied = true;
                     embedBuilder.setFooter(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "sanction_applied"), null);
-                    embedBuilder.setColor(new Color(231, 76, 60));
+                    embedBuilder.setColor(ColorUtil.RED);
                     SanctionManager.registerBan(author, textChannel, LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "reason_advertising"));
                     break;
                 }
@@ -229,7 +229,7 @@ public class ReportsManager {
                 if (warning.isEmpty())
                     warning = LanguageUtil.getString(textChannel.getGuild(), Bundle.STRINGS, "swearing_warning_sentence");
                 textChannel.sendMessage(new EmbedBuilder()
-                        .setColor(new Color(230, 126, 34))
+                        .setColor(ColorUtil.ORANGE)
                         .setAuthor(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "warning"), null, author.getUser().getAvatarUrl())
                         .setDescription(warning.replace("$user", author.getAsMention()))
                         .build()).queue();
@@ -262,7 +262,7 @@ public class ReportsManager {
         }
 
         EmbedBuilder embedBuilder = new EmbedBuilder()
-                .setColor(new Color(241, 196, 15))
+                .setColor(ColorUtil.ORANGE)
                 .setTitle(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "report_advertising"))
                 .addField(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "user"), author.getAsMention(), true)
                 .addField(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "text_channel"), textChannel.getAsMention(), true)
@@ -285,20 +285,20 @@ public class ReportsManager {
             case 4:
                 applied = true;
                 embedBuilder.setFooter(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "sanction_applied"), null);
-                embedBuilder.setColor(new Color(230, 126, 34));
+                embedBuilder.setColor(ColorUtil.ORANGE);
                 SanctionManager.registerKick(author, textChannel, LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "reason_advertising"));
                 break;
             case 5:
                 applied = true;
                 embedBuilder.setFooter(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "sanction_applied"), null);
-                embedBuilder.setColor(new Color(231, 76, 60));
+                embedBuilder.setColor(ColorUtil.RED);
                 SanctionManager.registerBan(author, textChannel, LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "reason_advertising"));
                 break;
             default:
                 if (reports.getAdvertisingReports().get(memberId) > 5) {
                     applied = true;
                     embedBuilder.setFooter(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "sanction_applied"), null);
-                    embedBuilder.setColor(new Color(231, 76, 60));
+                    embedBuilder.setColor(ColorUtil.RED);
                     SanctionManager.registerBan(author, textChannel, LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "reason_advertising"));
                     break;
                 }
@@ -306,7 +306,7 @@ public class ReportsManager {
                 if (warning.isEmpty())
                     warning = LanguageUtil.getString(textChannel.getGuild(), Bundle.STRINGS, "advertising_warning_sentence");
                 textChannel.sendMessage(new EmbedBuilder()
-                        .setColor(new Color(230, 126, 34))
+                        .setColor(ColorUtil.ORANGE)
                         .setAuthor(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "warning"), null, author.getUser().getAvatarUrl())
                         .setDescription(warning.replace("$user", author.getAsMention()))
                         .build()).queue();

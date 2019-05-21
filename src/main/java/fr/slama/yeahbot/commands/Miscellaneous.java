@@ -14,6 +14,7 @@ import fr.slama.yeahbot.managers.PaginationManager;
 import fr.slama.yeahbot.redis.RedisData;
 import fr.slama.yeahbot.redis.buckets.Settings;
 import fr.slama.yeahbot.settings.SettingsManager;
+import fr.slama.yeahbot.utilities.ColorUtil;
 import net.dv8tion.jda.bot.sharding.ShardManager;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
@@ -171,15 +172,15 @@ public class Miscellaneous {
 
         switch (executor) {
             case USER:
-                Color color = new Color(231, 76, 60);
+                Color color = ColorUtil.RED;
                 String state = LanguageUtil.getString(guild, Bundle.CAPTION, "connection_bad");
 
                 if (ping <= 250) {
-                    color = new Color(46, 204, 113);
+                    color = ColorUtil.GREEN;
                     state = LanguageUtil.getString(guild, Bundle.CAPTION, "connection_good");
                 }
                 if (ping > 250 && ping <= 550) {
-                    color = new Color(230, 126, 34);
+                    color = ColorUtil.ORANGE;
                     state = LanguageUtil.getString(guild, Bundle.CAPTION, "connection_medium");
                 }
 
@@ -521,7 +522,7 @@ public class Miscellaneous {
                 }
 
                 EmbedBuilder builder = new EmbedBuilder()
-                        .setColor(new Color(46, 204, 113))
+                        .setColor(ColorUtil.GREEN)
                         .setTitle(lang.getString("title"))
                         .setDescription(LanguageUtil.getArguedString(guild, Bundle.STRINGS, "current_version",
                                 object.getString("version")));

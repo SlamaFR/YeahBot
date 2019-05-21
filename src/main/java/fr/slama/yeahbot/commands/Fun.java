@@ -6,12 +6,12 @@ import fr.slama.yeahbot.commands.core.CommandError;
 import fr.slama.yeahbot.language.Bundle;
 import fr.slama.yeahbot.language.LanguageUtil;
 import fr.slama.yeahbot.redis.RedisData;
+import fr.slama.yeahbot.utilities.ColorUtil;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.TextChannel;
 
-import java.awt.*;
 import java.util.Arrays;
 import java.util.Random;
 
@@ -38,7 +38,7 @@ public class Fun {
                 Arrays.asList(args).contains("-iie") ? "&iie=1" : "");
 
         textChannel.sendMessage(new EmbedBuilder()
-                .setColor(new Color(142, 68, 173))
+                .setColor(ColorUtil.PURPLE)
                 .setTitle(LanguageUtil.getString(guild, Bundle.STRINGS, "search_ready"))
                 .setDescription(String.format("[%s](%s)", LanguageUtil.getString(guild, Bundle.CAPTION, "click_here"), url))
                 .build()).queue();

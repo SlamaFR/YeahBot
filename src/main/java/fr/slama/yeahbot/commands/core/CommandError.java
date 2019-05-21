@@ -2,11 +2,10 @@ package fr.slama.yeahbot.commands.core;
 
 import fr.slama.yeahbot.language.Bundle;
 import fr.slama.yeahbot.language.LanguageUtil;
+import fr.slama.yeahbot.utilities.ColorUtil;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.MessageEmbed;
-
-import java.awt.*;
 
 /**
  * Created on 13/11/2018.
@@ -30,7 +29,7 @@ public class CommandError {
     public MessageEmbed toEmbed() {
         String usageCaption = LanguageUtil.getString(guild, Bundle.CAPTION, "usage");
         return new EmbedBuilder()
-                .setColor(new Color(231, 76, 60))
+                .setColor(ColorUtil.RED)
                 .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "argument_error"))
                 .setDescription(LanguageUtil.getArguedString(guild, Bundle.ERROR, type.toString(), argument, String.join("\n", args)))
                 .addField(usageCaption, cmd.getUsage(guild), false)

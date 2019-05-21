@@ -13,13 +13,13 @@ import fr.slama.yeahbot.language.LanguageUtil;
 import fr.slama.yeahbot.listeners.SelectionListener;
 import fr.slama.yeahbot.redis.RedisData;
 import fr.slama.yeahbot.redis.buckets.Settings;
+import fr.slama.yeahbot.utilities.ColorUtil;
 import fr.slama.yeahbot.utilities.TimeUtil;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.TextChannel;
 
-import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -60,7 +60,7 @@ public class MusicManager {
             public void trackLoaded(AudioTrack track) {
                 textChannel.sendMessage(
                         new EmbedBuilder()
-                                .setColor(new Color(46, 204, 113))
+                                .setColor(ColorUtil.GREEN)
                                 .setTitle(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "track_added"))
                                 .setDescription(track.getInfo().title)
                                 .build()
@@ -102,7 +102,7 @@ public class MusicManager {
                         }
                     }
 
-                    embedBuilder.setColor(new Color(46, 204, 113));
+                    embedBuilder.setColor(ColorUtil.GREEN);
                     embedBuilder.setDescription(playlist.getName());
                     embedBuilder.addField(LanguageUtil.getString(guild, Bundle.CAPTION, "music_track_duration"), "⏱ " + TimeUtil.toTime(totalDuration), false);
                     embedBuilder.addField(LanguageUtil.getString(guild, Bundle.CAPTION, "music_tracks_loaded"), trackList.toString(), false);
@@ -148,7 +148,7 @@ public class MusicManager {
                             if (r.size() == 1) {
                                 textChannel.sendMessage(
                                         new EmbedBuilder()
-                                                .setColor(new Color(46, 204, 113))
+                                                .setColor(ColorUtil.GREEN)
                                                 .setTitle(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "track_added"))
                                                 .setDescription(playlist.getTracks().get(r.get(0).charAt(0) - '\u0030' - 1).getInfo().title)
                                                 .build()
@@ -165,7 +165,7 @@ public class MusicManager {
                                 }
                                 textChannel.sendMessage(
                                         new EmbedBuilder()
-                                                .setColor(new Color(46, 204, 113))
+                                                .setColor(ColorUtil.GREEN)
                                                 .setTitle(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "tracks_added"))
                                                 .setDescription(trackList.toString())
                                                 .build()
@@ -183,7 +183,7 @@ public class MusicManager {
 
                         textChannel.sendMessage(
                                 new EmbedBuilder()
-                                        .setColor(new Color(46, 204, 113))
+                                        .setColor(ColorUtil.GREEN)
                                         .setTitle(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "track_added"))
                                         .setDescription(playlist.getTracks().get(0).getInfo().title)
                                         .build()
@@ -205,7 +205,7 @@ public class MusicManager {
             @Override
             public void loadFailed(FriendlyException exception) {
                 textChannel.sendMessage(new EmbedBuilder()
-                        .setColor(new Color(231, 76, 60))
+                        .setColor(ColorUtil.RED)
                         .setTitle(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "error"))
                         .setDescription(String.format("```\n%s\n```", exception.getMessage()))
                         .build()).queue();

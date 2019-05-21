@@ -9,6 +9,7 @@ import fr.slama.yeahbot.YeahBot;
 import fr.slama.yeahbot.language.Bundle;
 import fr.slama.yeahbot.language.LanguageUtil;
 import fr.slama.yeahbot.redis.RedisData;
+import fr.slama.yeahbot.utilities.ColorUtil;
 import fr.slama.yeahbot.utilities.EmoteUtil;
 import fr.slama.yeahbot.utilities.TimeUtil;
 import net.dv8tion.jda.core.EmbedBuilder;
@@ -16,9 +17,7 @@ import net.dv8tion.jda.core.entities.Guild;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.awt.*;
 import java.util.*;
-import java.util.List;
 
 /**
  * Created on 12/11/2018.
@@ -89,7 +88,7 @@ public class TrackScheduler extends AudioEventAdapter {
 
         musicPlayer.getTextChannel().sendMessage(
                 new EmbedBuilder()
-                        .setColor(new Color(230, 126, 34))
+                        .setColor(ColorUtil.DARK_ORANGE)
                         .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "disconnecting"))
                         .setDescription(LanguageUtil.getString(guild, Bundle.STRINGS, "playlist_over"))
                         .build()
@@ -172,7 +171,7 @@ public class TrackScheduler extends AudioEventAdapter {
 
         musicPlayer.getTextChannel().sendMessage(
                 new EmbedBuilder()
-                        .setColor(new Color(52, 152, 219))
+                        .setColor(ColorUtil.BLUE)
                         .addField(LanguageUtil.getString(guild, Bundle.CAPTION, "now_playing"), LanguageUtil.getArguedString(guild, Bundle.STRINGS, "music_track", track.getInfo().title, track.getInfo().uri), false)
                         .addField(LanguageUtil.getString(guild, Bundle.CAPTION, "music_player_volume"), EmoteUtil.getVolumeEmote(musicPlayer.getAudioPlayer().getVolume()) + " " + musicPlayer.getAudioPlayer().getVolume() + "%", true)
                         .addField(LanguageUtil.getString(guild, Bundle.CAPTION, "music_player_sequence"), EmoteUtil.getSequenceEmote(RedisData.getSettings(guild).playerSequence) + " " + LanguageUtil.getString(guild, Bundle.CAPTION, "music_player_sequence_" + RedisData.getSettings(guild).playerSequence), true)
@@ -194,7 +193,7 @@ public class TrackScheduler extends AudioEventAdapter {
     public void onTrackException(AudioPlayer player, AudioTrack track, FriendlyException exception) {
         musicPlayer.getTextChannel().sendMessage(
                 new EmbedBuilder()
-                        .setColor(new Color(231, 76, 60))
+                        .setColor(ColorUtil.RED)
                         .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "error"))
                         .setDescription(LanguageUtil.getString(guild, Bundle.ERROR, "something_went_wrong") +
                                 "\n" + String.format("```\n%s\n```", exception.getMessage()))

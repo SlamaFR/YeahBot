@@ -2,6 +2,7 @@ package fr.slama.yeahbot.commands.core;
 
 import fr.slama.yeahbot.language.Bundle;
 import fr.slama.yeahbot.language.LanguageUtil;
+import fr.slama.yeahbot.utilities.ColorUtil;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
@@ -10,7 +11,6 @@ import net.dv8tion.jda.core.exceptions.ErrorResponseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.awt.*;
 import java.lang.reflect.Method;
 import java.util.concurrent.TimeUnit;
 
@@ -135,7 +135,7 @@ public final class BotCommand {
                 arguments[i] = String.format("● `%s` %s", arguments[i], argumentsDescription[i]);
 
             EmbedBuilder builder = new EmbedBuilder()
-                    .setColor(new Color(230, 126, 34))
+                    .setColor(ColorUtil.ORANGE)
                     .addField(usageCaption, getUsage(textChannel.getGuild()), false)
                     .addField(descriptionCaption, getDescription(textChannel.getGuild()), false)
                     .addField(categoryCaption, LanguageUtil.getString(textChannel.getGuild(), Bundle.CATEGORY, getCategory().getName()), true)
@@ -158,7 +158,7 @@ public final class BotCommand {
         } catch (Exception e) {
             logger.error("Error while generating help for " + name + " command!", e);
             textChannel.sendMessage(new EmbedBuilder()
-                    .setColor(new Color(231, 76, 60))
+                    .setColor(ColorUtil.RED)
                     .setTitle(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "error"))
                     .setDescription(LanguageUtil.getString(textChannel.getGuild(), Bundle.ERROR, "help_embed"))
                     .build()).queue();

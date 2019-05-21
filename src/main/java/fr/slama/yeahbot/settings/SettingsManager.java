@@ -5,6 +5,7 @@ import fr.slama.yeahbot.language.Bundle;
 import fr.slama.yeahbot.language.LanguageUtil;
 import fr.slama.yeahbot.redis.RedisData;
 import fr.slama.yeahbot.redis.buckets.Settings;
+import fr.slama.yeahbot.utilities.ColorUtil;
 import fr.slama.yeahbot.utilities.EmoteUtil;
 import fr.slama.yeahbot.utilities.EventWaiter;
 import net.dv8tion.jda.core.EmbedBuilder;
@@ -14,7 +15,6 @@ import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent;
 
-import java.awt.*;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +45,7 @@ public class SettingsManager {
             } else {
                 textChannel.sendMessage(
                         new EmbedBuilder()
-                                .setColor(new Color(231, 76, 60))
+                                .setColor(ColorUtil.RED)
                                 .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "error"))
                                 .setDescription(LanguageUtil.getString(guild, Bundle.ERROR, "something_went_wrong"))
                                 .build()
@@ -113,7 +113,7 @@ public class SettingsManager {
                     } catch (IllegalAccessException e1) {
                         textChannel.sendMessage(
                                 new EmbedBuilder()
-                                        .setColor(new Color(231, 76, 60))
+                                        .setColor(ColorUtil.RED)
                                         .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "error"))
                                         .setDescription(LanguageUtil.getString(guild, Bundle.ERROR, "something_went_wrong"))
                                         .build()
@@ -210,7 +210,7 @@ public class SettingsManager {
                         } catch (IllegalAccessException e1) {
                             textChannel.sendMessage(
                                     new EmbedBuilder()
-                                            .setColor(new Color(231, 76, 60))
+                                            .setColor(ColorUtil.RED)
                                             .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "error"))
                                             .setDescription(LanguageUtil.getString(guild, Bundle.ERROR, "something_went_wrong"))
                                             .build()

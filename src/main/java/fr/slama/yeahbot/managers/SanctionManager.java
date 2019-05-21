@@ -5,6 +5,7 @@ import fr.slama.yeahbot.language.Bundle;
 import fr.slama.yeahbot.language.LanguageUtil;
 import fr.slama.yeahbot.redis.RedisData;
 import fr.slama.yeahbot.redis.buckets.Mutes;
+import fr.slama.yeahbot.utilities.ColorUtil;
 import fr.slama.yeahbot.utilities.GuildUtil;
 import fr.slama.yeahbot.utilities.TaskScheduler;
 import net.dv8tion.jda.core.EmbedBuilder;
@@ -14,7 +15,6 @@ import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.awt.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -40,7 +40,7 @@ public class SanctionManager {
             textChannel.getGuild().getController().addRolesToMember(target, GuildUtil.getMutedRole(textChannel.getGuild(), true)).queue();
 
             textChannel.sendMessage(new EmbedBuilder()
-                    .setColor(new Color(231, 76, 60))
+                    .setColor(ColorUtil.RED)
                     .setTitle(LanguageUtil.getString(target.getGuild(), Bundle.CAPTION, "sanction_application"))
                     .setDescription(LanguageUtil.getArguedString(target.getGuild(), Bundle.STRINGS, "user_muted", target.getAsMention(), i,
                             LanguageUtil.getString(target.getGuild(), Bundle.UNIT, unit.toString().toLowerCase())))
@@ -64,7 +64,7 @@ public class SanctionManager {
             target.getGuild().getController().kick(target, reason).queue();
 
             textChannel.sendMessage(new EmbedBuilder()
-                    .setColor(new Color(231, 76, 60))
+                    .setColor(ColorUtil.RED)
                     .setTitle(LanguageUtil.getString(target.getGuild(), Bundle.CAPTION, "sanction_application"))
                     .setDescription(LanguageUtil.getArguedString(target.getGuild(), Bundle.STRINGS, "user_kicked", target.getAsMention()))
                     .addField(LanguageUtil.getString(target.getGuild(), Bundle.CAPTION, "reason"), reason, false)
@@ -80,7 +80,7 @@ public class SanctionManager {
             target.getGuild().getController().ban(target, 7, reason).queue();
 
             textChannel.sendMessage(new EmbedBuilder()
-                    .setColor(new Color(231, 76, 60))
+                    .setColor(ColorUtil.RED)
                     .setTitle(LanguageUtil.getString(target.getGuild(), Bundle.CAPTION, "sanction_application"))
                     .setDescription(LanguageUtil.getArguedString(target.getGuild(), Bundle.STRINGS, "user_banned", target.getAsMention()))
                     .addField(LanguageUtil.getString(target.getGuild(), Bundle.CAPTION, "reason"), reason, false)

@@ -5,14 +5,13 @@ import fr.slama.yeahbot.language.Bundle;
 import fr.slama.yeahbot.language.LanguageUtil;
 import fr.slama.yeahbot.redis.RedisData;
 import fr.slama.yeahbot.redis.buckets.PrivateChannels;
+import fr.slama.yeahbot.utilities.ColorUtil;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.TextChannel;
-
-import java.awt.*;
 
 /**
  * Created on 09/09/2018.
@@ -43,7 +42,7 @@ public class Util {
                 RedisData.setPrivateChannels(guild, channels);
 
                 textChannel.sendMessage(new EmbedBuilder()
-                        .setColor(new Color(46, 204, 113))
+                        .setColor(ColorUtil.GREEN)
                         .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "private_channel_created"))
                         .setDescription(LanguageUtil.getArguedString(guild, Bundle.STRINGS, "private_channel_identifier", channels.getChannels().size()))
                         .build()).queue();

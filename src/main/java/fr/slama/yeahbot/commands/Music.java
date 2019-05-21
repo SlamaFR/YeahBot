@@ -11,13 +11,13 @@ import fr.slama.yeahbot.music.*;
 import fr.slama.yeahbot.redis.RedisData;
 import fr.slama.yeahbot.redis.buckets.Playlists;
 import fr.slama.yeahbot.redis.buckets.Settings;
+import fr.slama.yeahbot.utilities.ColorUtil;
 import fr.slama.yeahbot.utilities.EmoteUtil;
 import fr.slama.yeahbot.utilities.TimeUtil;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 
-import java.awt.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -152,7 +152,7 @@ public class Music {
         if (!Command.CommandPermission.STAFF.test(member)) for (Track track : player.getTrackScheduler().getQueue()) {
             if (track.getRequesterId() != member.getUser().getIdLong()) {
                 textChannel.sendMessage(new EmbedBuilder()
-                        .setColor(new Color(231, 76, 60))
+                        .setColor(ColorUtil.RED)
                         .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "error"))
                         .setDescription(LanguageUtil.getString(guild, Bundle.CAPTION, "no_permission"))
                         .build()).queue();
@@ -208,7 +208,7 @@ public class Music {
 
         textChannel.sendMessage(
                 new EmbedBuilder()
-                        .setColor(new Color(52, 152, 219))
+                        .setColor(ColorUtil.BLUE)
                         .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "now_playing"))
                         .setDescription(LanguageUtil.getArguedString(guild, Bundle.STRINGS, "music_track", track.getAudioTrack().getInfo().title, track.getAudioTrack().getInfo().uri))
                         .addField(
@@ -266,7 +266,7 @@ public class Music {
                 .objectList(tracks)
                 .objectName(t -> "`" + t.getAudioTrack().getInfo().title + "`")
                 .listTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "music_tracks"))
-                .embedCustomizer(b -> b.setColor(new Color(52, 152, 219))
+                .embedCustomizer(b -> b.setColor(ColorUtil.BLUE)
                         .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "music_queue"))
                         .addField(LanguageUtil.getString(guild, Bundle.CAPTION, "music_track_duration"),
                                 String.format("⏱ %s", TimeUtil.toTime(finalDuration)), false)
@@ -337,7 +337,7 @@ public class Music {
                                         LanguageUtil.getString(guild, Bundle.CAPTION, "music_player_sequence_" + sequence)),
                                 false
                         )
-                        .setColor(settings.shuffle ? new Color(46, 204, 113) : new Color(231, 76, 60))
+                        .setColor(settings.shuffle ? ColorUtil.GREEN : ColorUtil.RED)
                         .build()
         ).queue();
 
@@ -397,7 +397,7 @@ public class Music {
                                         LanguageUtil.getString(guild, Bundle.CAPTION, "music_player_sequence_" + sequence)),
                                 false
                         )
-                        .setColor(settings.loop > 0 ? new Color(46, 204, 113) : new Color(231, 76, 60))
+                        .setColor(settings.loop > 0 ? ColorUtil.GREEN : ColorUtil.RED)
                         .build()
         ).queue();
 
@@ -497,7 +497,7 @@ public class Music {
                 ).queue();
             } else {
                 textChannel.sendMessage(new EmbedBuilder()
-                        .setColor(new Color(231, 76, 60))
+                        .setColor(ColorUtil.RED)
                         .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "error"))
                         .setDescription(LanguageUtil.getArguedString(guild, Bundle.ERROR, "not_dj",
                                 guild.getMemberById(player.getTrackScheduler().getCurrentRequesterId()).getAsMention()))
@@ -526,7 +526,7 @@ public class Music {
         if (!playlists.getPlaylists().containsKey(name)) {
             textChannel.sendMessage(
                     new EmbedBuilder()
-                            .setColor(new Color(231, 76, 60))
+                            .setColor(ColorUtil.RED)
                             .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "unknown_playlist"))
                             .setDescription(LanguageUtil.getArguedString(guild, Bundle.ERROR, "unknown_playlist",
                                     addPlaylistCommand.get().getUsage(guild)))
@@ -617,7 +617,7 @@ public class Music {
         if (!playlists.getPlaylists().containsKey(name)) {
             textChannel.sendMessage(
                     new EmbedBuilder()
-                            .setColor(new Color(231, 76, 60))
+                            .setColor(ColorUtil.RED)
                             .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "unknown_playlist"))
                             .setDescription(LanguageUtil.getString(guild, Bundle.ERROR, "playlist_not_found"))
                             .build()
@@ -628,7 +628,7 @@ public class Music {
         if (!Command.CommandPermission.STAFF.test(member) &&
                 playlists.getPlaylists().get(name).getOwnerLong() != member.getUser().getIdLong()) {
             textChannel.sendMessage(new EmbedBuilder()
-                    .setColor(new Color(231, 76, 60))
+                    .setColor(ColorUtil.RED)
                     .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "error"))
                     .setDescription(LanguageUtil.getString(guild, Bundle.CAPTION, "no_permission"))
                     .build()).queue();
@@ -673,7 +673,7 @@ public class Music {
         if (!Command.CommandPermission.STAFF.test(member)) for (Track track : player.getTrackScheduler().getQueue()) {
             if (track.getRequesterId() != member.getUser().getIdLong()) {
                 textChannel.sendMessage(new EmbedBuilder()
-                        .setColor(new Color(231, 76, 60))
+                        .setColor(ColorUtil.RED)
                         .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "error"))
                         .setDescription(LanguageUtil.getString(guild, Bundle.CAPTION, "no_permission"))
                         .build()).queue();

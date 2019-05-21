@@ -4,14 +4,13 @@ import fr.slama.yeahbot.language.Bundle;
 import fr.slama.yeahbot.language.LanguageUtil;
 import fr.slama.yeahbot.redis.RedisData;
 import fr.slama.yeahbot.redis.buckets.Mutes;
+import fr.slama.yeahbot.utilities.ColorUtil;
 import fr.slama.yeahbot.utilities.GuildUtil;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberRoleRemoveEvent;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
-
-import java.awt.*;
 
 /**
  * Created on 01/10/2018.
@@ -27,7 +26,7 @@ public class RoleListener extends ListenerAdapter {
                 try {
                     if (event.getGuild().getDefaultChannel() != null)
                         event.getGuild().getDefaultChannel().sendMessage(new EmbedBuilder()
-                                .setColor(new Color(46, 204, 113))
+                                .setColor(ColorUtil.GREEN)
                                 .setTitle(LanguageUtil.getString(event.getGuild(), Bundle.CAPTION, "sanction_cancellation"))
                                 .setDescription(LanguageUtil.getArguedString(event.getGuild(), Bundle.STRINGS, "user_unmuted", event.getMember().getAsMention()))
                                 .build()).queue();
