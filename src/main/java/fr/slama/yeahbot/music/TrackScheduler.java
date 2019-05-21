@@ -88,7 +88,7 @@ public class TrackScheduler extends AudioEventAdapter {
 
         musicPlayer.getTextChannel().sendMessage(
                 new EmbedBuilder()
-                        .setColor(ColorUtil.DARK_ORANGE)
+                        .setColor(ColorUtil.ORANGE)
                         .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "disconnecting"))
                         .setDescription(LanguageUtil.getString(guild, Bundle.STRINGS, "playlist_over"))
                         .build()

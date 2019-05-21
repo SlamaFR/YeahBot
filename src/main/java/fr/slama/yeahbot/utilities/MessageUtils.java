@@ -20,14 +20,12 @@ public class MessageUtils {
         if (permission.length < 2) {
             perm = LanguageUtil.getString(guild, Bundle.PERMISSION, permission[0].toString().toLowerCase());
         } else {
-
             StringBuilder builder = new StringBuilder();
 
             for (Permission p : permission) {
                 if (builder.length() > 1) builder.append(", ");
                 builder.append(LanguageUtil.getString(guild, Bundle.PERMISSION, p.toString().toLowerCase()));
             }
-
             perm = builder.toString();
         }
 
