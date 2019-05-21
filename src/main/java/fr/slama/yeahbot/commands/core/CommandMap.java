@@ -6,9 +6,9 @@ import fr.slama.yeahbot.language.Bundle;
 import fr.slama.yeahbot.language.LanguageUtil;
 import fr.slama.yeahbot.redis.RedisData;
 import fr.slama.yeahbot.redis.buckets.Settings;
+import fr.slama.yeahbot.utilities.MessageUtils;
 import net.dv8tion.jda.bot.sharding.ShardManager;
 import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -104,14 +104,7 @@ public class CommandMap {
                         if (message.getGuild().getSelfMember().hasPermission(cmd.getDiscordPermission())) {
                             execute(cmd, command, (String[]) object[1], message, Command.CommandExecutor.USER);
                         } else {
-                            StringBuilder builder = new StringBuilder();
-                            for (Permission permission : cmd.getDiscordPermission()) {
-                                if (builder.length() > 1) builder.append(", ");
-                                builder.append(LanguageUtil.getString(message.getGuild(), Bundle.PERMISSION, permission.toString().toLowerCase()));
-                            }
-                            message.getTextChannel().sendMessage(
-                                    LanguageUtil.getArguedString(message.getGuild(), Bundle.CAPTION, "missing_permission", builder.toString())
-                            ).queue();
+                            MessageUtils.sendPermissionEmbed(message.getGuild(), message.getTextChannel(), cmd.getDiscordPermission());
                         }
                     } else execute(cmd, command, (String[]) object[1], message, Command.CommandExecutor.USER);
                 } catch (Exception e) {

@@ -1,10 +1,8 @@
 package fr.slama.yeahbot.listeners;
 
 import fr.slama.yeahbot.YeahBot;
-import fr.slama.yeahbot.language.Bundle;
-import fr.slama.yeahbot.language.LanguageUtil;
 import fr.slama.yeahbot.utilities.EmoteUtil;
-import net.dv8tion.jda.core.EmbedBuilder;
+import fr.slama.yeahbot.utilities.MessageUtils;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.User;
@@ -50,10 +48,7 @@ public class SelectionListener extends ListenerAdapter {
         this.multiple = multiple;
 
         if (!message.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE)) {
-            message.getTextChannel().sendMessage(new EmbedBuilder()
-                    .setTitle(LanguageUtil.getString(message.getGuild(), Bundle.CAPTION, "permission_needed"))
-                    .setDescription(LanguageUtil.getArguedString(message.getGuild(), Bundle.ERROR, "need_permission", Permission.MESSAGE_MANAGE.getName()))
-                    .build()).queue();
+            MessageUtils.sendPermissionEmbed(message.getGuild(), message.getTextChannel(), Permission.MESSAGE_MANAGE);
             return;
         }
 
@@ -70,10 +65,13 @@ public class SelectionListener extends ListenerAdapter {
         }
 
         if (!message.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_ADD_REACTION)) {
-            message.getTextChannel().sendMessage(new EmbedBuilder()
-                    .setTitle(LanguageUtil.getString(message.getGuild(), Bundle.CAPTION, "permission_needed"))
-                    .setDescription(LanguageUtil.getArguedString(message.getGuild(), Bundle.ERROR, "need_permission", Permission.MESSAGE_ADD_REACTION.getName()))
-                    .build()).queue();
+            MessageUtils.sendPermissionEmbed(message.getGuild(), message.getTextChannel(), Permission.MESSAGE_ADD_REACTION);
+            message.delete().queue();
+            return;
+        }
+
+        if (!message.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_HISTORY)) {
+            MessageUtils.sendPermissionEmbed(message.getGuild(), message.getTextChannel(), Permission.MESSAGE_HISTORY);
             message.delete().queue();
             return;
         }
