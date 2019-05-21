@@ -34,7 +34,7 @@ public class Music {
     private final MusicManager manager = YeahBot.getInstance().getMusicManager();
 
     @Command(name = "play",
-            discordPermission = {Permission.MESSAGE_ADD_REACTION, Permission.VOICE_SPEAK, Permission.VOICE_CONNECT},
+            discordPermission = {Permission.VOICE_SPEAK, Permission.VOICE_CONNECT},
             category = Command.CommandCategory.MUSIC,
             executor = Command.CommandExecutor.USER)
     private void play(Guild guild, TextChannel textChannel, Member member, String[] args, BotCommand cmd) {
