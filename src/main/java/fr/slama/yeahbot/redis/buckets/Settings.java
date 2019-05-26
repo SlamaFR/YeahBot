@@ -30,6 +30,7 @@ public class Settings {
     public boolean shuffle = false;
     @IgnoreSetting
     public byte loop = 0;
+    @IgnoreSetting
     public int maxSearchResults = 5;
     public boolean multipleResultsSearch = true;
 
