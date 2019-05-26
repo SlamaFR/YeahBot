@@ -10,6 +10,7 @@ import fr.slama.yeahbot.managers.SanctionManager;
 import fr.slama.yeahbot.redis.RedisData;
 import fr.slama.yeahbot.redis.buckets.Reports;
 import fr.slama.yeahbot.redis.buckets.Settings;
+import fr.slama.yeahbot.utilities.ColorUtil;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
@@ -49,12 +50,20 @@ public class Moderation {
         try {
             amount = Integer.parseInt(args[0]);
         } catch (NumberFormatException | IndexOutOfBoundsException e) {
-            command.sendUsageEmbed(textChannel);
+            textChannel.sendMessage(
+                    new CommandError(command, command.getArguments(guild)[0], guild, CommandError.ErrorType.INTEGER).toEmbed()
+            ).queue();
             return;
         }
 
         if (amount > 1001 || amount < 1) {
-            textChannel.sendMessage(LanguageUtil.getString(guild, Bundle.ERROR, "limit_reached")).queue();
+            textChannel.sendMessage(
+                    new EmbedBuilder()
+                            .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "error"))
+                            .setDescription(LanguageUtil.getString(guild, Bundle.ERROR, "message_amount"))
+                            .setColor(ColorUtil.RED)
+                            .build()
+            ).queue();
             return;
         }
 
@@ -66,12 +75,24 @@ public class Moderation {
                 .filter(msg -> message.getMentionedMembers().size() == 0 || message.getMentionedMembers().contains(msg.getMember()))
                 .collect(Collectors.toList());
 
-        textChannel.sendMessage(LanguageUtil.getString(guild, Bundle.CAPTION, "deleting")).queue(msg -> {
-            if (messages.size() > 100)
-                textChannel.sendMessage(LanguageUtil.getString(guild, Bundle.STRINGS, "may_take_a_while")).queue();
+        EmbedBuilder builder = new EmbedBuilder()
+                .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "please_wait"))
+                .setDescription(LanguageUtil.getString(guild, Bundle.CAPTION, "deleting"))
+                .setColor(ColorUtil.ORANGE);
+
+        if (messages.size() > 100)
+            builder.setFooter(LanguageUtil.getString(guild, Bundle.STRINGS, "may_take_a_while"), null);
+
+        textChannel.sendMessage(builder.build()).queue(msg -> {
             RequestFuture.allOf(textChannel.purgeMessages(messages)).thenRun(() -> {
                 try {
-                    msg.editMessage(LanguageUtil.getArguedString(guild, Bundle.CAPTION, "messages_deleted", messages.size())).queue();
+                    msg.editMessage(
+                            new EmbedBuilder()
+                                    .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "success"))
+                                    .setDescription(LanguageUtil.getArguedString(guild, Bundle.CAPTION, "messages_deleted", messages.size()))
+                                    .setColor(ColorUtil.GREEN)
+                                    .build()
+                    ).queue();
                 } catch (ErrorResponseException e) {
                     //Message has been deleted, send it instead of editing it.
                     textChannel.sendMessage(LanguageUtil.getArguedString(guild, Bundle.CAPTION, "messages_deleted", messages.size() - 1)).queue();
