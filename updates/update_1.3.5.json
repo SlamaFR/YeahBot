@@ -1,0 +1,22 @@
+{
+  "version": "1.3.5",
+  "date": 1558476000000,
+  "fr": {
+    "title": "Bulletin de mise à jour",
+    "adds": [],
+    "removes": [],
+    "changes": [
+      "Résolution d'un bug avec les commandes 'repeat' et 'shuffle'."
+    ],
+    "coming": []
+  },
+  "en": {
+    "title": "Update report",
+    "adds": [],
+    "removes": [],
+    "changes": [
+      "Fixed a bug with the 'repeat' and 'shuffle' commands."
+    ],
+    "coming": []
+  }
+}

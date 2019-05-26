@@ -1,9 +1,7 @@
-package fr.slama.yeahbot.managers;
+package fr.slama.yeahbot.utilities;
 
 import fr.slama.yeahbot.language.Bundle;
 import fr.slama.yeahbot.language.LanguageUtil;
-import fr.slama.yeahbot.utilities.EmoteUtil;
-import fr.slama.yeahbot.utilities.EventWaiter;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Message;
@@ -23,7 +21,12 @@ import java.util.function.Function;
 /**
  * Created on 22/12/2018.
  */
-public class PaginationManager<T> {
+public class Paginator<T> {
+
+    private final static Consumer<? super Object> SUCCESS = s -> {
+    };
+    private final static Consumer<? super Throwable> FAILURE = f -> {
+    };
 
     private TextChannel textChannel;
     private Message message;
@@ -36,12 +39,16 @@ public class PaginationManager<T> {
     private int pageSize;
     private long timeout;
     private TimeUnit unit;
-    private boolean selection;
+    private boolean selectable;
     private boolean closeable;
     private Consumer<T> selectionResult;
     private Runnable timeoutAction;
 
-    private PaginationManager(Builder<T> builder) {
+    private final int min;
+    private final int max;
+    private final int maxPage;
+
+    private Paginator(Builder<T> builder) {
         this.textChannel = builder.textChannel;
         this.user = builder.user;
         this.objectList = builder.objectList;
@@ -51,7 +58,7 @@ public class PaginationManager<T> {
         this.pageSize = builder.pageSize;
         this.timeout = builder.timeout;
         this.unit = builder.unit;
-        this.selection = builder.selection;
+        this.selectable = builder.selectable;
         this.closeable = builder.closeable;
         this.selectionResult = builder.selectionResult;
         this.timeoutAction = builder.timeoutAction;
@@ -65,21 +72,22 @@ public class PaginationManager<T> {
             Checks.check(textChannel.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE), "Must have MESSAGE_MANAGE");
         }
 
+        this.min = this.pageSize * this.page;
+        this.max = this.min + this.pageSize - 1;
+        this.maxPage = (int) Math.ceil(this.objectList.size() / (float) this.pageSize) - 1;
+
         init();
     }
 
     private void init() {
         StringBuilder builder = new StringBuilder();
-        int min = pageSize * page;
-        int max = min + pageSize - 1;
-        final double maxPage = Math.ceil(objectList.size() / (double) pageSize) - 1;
 
         for (int i = 0; i < objectList.size(); i++) {
             T t = objectList.get(i);
             if (min <= i && i <= max) {
                 String title = objectName.apply(t);
                 if (builder.length() > 0) builder.append("\n");
-                builder.append(String.format("`%d` - %s", (selection ? i + 1 - min : i + 1 - min + page * pageSize), title));
+                builder.append(String.format("`%d` - %s", (selectable ? i + 1 - min : i + 1 - min + page * pageSize), title));
             }
         }
 
@@ -91,37 +99,39 @@ public class PaginationManager<T> {
                 "";
 
         EmbedBuilder embed = new EmbedBuilder();
+
         if (embedCustomizer != null) embedCustomizer.accept(embed);
-        embed.addField(listTitle, builder.toString(), false)
-                .setFooter(pageFooter + expirationFooter, null);
+        embed.addField(listTitle, builder.toString(), false);
+        embed.setFooter(pageFooter + expirationFooter, null);
 
         MessageAction action;
         if (message == null) action = textChannel.sendMessage(embed.build());
         else action = message.editMessage(embed.build());
 
         List<String> choices = new ArrayList<>(Arrays.asList(EmoteUtil.PREVIOUS, EmoteUtil.NEXT));
-        if (selection) choices.addAll(EmoteUtil.getNumbers(pageSize));
+        if (selectable) choices.addAll(EmoteUtil.getNumbers(pageSize));
         if (closeable) choices.add(EmoteUtil.NO_EMOTE);
 
         action.queue(msg -> {
             message = msg;
-            for (String choice : choices)
-                msg.addReaction(choice).queue(s -> {
-                }, f -> msg.addReaction(textChannel.getJDA().getEmoteById(choice)).queue(s1 -> {
-                }, f1 -> {
-                }));
+            for (String choice : choices) {
+                try {
+                    msg.addReaction(textChannel.getJDA().getEmoteById(choice)).queue(SUCCESS, FAILURE);
+                } catch (NumberFormatException e) {
+                    msg.addReaction(choice).queue(SUCCESS, FAILURE);
+                }
+            }
 
             new EventWaiter(MessageReactionAddEvent.class,
                     e -> e.getUser().getIdLong() == user.getIdLong() &&
-                            (choices.contains(e.getReactionEmote().getName()) ||
-                                    choices.contains(e.getReactionEmote().getId())) &&
+                            (choices.contains(e.getReactionEmote().getName()) || choices.contains(e.getReactionEmote().getId())) &&
                             e.getMessageIdLong() == msg.getIdLong(),
                     e -> {
-                        e.getReaction().removeReaction(user).queue();
+                        e.getReaction().removeReaction(user).queue(SUCCESS, FAILURE);
 
                         if (e.getReactionEmote().getId() != null &&
                                 e.getReactionEmote().getId().equals(EmoteUtil.NO_EMOTE)) {
-                            msg.delete().queue();
+                            msg.delete().queue(SUCCESS, FAILURE);
                             return;
                         }
 
@@ -138,19 +148,17 @@ public class PaginationManager<T> {
                                 int index = e.getReactionEmote().getName().charAt(0) - '\u0030' - 1 + min;
                                 if (index < objectList.size()) {
                                     selectionResult.accept(objectList.get(index));
-                                    msg.delete().queue();
+                                    msg.delete().queue(SUCCESS, FAILURE);
                                 } else init();
                                 break;
                         }
                     }, timeout, unit,
                     () -> {
-                        msg.delete().queue(s -> {
-                        }, f -> {
-                        });
+                        msg.delete().queue(SUCCESS, FAILURE);
                         timeoutAction.run();
                     });
 
-        });
+        }, FAILURE);
     }
 
     public static class Builder<T> {
@@ -163,7 +171,7 @@ public class PaginationManager<T> {
         private int pageSize = 5;
         private long timeout = -1;
         private TimeUnit unit;
-        private boolean selection = false;
+        private boolean selectable = false;
         private boolean closeable = false;
         private Consumer<T> selectionResult;
         private Runnable timeoutAction;
@@ -212,8 +220,8 @@ public class PaginationManager<T> {
             return this;
         }
 
-        public Builder<T> selection(boolean selection) {
-            this.selection = selection;
+        public Builder<T> selectable(boolean selectable) {
+            this.selectable = selectable;
             return this;
         }
 
@@ -232,8 +240,8 @@ public class PaginationManager<T> {
             return this;
         }
 
-        public PaginationManager build() {
-            return new PaginationManager<>(this);
+        public Paginator build() {
+            return new Paginator<>(this);
         }
 
     }
