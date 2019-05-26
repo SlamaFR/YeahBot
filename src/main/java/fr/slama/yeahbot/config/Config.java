@@ -18,7 +18,7 @@ import java.nio.file.Paths;
  */
 public class Config {
 
-    private static final Logger logger = LoggerFactory.getLogger("Config");
+    private static final Logger LOGGER = LoggerFactory.getLogger("Config");
 
     @JsonProperty
     public String token = "enter your token";
@@ -45,14 +45,14 @@ public class Config {
             final String yamlSource = new String(Files.readAllBytes(Paths.get(path)), StandardCharsets.UTF_8);
             return mapper.readValue(yamlSource, Config.class);
         } catch (IOException e) {
-            logger.error("Missing config file!");
+            LOGGER.error("Missing config file!");
             try {
                 mapper.writeValue(new File("config.yml"), new Config());
-                logger.info("An empty config file has been created! Fill it and run the bot.");
+                LOGGER.info("An empty config file has been created! Fill it and run the bot.");
                 System.exit(100);
                 return null;
             } catch (IOException e1) {
-                logger.warn("Couldn't generate config file!");
+                LOGGER.warn("Couldn't generate config file!");
                 System.exit(1);
                 return null;
             }

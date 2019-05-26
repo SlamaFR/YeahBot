@@ -13,7 +13,7 @@ import java.sql.Statement;
  */
 public class DbConnection {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger LOGGER = LoggerFactory.getLogger(getClass());
     private DbCredentials credentials;
     private Connection connection;
 
@@ -24,11 +24,11 @@ public class DbConnection {
 
     private void connect() {
         try {
-            logger.info("Connecting to database...");
+            LOGGER.info("Connecting to database...");
 
             Class.forName("com.mysql.jdbc.Driver");
             this.connection = DriverManager.getConnection(this.credentials.toURI(), this.credentials.getUsername(), this.credentials.getPassword());
-            logger.info("Database successfully connected!");
+            LOGGER.info("Database successfully connected!");
 
             Statement checkStatement = getConnection().createStatement();
             checkStatement.addBatch("CREATE TABLE IF NOT EXISTS `guild_channels` (`GUILD_ID` bigint(20) NOT NULL,`CHANNELS` longtext NOT NULL, UNIQUE KEY (`GUILD_ID`)) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
@@ -38,9 +38,9 @@ public class DbConnection {
             checkStatement.addBatch("CREATE TABLE IF NOT EXISTS `guild_playlists` (`GUILD_ID` bigint(20) NOT NULL,`PLAYLISTS` longtext NOT NULL, UNIQUE KEY (`GUILD_ID`)) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
             checkStatement.executeBatch();
 
-            logger.info("Finished initializing database tables!");
+            LOGGER.info("Finished initializing database tables!");
         } catch (SQLException | ClassNotFoundException e) {
-            logger.error("Database connection failed!", e);
+            LOGGER.error("Database connection failed!", e);
             System.exit(100);
         }
     }

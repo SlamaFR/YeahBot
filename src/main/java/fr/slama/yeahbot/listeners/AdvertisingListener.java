@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
  */
 public class AdvertisingListener extends ListenerAdapter {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
     @Override
     public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
@@ -50,7 +50,7 @@ public class AdvertisingListener extends ListenerAdapter {
             file = new File("./ad_keywords.json");
             if (!file.exists()) return;
         } catch (NullPointerException e) {
-            logger.warn("(AD) Dictionary not found!");
+            LOGGER.warn("(AD) Dictionary not found!");
             return;
         }
 
@@ -78,9 +78,9 @@ public class AdvertisingListener extends ListenerAdapter {
             }
 
         } catch (IOException e) {
-            logger.error("(AD) Error while fetching data!");
+            LOGGER.error("(AD) Error while fetching data!");
         } catch (JSONException e) {
-            logger.error("(AD) Error while parsing data!");
+            LOGGER.error("(AD) Error while parsing data!");
         }
 
         for (String s : event.getMessage().getContentRaw().split("\\W")) {

@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
  */
 public class SwearingListener extends ListenerAdapter {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
     @Override
     public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
@@ -44,7 +44,7 @@ public class SwearingListener extends ListenerAdapter {
             file = new File("./bad_words.json");
             if (!file.exists()) return;
         } catch (NullPointerException e) {
-            logger.warn("(SWR) Dictionary not found!");
+            LOGGER.warn("(SWR) Dictionary not found!");
             return;
         }
 
@@ -79,9 +79,9 @@ public class SwearingListener extends ListenerAdapter {
             }
 
         } catch (IOException e) {
-            logger.error("(SWR) Error while fetching data!");
+            LOGGER.error("(SWR) Error while fetching data!");
         } catch (JSONException e) {
-            logger.error("(SWR) Error while parsing data!");
+            LOGGER.error("(SWR) Error while parsing data!");
         }
 
     }

@@ -10,11 +10,11 @@ import fr.slama.yeahbot.language.Bundle;
 import fr.slama.yeahbot.language.Language;
 import fr.slama.yeahbot.language.LanguageUtil;
 import fr.slama.yeahbot.listeners.SelectionListener;
-import fr.slama.yeahbot.managers.PaginationManager;
+import fr.slama.yeahbot.managers.SettingsManager;
 import fr.slama.yeahbot.redis.RedisData;
 import fr.slama.yeahbot.redis.buckets.Settings;
-import fr.slama.yeahbot.settings.SettingsManager;
 import fr.slama.yeahbot.utilities.ColorUtil;
+import fr.slama.yeahbot.utilities.Paginator;
 import net.dv8tion.jda.bot.sharding.ShardManager;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
@@ -38,7 +38,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class Miscellaneous {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
     @Command(name = "help",
             executor = Command.CommandExecutor.USER)
@@ -132,7 +132,7 @@ public class Miscellaneous {
                 if (args.length > 0) for (String arg : args) {
                     Guild leavingGuild = shardManager.getGuildById(arg);
                     leavingGuild.leave().queue();
-                    logger.info("Leaving " + leavingGuild.toString());
+                    LOGGER.info("Leaving " + leavingGuild.toString());
                 }
                 break;
             case USER:
@@ -155,7 +155,7 @@ public class Miscellaneous {
                                             textChannel.sendMessage(LanguageUtil.getString(guild, Bundle.STRINGS, "action_cancelled")).queue();
                                         } else {
                                             textChannel.sendMessage(LanguageUtil.getString(guild, Bundle.STRINGS, "goodbye")).queue(s -> guild.leave().queue());
-                                            logger.info("Leaving " + guild.toString());
+                                            LOGGER.info("Leaving " + guild.toString());
                                         }
                                     }
                                 },
@@ -190,7 +190,7 @@ public class Miscellaneous {
                         .build()).queue();
                 break;
             case CONSOLE:
-                logger.info(String.format("Ping : %sms", ping));
+                LOGGER.info(String.format("Ping : %sms", ping));
                 break;
         }
 
@@ -287,11 +287,11 @@ public class Miscellaneous {
                 builder.append(command.getName());
             }
 
-            logger.info("Currently disabled commands:");
+            LOGGER.info("Currently disabled commands:");
             if (builder.length() > 0) {
-                logger.info(builder.toString());
+                LOGGER.info(builder.toString());
                 if (textChannel != null) textChannel.sendMessage(builder.toString()).queue();
-            } else logger.warn("None");
+            } else LOGGER.warn("None");
 
         } else {
 
@@ -303,10 +303,10 @@ public class Miscellaneous {
 
                     if (!YeahBot.getInstance().getCommandMap().getDisabledCommands().contains(command)) {
                         YeahBot.getInstance().getCommandMap().getDisabledCommands().add(command);
-                        logger.info(command.getName() + " command now disabled");
+                        LOGGER.info(command.getName() + " command now disabled");
                     } else {
                         YeahBot.getInstance().getCommandMap().getDisabledCommands().remove(command);
-                        logger.info(command.getName() + " command now enabled");
+                        LOGGER.info(command.getName() + " command now enabled");
                     }
 
                 }
@@ -319,7 +319,7 @@ public class Miscellaneous {
 
 
                 if (command == null) {
-                    logger.warn(arg + " command doesn't exist");
+                    LOGGER.warn(arg + " command doesn't exist");
                     if (textChannel != null) textChannel.sendMessage(":x:").queue();
                     continue;
                 }
@@ -328,7 +328,7 @@ public class Miscellaneous {
 
                 if (!YeahBot.getInstance().getCommandMap().getDisabledCommands().contains(command)) {
                     YeahBot.getInstance().getCommandMap().getDisabledCommands().add(command);
-                    logger.info(command.getName() + " command now disabled");
+                    LOGGER.info(command.getName() + " command now disabled");
                     if (textChannel != null)
                         textChannel.sendMessage(
                                 String.format(":regional_indicator_%s::negative_squared_cross_mark:",
@@ -337,7 +337,7 @@ public class Miscellaneous {
                         ).queue();
                 } else {
                     YeahBot.getInstance().getCommandMap().getDisabledCommands().remove(command);
-                    logger.info(command.getName() + " command now enabled");
+                    LOGGER.info(command.getName() + " command now enabled");
                     if (textChannel != null)
                         textChannel.sendMessage(
                                 String.format(":regional_indicator_%s::white_check_mark:",
@@ -450,19 +450,19 @@ public class Miscellaneous {
 
         List<Field> fields = SettingsManager.getFields(guild);
 
-        new PaginationManager.Builder<Field>()
+        new Paginator.Builder<Field>()
                 .textChannel(textChannel)
                 .user(user)
                 .objectList(fields)
                 .objectName(f -> LanguageUtil.getString(guild, Bundle.SETTINGS, SettingsManager.getSettingKey(f)))
                 .listTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "config"))
                 .timeout(1, TimeUnit.MINUTES)
-                .selection(true)
+                .selectable(true)
                 .selectionResult(f -> {
                     try {
                         SettingsManager.editField(guild, textChannel, user, f);
                     } catch (IllegalAccessException e) {
-                        e.printStackTrace();
+                        SettingsManager.sendErrorEmbed(textChannel);
                     }
                 })
                 .build();
@@ -568,15 +568,15 @@ public class Miscellaneous {
                     }
                     guild.getTextChannelById(settings.updateChannel).sendMessage(builder.build()).queue();
                 } catch (PermissionException ignored) {
-                    logger.warn("[Update] Failed to broadcast on %s", guild);
+                    LOGGER.warn("[Update] Failed to broadcast on %s", guild);
                 }
 
             }
 
         } catch (IOException e) {
-            logger.error("Error while fetching data!");
+            LOGGER.error("Error while fetching data!");
         } catch (JSONException e) {
-            logger.error("Error while parsing data!", e);
+            LOGGER.error("Error while parsing data!", e);
         }
 
     }

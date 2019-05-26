@@ -16,7 +16,7 @@ import java.util.TimerTask;
  */
 public class PrivateChannelsTask extends TimerTask {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
     @Override
     public void run() {
@@ -30,7 +30,7 @@ public class PrivateChannelsTask extends TimerTask {
             for (long id : channels.getChannels()) {
                 if (guild.getVoiceChannelById(id) == null)
                     toDelete.add(id);
-                logger.info("Private channel " + id + " expired");
+                LOGGER.info("Private channel " + id + " expired");
             }
 
             channels.getChannels().removeAll(toDelete);

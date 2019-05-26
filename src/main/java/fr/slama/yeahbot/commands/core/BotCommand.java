@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
  */
 public final class BotCommand {
 
-    private final Logger logger = LoggerFactory.getLogger("BotCommand");
+    private final Logger LOGGER = LoggerFactory.getLogger("BotCommand");
 
     private final String name;
     private final String[] aliases;
@@ -156,7 +156,7 @@ public final class BotCommand {
             textChannel.sendMessage(builder.build()).queue(m -> m.delete().queueAfter(30, TimeUnit.SECONDS));
         } catch (ErrorResponseException ignored) {
         } catch (Exception e) {
-            logger.error("Error while generating help for " + name + " command!", e);
+            LOGGER.error("Error while generating help for " + name + " command!", e);
             textChannel.sendMessage(new EmbedBuilder()
                     .setColor(ColorUtil.RED)
                     .setTitle(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "error"))

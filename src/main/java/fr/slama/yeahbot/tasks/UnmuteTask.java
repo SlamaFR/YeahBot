@@ -18,7 +18,7 @@ import java.util.TimerTask;
  */
 public class UnmuteTask extends TimerTask {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
     @Override
     public void run() {
@@ -39,7 +39,7 @@ public class UnmuteTask extends TimerTask {
                                 .removeRolesFromMember(guild.getMemberById(userId), GuildUtil.getMutedRole(guild, false))
                                 .queue();
                         toRemove.add(userId);
-                        logger.info("Unmuted " + userId);
+                        LOGGER.info("Unmuted " + userId);
                     } else {
                         TaskScheduler.async(() -> {
                             guild.getController()
@@ -48,7 +48,7 @@ public class UnmuteTask extends TimerTask {
                             mutes.getMutesMap().remove(userId);
                             RedisData.setMutes(guild, mutes);
                         }, timeout - now);
-                        logger.info("Scheduled unmute of " + userId);
+                        LOGGER.info("Scheduled unmute of " + userId);
                     }
                 } catch (Exception ignored) {
                     break;

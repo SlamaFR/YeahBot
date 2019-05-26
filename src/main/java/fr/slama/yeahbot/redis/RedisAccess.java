@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
  */
 public class RedisAccess {
 
-    private static final Logger logger = LoggerFactory.getLogger(RedisAccess.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RedisAccess.class);
     static RedisAccess INSTANCE;
     private RedissonClient redissonClient;
 
@@ -23,12 +23,12 @@ public class RedisAccess {
     }
 
     public static void init() {
-        logger.info("Connection to Redis...");
+        LOGGER.info("Connection to Redis...");
         new RedisAccess(new RedisCredentials(YeahBot.CONFIG.redis.host, YeahBot.CONFIG.redis.password, YeahBot.CONFIG.redis.port));
     }
 
     public static void close() {
-        logger.info("Closing Redis connection...");
+        LOGGER.info("Closing Redis connection...");
         RedisAccess.INSTANCE.getRedissonClient().shutdown();
     }
 
@@ -44,7 +44,7 @@ public class RedisAccess {
                 .setDatabase(0)
                 .setClientName(credentials.getClientName());
 
-        logger.info("Successfully connected to Redis !");
+        LOGGER.info("Successfully connected to Redis !");
         return Redisson.create(config);
     }
 

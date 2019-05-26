@@ -28,7 +28,7 @@ import java.util.*;
  */
 public class CommandMap {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger LOGGER = LoggerFactory.getLogger(getClass());
     private final Map<String, BotCommand> commands = new HashMap<>();
     private ArrayList<BotCommand> disabledCommand = new ArrayList<>();
     private List<BotCommand> registry = new ArrayList<>();
@@ -109,7 +109,7 @@ public class CommandMap {
                 } catch (PermissionException e) {
                     MessageUtils.sendPermissionEmbed(message.getGuild(), message.getTextChannel(), e.getPermission());
                 } catch (Exception e) {
-                    logger.error(String.format("The %s command failed", cmd.getName()), e);
+                    LOGGER.error(String.format("The %s command failed", cmd.getName()), e);
                     message.getChannel().sendMessage(new EmbedBuilder()
                             .setTitle(LanguageUtil.getString(message.getGuild(), Bundle.CAPTION, "error"))
                             .setDescription(LanguageUtil.getString(message.getGuild(), Bundle.ERROR, "command"))
@@ -128,19 +128,19 @@ public class CommandMap {
     }
 
     public void commandConsole(String command) {
-        logger.info("[CONSOLE] >> " + command);
+        LOGGER.info("[CONSOLE] >> " + command);
         Object[] object = getCommand(command);
         if (object[0] == null) {
-            logger.warn("Unknown command.");
+            LOGGER.warn("Unknown command.");
             return;
         } else if (((BotCommand) object[0]).getExecutor().equals(Command.CommandExecutor.USER)) {
-            logger.warn("User only command!");
+            LOGGER.warn("User only command!");
             return;
         }
         try {
             execute((BotCommand) object[0], command, (String[]) object[1], null, Command.CommandExecutor.CONSOLE);
         } catch (Exception e) {
-            logger.error(String.format("The %s command failed", ((BotCommand) object[0]).getName()), e);
+            LOGGER.error(String.format("The %s command failed", ((BotCommand) object[0]).getName()), e);
         }
     }
 

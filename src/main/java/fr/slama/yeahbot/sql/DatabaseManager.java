@@ -13,7 +13,7 @@ import static fr.slama.yeahbot.YeahBot.CONFIG;
  */
 public class DatabaseManager {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger LOGGER = LoggerFactory.getLogger(getClass());
     private DbConnection connection;
 
     public DatabaseManager() {
@@ -22,11 +22,11 @@ public class DatabaseManager {
 
     public void close() {
         try {
-            logger.info("Closing database connection...");
+            LOGGER.info("Closing database connection...");
             this.connection.close();
-            logger.info("Database connection successfully closed!");
+            LOGGER.info("Database connection successfully closed!");
         } catch (SQLException e) {
-            logger.error("Database connection closing failed!", e);
+            LOGGER.error("Database connection closing failed!", e);
         }
     }
 

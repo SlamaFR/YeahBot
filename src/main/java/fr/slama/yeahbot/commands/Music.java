@@ -6,13 +6,13 @@ import fr.slama.yeahbot.commands.core.Command;
 import fr.slama.yeahbot.commands.core.CommandError;
 import fr.slama.yeahbot.language.Bundle;
 import fr.slama.yeahbot.language.LanguageUtil;
-import fr.slama.yeahbot.managers.PaginationManager;
 import fr.slama.yeahbot.music.*;
 import fr.slama.yeahbot.redis.RedisData;
 import fr.slama.yeahbot.redis.buckets.Playlists;
 import fr.slama.yeahbot.redis.buckets.Settings;
 import fr.slama.yeahbot.utilities.ColorUtil;
 import fr.slama.yeahbot.utilities.EmoteUtil;
+import fr.slama.yeahbot.utilities.Paginator;
 import fr.slama.yeahbot.utilities.TimeUtil;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
@@ -260,7 +260,7 @@ public class Music {
         for (Track track : tracks) duration += track.getAudioTrack().getDuration();
         long finalDuration = duration;
 
-        new PaginationManager.Builder<Track>()
+        new Paginator.Builder<Track>()
                 .textChannel(textChannel)
                 .user(user)
                 .objectList(tracks)

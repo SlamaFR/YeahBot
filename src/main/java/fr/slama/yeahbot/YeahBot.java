@@ -32,7 +32,7 @@ import java.util.Scanner;
 public class YeahBot extends ListenerAdapter implements Runnable {
 
     public static final Config CONFIG = Config.parseFile("./config.yml");
-    private static final Logger logger = LoggerFactory.getLogger(YeahBot.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(YeahBot.class);
     private static YeahBot INSTANCE;
     private static boolean dev;
     private final Scanner scanner = new Scanner(System.in);
@@ -48,12 +48,12 @@ public class YeahBot extends ListenerAdapter implements Runnable {
 
         INSTANCE = this;
 
-        logger.info("Initializing managers");
+        LOGGER.info("Initializing managers");
         musicManager = new MusicManager();
         databaseManager = new DatabaseManager();
         commandMap = new CommandMap();
 
-        logger.info("Logging in Discord API...");
+        LOGGER.info("Logging in Discord API...");
         shardManager = new DefaultShardManagerBuilder(CONFIG.token)
                 .addEventListeners(this)
                 .addEventListeners(new CommandListener(commandMap))
@@ -61,7 +61,7 @@ public class YeahBot extends ListenerAdapter implements Runnable {
                 .addEventListeners(new SpamListener(), new SwearingListener(), new AdvertisingListener())
                 .addEventListeners(new PrivateChannelsListener(), new JoinLeaveListener())
                 .build();
-        logger.info("Logging in DBL API...");
+        LOGGER.info("Logging in DBL API...");
         api = new DiscordBotListAPI.Builder()
                 .token(CONFIG.dbl_token)
                 .botId(CONFIG.id)
@@ -72,20 +72,20 @@ public class YeahBot extends ListenerAdapter implements Runnable {
     public static void main(String[] args) throws LoginException {
 
         if (CONFIG == null) {
-            logger.error("Config couldn't be loaded!");
+            LOGGER.error("Config couldn't be loaded!");
             System.exit(1);
         }
 
-        logger.info("Loaded config.");
+        LOGGER.info("Loaded config.");
         if (CONFIG.token == null) {
-            logger.error("No token provided!");
+            LOGGER.error("No token provided!");
             System.exit(1);
         }
-        logger.debug("Found token.");
+        LOGGER.debug("Found token.");
 
         dev = Arrays.asList(args).contains("--dev");
 
-        if (dev) logger.warn("Starting in DEV MODE!");
+        if (dev) LOGGER.warn("Starting in DEV MODE!");
 
         new Thread(new YeahBot()).start();
     }
@@ -129,13 +129,13 @@ public class YeahBot extends ListenerAdapter implements Runnable {
         scanner.close();
         shardManager.shutdown();
 
-        logger.info("Saving data to database...");
+        LOGGER.info("Saving data to database...");
         new DatabaseUpdater().run();
 
         databaseManager.close();
         RedisAccess.close();
 
-        logger.info("Stopping bot...");
+        LOGGER.info("Stopping bot...");
         System.exit(0);
     }
 

@@ -24,7 +24,7 @@ import java.util.*;
  */
 public class TrackScheduler extends AudioEventAdapter {
 
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
     private final LinkedList<Track> queue = new LinkedList<>();
     private final MusicPlayer musicPlayer;
     private final Map<Long, MusicPlayer> players;
@@ -156,7 +156,7 @@ public class TrackScheduler extends AudioEventAdapter {
         }
 
         playedTrack++;
-        logger.info(String.format("%s Now playing %s", guild, track.getInfo().title));
+        LOGGER.info(String.format("%s Now playing %s", guild, track.getInfo().title));
 
         votingUsers = new ArrayList<>();
 

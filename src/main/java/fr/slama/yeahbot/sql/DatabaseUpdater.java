@@ -17,7 +17,7 @@ import java.util.TimerTask;
  */
 public class DatabaseUpdater extends TimerTask {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
     @Override
     public void run() {
@@ -103,24 +103,24 @@ public class DatabaseUpdater extends TimerTask {
             }
 
             playlistsStatement.executeBatch();
-            logger.info("Synchronized database!");
+            LOGGER.info("Synchronized database!");
 
             YeahBot.getInstance().getShardManager().setGame(Game.watching(
                     String.format("%d servers | %d users",
                             YeahBot.getInstance().getShardManager().getGuilds().size(),
                             YeahBot.getInstance().getShardManager().getUsers().stream().filter(u -> !u.isBot()).toArray().length)
             ));
-            logger.info("Synchronized presence!");
+            LOGGER.info("Synchronized presence!");
 
             if (!YeahBot.isDev()) {
                 YeahBot.getInstance().getDiscordBotAPI().setStats(
                         YeahBot.getInstance().getShardManager().getGuilds().size()
                 );
-                logger.info("Synchronized DBL API!");
+                LOGGER.info("Synchronized DBL API!");
             }
 
         } catch (SQLException e) {
-            logger.error("Failed to sync database!", e);
+            LOGGER.error("Failed to sync database!", e);
         } catch (NoSuchElementException ignored) {
         }
 
