@@ -84,7 +84,7 @@ public class Fun {
                 int maximum = Integer.parseInt(args[0]);
                 textChannel.sendMessage(LanguageUtil.getArguedString(guild, Bundle.STRINGS, "random_number", new Random().nextInt(maximum))).queue();
             } catch (NumberFormatException e) {
-                if (Long.parseLong(args[1]) > Integer.MAX_VALUE || Long.parseLong(args[1]) < Integer.MIN_VALUE) {
+                if (Long.parseLong(args[0]) > Integer.MAX_VALUE || Long.parseLong(args[0]) < Integer.MIN_VALUE) {
                     textChannel.sendMessage(
                             new CommandError(cmd, cmd.getArguments(guild)[1], guild, CommandError.ErrorType.INCORRECT_RANGE, String.valueOf(Integer.MIN_VALUE), String.valueOf(Integer.MAX_VALUE)).toEmbed()
                     ).queue();
