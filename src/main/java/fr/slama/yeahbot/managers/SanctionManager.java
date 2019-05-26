@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class SanctionManager {
 
-    private static final Logger logger = LoggerFactory.getLogger(SanctionManager.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SanctionManager.class);
 
     public static void registerMute(Member target, TextChannel textChannel, int i, TimeUnit unit) {
         if (Command.CommandPermission.STAFF.test(target)) {
@@ -54,7 +54,7 @@ public class SanctionManager {
                 RedisData.setMutes(target.getGuild(), mutes);
             }, unit.toMillis(i));
 
-            logger.info(String.format("%s Muted %s", target.getGuild(), target.getUser()));
+            LOGGER.info(String.format("%s Muted %s", target.getGuild(), target.getUser()));
         } catch (InsufficientPermissionException ignored) {
         }
     }
@@ -69,7 +69,7 @@ public class SanctionManager {
                     .setDescription(LanguageUtil.getArguedString(target.getGuild(), Bundle.STRINGS, "user_kicked", target.getAsMention()))
                     .addField(LanguageUtil.getString(target.getGuild(), Bundle.CAPTION, "reason"), reason, false)
                     .build()).queue();
-            logger.info(String.format("%s Kicked %s", target.getGuild(), target.getUser()));
+            LOGGER.info(String.format("%s Kicked %s", target.getGuild(), target.getUser()));
         } else {
             textChannel.sendMessage(LanguageUtil.getString(target.getGuild(), Bundle.ERROR, "higher_member")).queue();
         }
@@ -85,7 +85,7 @@ public class SanctionManager {
                     .setDescription(LanguageUtil.getArguedString(target.getGuild(), Bundle.STRINGS, "user_banned", target.getAsMention()))
                     .addField(LanguageUtil.getString(target.getGuild(), Bundle.CAPTION, "reason"), reason, false)
                     .build()).queue();
-            logger.info(String.format("%s Banned %s", target.getGuild(), target.getUser()));
+            LOGGER.info(String.format("%s Banned %s", target.getGuild(), target.getUser()));
         } else {
             textChannel.sendMessage(LanguageUtil.getString(target.getGuild(), Bundle.ERROR, "higher_member")).queue();
         }
