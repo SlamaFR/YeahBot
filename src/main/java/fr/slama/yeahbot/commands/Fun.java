@@ -84,7 +84,15 @@ public class Fun {
                 int maximum = Integer.parseInt(args[0]);
                 textChannel.sendMessage(LanguageUtil.getArguedString(guild, Bundle.STRINGS, "random_number", new Random().nextInt(maximum))).queue();
             } catch (NumberFormatException e) {
-                textChannel.sendMessage(new CommandError(cmd, cmd.getArguments(guild)[1], guild, CommandError.ErrorType.INTEGER).toEmbed()).queue();
+                if (Long.parseLong(args[1]) > Integer.MAX_VALUE || Long.parseLong(args[1]) < Integer.MIN_VALUE) {
+                    textChannel.sendMessage(
+                            new CommandError(cmd, cmd.getArguments(guild)[1], guild, CommandError.ErrorType.INCORRECT_RANGE, String.valueOf(Integer.MIN_VALUE), String.valueOf(Integer.MAX_VALUE)).toEmbed()
+                    ).queue();
+                } else {
+                    textChannel.sendMessage(
+                            new CommandError(cmd, cmd.getArguments(guild)[0], guild, CommandError.ErrorType.INTEGER).toEmbed()
+                    ).queue();
+                }
             }
         } else if (args.length == 2) {
             try {
@@ -97,7 +105,19 @@ public class Fun {
                 }
                 textChannel.sendMessage(LanguageUtil.getArguedString(guild, Bundle.STRINGS, "random_number", new Random().nextInt(maximum - minimum) + minimum)).queue();
             } catch (NumberFormatException e) {
-                textChannel.sendMessage(new CommandError(cmd, cmd.getArguments(guild)[0], guild, CommandError.ErrorType.INTEGER).toEmbed()).queue();
+                if (Long.parseLong(args[0]) > Integer.MAX_VALUE || Long.parseLong(args[0]) < Integer.MIN_VALUE) {
+                    textChannel.sendMessage(
+                            new CommandError(cmd, cmd.getArguments(guild)[0], guild, CommandError.ErrorType.INCORRECT_RANGE, String.valueOf(Integer.MIN_VALUE), String.valueOf(Integer.MAX_VALUE)).toEmbed()
+                    ).queue();
+                } else if (Long.parseLong(args[1]) > Integer.MAX_VALUE || Long.parseLong(args[1]) < Integer.MIN_VALUE) {
+                    textChannel.sendMessage(
+                            new CommandError(cmd, cmd.getArguments(guild)[1], guild, CommandError.ErrorType.INCORRECT_RANGE, String.valueOf(Integer.MIN_VALUE), String.valueOf(Integer.MAX_VALUE)).toEmbed()
+                    ).queue();
+                } else {
+                    textChannel.sendMessage(
+                            new CommandError(cmd, cmd.getArguments(guild)[0], guild, CommandError.ErrorType.INTEGER).toEmbed()
+                    ).queue();
+                }
             }
         } else {
             cmd.sendUsageEmbed(textChannel);

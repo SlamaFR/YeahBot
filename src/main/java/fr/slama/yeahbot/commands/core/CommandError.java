@@ -31,7 +31,7 @@ public class CommandError {
         return new EmbedBuilder()
                 .setColor(ColorUtil.RED)
                 .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "argument_error"))
-                .setDescription(LanguageUtil.getArguedString(guild, Bundle.ERROR, type.toString(), argument, String.join("\n", args)))
+                .setDescription(LanguageUtil.getArguedString(guild, Bundle.ERROR, type.toString(), argument, args))
                 .addField(usageCaption, cmd.getUsage(guild), false)
                 .build();
     }
@@ -40,6 +40,7 @@ public class CommandError {
 
         ENTITY_NOT_FOUND,
         INCORRECT_VALUE,
+        INCORRECT_RANGE,
         INTEGER,
         MISSING_VALUE,
         TOO_LONG,

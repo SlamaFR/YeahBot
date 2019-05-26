@@ -1,6 +1,7 @@
 package fr.slama.yeahbot.language;
 
 import fr.slama.yeahbot.redis.RedisData;
+import fr.slama.yeahbot.utilities.ArrayUtil;
 import net.dv8tion.jda.core.entities.Guild;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,6 +55,13 @@ public class LanguageUtil {
     public static String getArguedString(String language, Bundle bundle, String key, Object... arguments) {
 
         String value = getString(language, bundle, key);
+
+        for (Object o : arguments) {
+            if (o.getClass().isArray()) {
+                arguments = ArrayUtil.removeLast(arguments);
+                for (Object o1 : ((Object[]) o)) arguments = ArrayUtil.appendTo(arguments, o1);
+            }
+        }
 
         if (value.contains("{")) return MessageFormat.format(value.replace("'", "''"), (Object[]) arguments);
         else return MessageFormat.format(value, arguments);
