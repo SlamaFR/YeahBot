@@ -10,7 +10,7 @@ import net.dv8tion.jda.core.entities.TextChannel;
 /**
  * Created on 2019-05-21.
  */
-public class MessageUtils {
+public class MessageUtil {
 
     public static void sendPermissionEmbed(Guild guild, TextChannel textChannel, Permission... permission) {
         String perm;

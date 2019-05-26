@@ -2,7 +2,7 @@ package fr.slama.yeahbot.listeners;
 
 import fr.slama.yeahbot.YeahBot;
 import fr.slama.yeahbot.utilities.EmoteUtil;
-import fr.slama.yeahbot.utilities.MessageUtils;
+import fr.slama.yeahbot.utilities.MessageUtil;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.User;
@@ -48,12 +48,12 @@ public class SelectionListener extends ListenerAdapter {
         this.multiple = multiple;
 
         if (!message.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE)) {
-            MessageUtils.sendPermissionEmbed(message.getGuild(), message.getTextChannel(), Permission.MESSAGE_MANAGE);
+            MessageUtil.sendPermissionEmbed(message.getGuild(), message.getTextChannel(), Permission.MESSAGE_MANAGE);
             return;
         }
 
         if (!message.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_ADD_REACTION)) {
-            MessageUtils.sendPermissionEmbed(message.getGuild(), message.getTextChannel(), Permission.MESSAGE_ADD_REACTION);
+            MessageUtil.sendPermissionEmbed(message.getGuild(), message.getTextChannel(), Permission.MESSAGE_ADD_REACTION);
             message.delete().queue();
             return;
         }
@@ -71,7 +71,7 @@ public class SelectionListener extends ListenerAdapter {
         }
 
         if (!message.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_HISTORY)) {
-            MessageUtils.sendPermissionEmbed(message.getGuild(), message.getTextChannel(), Permission.MESSAGE_HISTORY);
+            MessageUtil.sendPermissionEmbed(message.getGuild(), message.getTextChannel(), Permission.MESSAGE_HISTORY);
             message.delete().queue();
             return;
         }

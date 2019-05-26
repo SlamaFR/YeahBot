@@ -7,7 +7,7 @@ import fr.slama.yeahbot.language.LanguageUtil;
 import fr.slama.yeahbot.redis.RedisData;
 import fr.slama.yeahbot.redis.buckets.Settings;
 import fr.slama.yeahbot.utilities.ColorUtil;
-import fr.slama.yeahbot.utilities.MessageUtils;
+import fr.slama.yeahbot.utilities.MessageUtil;
 import net.dv8tion.jda.bot.sharding.ShardManager;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.*;
@@ -103,11 +103,11 @@ public class CommandMap {
                         if (message.getGuild().getSelfMember().hasPermission(cmd.getDiscordPermission())) {
                             execute(cmd, command, (String[]) object[1], message, Command.CommandExecutor.USER);
                         } else {
-                            MessageUtils.sendPermissionEmbed(message.getGuild(), message.getTextChannel(), cmd.getDiscordPermission());
+                            MessageUtil.sendPermissionEmbed(message.getGuild(), message.getTextChannel(), cmd.getDiscordPermission());
                         }
                     } else execute(cmd, command, (String[]) object[1], message, Command.CommandExecutor.USER);
                 } catch (PermissionException e) {
-                    MessageUtils.sendPermissionEmbed(message.getGuild(), message.getTextChannel(), e.getPermission());
+                    MessageUtil.sendPermissionEmbed(message.getGuild(), message.getTextChannel(), e.getPermission());
                 } catch (Exception e) {
                     LOGGER.error(String.format("The %s command failed", cmd.getName()), e);
                     message.getChannel().sendMessage(new EmbedBuilder()
