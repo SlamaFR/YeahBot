@@ -119,7 +119,7 @@ public class SettingsManager {
 
             RedisData.setSettings(guild, settings);
             textChannel.deleteMessages(Arrays.asList(message, e.getMessage())).queue(SUCCESS, FAILURE);
-            sendUpdateEmbed(textChannel, value, newValue);
+            sendUpdateEmbed(textChannel, field, value, newValue);
         }), FAILURE);
     }
 
@@ -161,7 +161,7 @@ public class SettingsManager {
                         }
                         RedisData.setSettings(guild, settings);
                         message.delete().queue(SUCCESS, FAILURE);
-                        sendUpdateEmbed(textChannel, oldValue, newValue);
+                        sendUpdateEmbed(textChannel, field, oldValue, newValue);
                     }, 30, TimeUnit.SECONDS, () -> message.delete().queue(SUCCESS, FAILURE));
         }, FAILURE);
     }
@@ -218,7 +218,7 @@ public class SettingsManager {
                     }
                     RedisData.setSettings(guild, settings);
                     textChannel.deleteMessages(Arrays.asList(message, e.getMessage())).queue(SUCCESS, FAILURE);
-                    sendUpdateEmbed(textChannel, oldValue, newValue);
+                    sendUpdateEmbed(textChannel, field, oldValue, newValue);
                 }), FAILURE);
     }
 
@@ -230,7 +230,7 @@ public class SettingsManager {
         return String.format("%s - %s", m.getName(), m.getAsMention());
     }
 
-    private static void sendUpdateEmbed(TextChannel textChannel, String oldValue, String newValue) {
+    private static void sendUpdateEmbed(TextChannel textChannel, Field field, String oldValue, String newValue) {
         textChannel.sendMessage(
                 new EmbedBuilder()
                         .setTitle(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "success"))
@@ -245,6 +245,7 @@ public class SettingsManager {
                                 String.format("```\n%s\n```", newValue),
                                 false
                         )
+                        .setFooter(LanguageUtil.getString(textChannel.getGuild(), Bundle.SETTINGS, getSettingKey(field)), null)
                         .setColor(ColorUtil.GREEN)
                         .build()
         ).queue(SUCCESS, FAILURE);
