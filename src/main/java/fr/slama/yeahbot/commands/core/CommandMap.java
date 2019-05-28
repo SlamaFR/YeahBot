@@ -109,7 +109,8 @@ public class CommandMap {
                 } catch (PermissionException e) {
                     MessageUtil.sendPermissionEmbed(message.getGuild(), message.getTextChannel(), e.getPermission());
                 } catch (Exception e) {
-                    LOGGER.error(String.format("The %s command failed", cmd.getName()), e);
+                    LOGGER.error("The {} command failed", cmd.getName());
+                    LOGGER.error("Stack Trace:", e);
                     message.getChannel().sendMessage(new EmbedBuilder()
                             .setTitle(LanguageUtil.getString(message.getGuild(), Bundle.CAPTION, "error"))
                             .setDescription(LanguageUtil.getString(message.getGuild(), Bundle.ERROR, "command"))
@@ -140,7 +141,8 @@ public class CommandMap {
         try {
             execute((BotCommand) object[0], command, (String[]) object[1], null, Command.CommandExecutor.CONSOLE);
         } catch (Exception e) {
-            LOGGER.error(String.format("The %s command failed", ((BotCommand) object[0]).getName()), e);
+            LOGGER.error("The {} command failed", ((BotCommand) object[0]).getName());
+            LOGGER.error("Stack Trace:", e);
         }
     }
 
