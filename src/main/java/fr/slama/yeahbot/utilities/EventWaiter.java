@@ -52,11 +52,9 @@ public class EventWaiter implements EventListener, Closeable {
     @Override
     @SuppressWarnings("unchecked")
     public final void onEvent(Event event) {
-        if (event.getClass().equals(classType)) {
-            if (condition.test(event)) {
-                action.accept(event);
-                INSTANCE.close();
-            }
+        if (event.getClass().equals(classType) && (condition.test(event))) {
+            action.accept(event);
+            INSTANCE.close();
         }
     }
 

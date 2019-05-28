@@ -24,16 +24,18 @@ public class LanguageUtil {
 
     public static String getString(String language, Bundle bundle, String key) {
 
-        if (language == null || language.isEmpty()) language = Language.ENGLISH;
+        String lang = language;
 
-        if (!Language.languages.contains(language)) language = Language.ENGLISH;
+        if (lang == null || lang.isEmpty()) lang = Language.ENGLISH;
+
+        if (!Language.languages.contains(lang)) lang = Language.ENGLISH;
 
         ResourceBundle resourceBundle;
         try {
-            resourceBundle = ResourceBundle.getBundle(bundle.getName(), new Locale(language));
+            resourceBundle = ResourceBundle.getBundle(bundle.getName(), new Locale(lang));
         } catch (MissingResourceException e) {
             LOGGER.error("[FATAL] Missing " + bundle + " bundle!");
-            return language.equals(Language.ENGLISH) ? Language.MISSING : getString(Language.ENGLISH, bundle, key);
+            return lang.equals(Language.ENGLISH) ? Language.MISSING : getString(Language.ENGLISH, bundle, key);
         }
 
         try {
@@ -41,9 +43,9 @@ public class LanguageUtil {
             return new String(value.getBytes(ISO_8859_1), UTF_8);
         } catch (MissingResourceException e) {
             if (bundle.equals(Bundle.DESCRIPTION) || bundle.equals(Bundle.ARGUMENTS) || bundle.equals(Bundle.ARGUMENTS_DESCRIPTION))
-                return language.equals(Language.ENGLISH) ? "" : getString(Language.ENGLISH, bundle, key);
+                return lang.equals(Language.ENGLISH) ? "" : getString(Language.ENGLISH, bundle, key);
             LOGGER.error("[FATAL] Missing " + key + " key in " + bundle + " bundle!");
-            return language.equals(Language.ENGLISH) ? Language.MISSING : getString(Language.ENGLISH, bundle, key);
+            return lang.equals(Language.ENGLISH) ? Language.MISSING : getString(Language.ENGLISH, bundle, key);
         }
 
     }

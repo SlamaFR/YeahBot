@@ -118,7 +118,7 @@ public class SelectionListener extends ListenerAdapter {
                     if (choices.contains(id) && !selection.contains(id)) selection.add(id);
 
                     if (multiple) {
-                        if (s.equals("✅")) {
+                        if ("✅".equals(s)) {
                             result.accept(selection);
                             YeahBot.getInstance().getShardManager().removeEventListener(this);
                             message.delete().queue();
