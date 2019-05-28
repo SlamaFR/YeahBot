@@ -10,6 +10,7 @@ import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import java.util.concurrent.TimeUnit;
 
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -75,5 +76,9 @@ public class LanguageUtil {
 
     public static String getState(Guild guild, boolean bool) {
         return getString(guild, Bundle.CAPTION, bool ? "state_enabled" : "state_disabled");
+    }
+
+    public static String getTimeUnit(Guild guild, TimeUnit unit, long time) {
+        return LanguageUtil.getString(guild, Bundle.UNIT, unit.toString().toLowerCase() + (time > 1 ? "s" : ""));
     }
 }

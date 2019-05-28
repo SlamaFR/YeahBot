@@ -40,12 +40,11 @@ public class Paginator<T> {
     private long timeout;
     private TimeUnit unit;
     private boolean selectable;
+    private boolean ordered;
     private boolean closeable;
     private Consumer<T> selectionResult;
     private Runnable timeoutAction;
 
-    private final int min;
-    private final int max;
     private final int maxPage;
 
     private Paginator(Builder<T> builder) {
@@ -59,6 +58,7 @@ public class Paginator<T> {
         this.timeout = builder.timeout;
         this.unit = builder.unit;
         this.selectable = builder.selectable;
+        this.ordered = builder.ordered;
         this.closeable = builder.closeable;
         this.selectionResult = builder.selectionResult;
         this.timeoutAction = builder.timeoutAction;
@@ -72,49 +72,62 @@ public class Paginator<T> {
             Checks.check(textChannel.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE), "Must have MESSAGE_MANAGE");
         }
 
-        this.min = this.pageSize * this.page;
-        this.max = this.min + this.pageSize - 1;
+
         this.maxPage = (int) Math.ceil(this.objectList.size() / (float) this.pageSize) - 1;
 
         init();
     }
 
     private void init() {
+        final int min = this.pageSize * this.page;
+        final int max = min + this.pageSize - 1;
         StringBuilder builder = new StringBuilder();
 
-        for (int i = 0; i < objectList.size(); i++) {
-            T t = objectList.get(i);
+        for (int i = 0; i < this.objectList.size(); i++) {
+            T t = this.objectList.get(i);
             if (min <= i && i <= max) {
-                String title = objectName.apply(t);
+                String title = this.objectName.apply(t);
                 if (builder.length() > 0) builder.append("\n");
-                builder.append(String.format("`%d` - %s", (selectable ? i + 1 - min : i + 1 - min + page * pageSize), title));
+                builder.append(String.format("`%s` - %s", (this.selectable || this.ordered ? i + 1 - min : "●"), title));
             }
         }
 
         String pageFooter = LanguageUtil.getArguedString(textChannel.getGuild(), Bundle.CAPTION, "page", page + 1, maxPage + 1);
         String expirationFooter = timeout > -1 ?
-                " • " + LanguageUtil.getArguedString(textChannel.getGuild(), Bundle.CAPTION, "custom_time_expiration",
-                        timeout,
-                        LanguageUtil.getString(textChannel.getGuild(), Bundle.UNIT, unit.toString().toLowerCase() + (timeout > 1 ? "s" : ""))) :
-                "";
+                String.format(" • %s",
+                        LanguageUtil.getArguedString(
+                                textChannel.getGuild(),
+                                Bundle.CAPTION,
+                                "custom_time_expiration",
+                                timeout,
+                                LanguageUtil.getTimeUnit(textChannel.getGuild(), unit, timeout)
+                        )) : "";
 
         EmbedBuilder embed = new EmbedBuilder();
 
-        if (embedCustomizer != null) embedCustomizer.accept(embed);
-        embed.addField(listTitle, builder.toString(), false);
+        if (this.embedCustomizer != null) this.embedCustomizer.accept(embed);
+        embed.addField(this.listTitle, builder.toString(), false);
         embed.setFooter(pageFooter + expirationFooter, null);
 
         MessageAction action;
-        if (message == null) action = textChannel.sendMessage(embed.build());
-        else action = message.editMessage(embed.build());
+        if (this.message == null) action = this.textChannel.sendMessage(embed.build());
+        else action = this.message.editMessage(embed.build());
 
         List<String> choices = new ArrayList<>(Arrays.asList(EmoteUtil.PREVIOUS, EmoteUtil.NEXT));
-        if (selectable) choices.addAll(EmoteUtil.getNumbers(pageSize));
-        if (closeable) choices.add(EmoteUtil.NO_EMOTE);
+        if (this.selectable) choices.addAll(EmoteUtil.getNumbers(this.pageSize));
+        if (this.closeable) choices.add(EmoteUtil.NO_EMOTE);
 
         action.queue(msg -> {
-            message = msg;
+            this.message = msg;
+
+            List<String> presentReactions = new ArrayList<>();
+
+            this.message.getReactions().forEach(messageReaction -> {
+                presentReactions.add(messageReaction.getReactionEmote().getName());
+            });
+
             for (String choice : choices) {
+                if (presentReactions.contains(choice)) continue;
                 try {
                     msg.addReaction(textChannel.getJDA().getEmoteById(choice)).queue(SUCCESS, FAILURE);
                 } catch (NumberFormatException e) {
@@ -137,25 +150,25 @@ public class Paginator<T> {
 
                         switch (e.getReactionEmote().getName()) {
                             case EmoteUtil.PREVIOUS:
-                                if (page > 0) page--;
+                                if (this.page > 0) this.page--;
                                 init();
                                 return;
                             case EmoteUtil.NEXT:
-                                if (page < maxPage) page++;
+                                if (this.page < this.maxPage) this.page++;
                                 init();
                                 return;
                             default:
                                 int index = e.getReactionEmote().getName().charAt(0) - '\u0030' - 1 + min;
-                                if (index < objectList.size()) {
-                                    selectionResult.accept(objectList.get(index));
+                                if (index < this.objectList.size()) {
+                                    this.selectionResult.accept(this.objectList.get(index));
                                     msg.delete().queue(SUCCESS, FAILURE);
-                                } else init();
+                                }
                                 break;
                         }
-                    }, timeout, unit,
+                    }, this.timeout, this.unit,
                     () -> {
                         msg.delete().queue(SUCCESS, FAILURE);
-                        timeoutAction.run();
+                        this.timeoutAction.run();
                     });
 
         }, FAILURE);
@@ -172,6 +185,7 @@ public class Paginator<T> {
         private long timeout = -1;
         private TimeUnit unit;
         private boolean selectable = false;
+        private boolean ordered = false;
         private boolean closeable = false;
         private Consumer<T> selectionResult;
         private Runnable timeoutAction;
@@ -222,6 +236,11 @@ public class Paginator<T> {
 
         public Builder<T> selectable(boolean selectable) {
             this.selectable = selectable;
+            return this;
+        }
+
+        public Builder<T> ordered(boolean ordered) {
+            this.ordered = ordered;
             return this;
         }
 

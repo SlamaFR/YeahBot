@@ -274,6 +274,7 @@ public class Music {
                                 String.format("⏱ %s", TimeUtil.toTime(finalDuration)), false)
                 )
                 .pageSize(10)
+                .ordered(true)
                 .closeable(true)
                 .timeout(1, TimeUnit.MINUTES)
                 .build();

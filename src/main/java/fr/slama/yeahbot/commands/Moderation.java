@@ -13,10 +13,7 @@ import fr.slama.yeahbot.redis.buckets.Settings;
 import fr.slama.yeahbot.utilities.ColorUtil;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.exceptions.ErrorResponseException;
 import net.dv8tion.jda.core.exceptions.HierarchyException;
 import net.dv8tion.jda.core.requests.RequestFuture;
@@ -85,17 +82,17 @@ public class Moderation {
 
         textChannel.sendMessage(builder.build()).queue(msg -> {
             RequestFuture.allOf(textChannel.purgeMessages(messages)).thenRun(() -> {
+
+                MessageEmbed embed = new EmbedBuilder()
+                        .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "success"))
+                        .setDescription(LanguageUtil.getArguedString(guild, Bundle.CAPTION, "messages_deleted", messages.size()))
+                        .setColor(ColorUtil.GREEN)
+                        .build();
+
                 try {
-                    msg.editMessage(
-                            new EmbedBuilder()
-                                    .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "success"))
-                                    .setDescription(LanguageUtil.getArguedString(guild, Bundle.CAPTION, "messages_deleted", messages.size()))
-                                    .setColor(ColorUtil.GREEN)
-                                    .build()
-                    ).queue();
+                    msg.editMessage(embed).queue();
                 } catch (ErrorResponseException e) {
-                    //Message has been deleted, send it instead of editing it.
-                    textChannel.sendMessage(LanguageUtil.getArguedString(guild, Bundle.CAPTION, "messages_deleted", messages.size() - 1)).queue();
+                    textChannel.sendMessage(embed).queue();
                 }
             });
         });

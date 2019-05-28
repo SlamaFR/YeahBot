@@ -16,7 +16,7 @@ public class CommandError {
     private final Guild guild;
     private final ErrorType type;
     private final String[] args;
-    private BotCommand cmd;
+    private final BotCommand cmd;
 
     public CommandError(BotCommand cmd, String argument, Guild guild, ErrorType type, String... args) {
         this.cmd = cmd;
@@ -38,7 +38,6 @@ public class CommandError {
 
     public enum ErrorType {
 
-        ENTITY_NOT_FOUND,
         INCORRECT_VALUE,
         INCORRECT_RANGE,
         INTEGER,
