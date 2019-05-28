@@ -56,7 +56,7 @@ public class Music {
             return;
         }
 
-        String query = String.join(" ", args).trim();
+        String query = String.join(" ", args);
 
         boolean firstPosition = false;
 
@@ -64,6 +64,8 @@ public class Music {
             query = query.replace("--next", "");
             firstPosition = true;
         }
+
+        query = query.trim();
 
         try {
             new URL(query);
