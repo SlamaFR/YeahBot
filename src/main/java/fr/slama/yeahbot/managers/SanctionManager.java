@@ -26,7 +26,13 @@ public class SanctionManager {
 
     public static void registerMute(Member target, TextChannel textChannel, int i, TimeUnit unit) {
         if (Command.CommandPermission.STAFF.test(target)) {
-            textChannel.sendMessage(LanguageUtil.getString(target.getGuild(), Bundle.ERROR, "higher_member")).queue();
+            textChannel.sendMessage(
+                    new EmbedBuilder()
+                            .setTitle(LanguageUtil.getString(target.getGuild(), Bundle.CAPTION, "error"))
+                            .setDescription(LanguageUtil.getString(target.getGuild(), Bundle.ERROR, "higher_member"))
+                            .setColor(ColorUtil.RED)
+                            .build()
+            ).queue();
             return;
         }
 
@@ -60,35 +66,49 @@ public class SanctionManager {
     }
 
     public static void registerKick(Member target, TextChannel textChannel, String reason) {
-        if (!Command.CommandPermission.STAFF.test(target)) {
-            target.getGuild().getController().kick(target, reason).queue();
-
-            textChannel.sendMessage(new EmbedBuilder()
-                    .setColor(ColorUtil.RED)
-                    .setTitle(LanguageUtil.getString(target.getGuild(), Bundle.CAPTION, "sanction_application"))
-                    .setDescription(LanguageUtil.getArguedString(target.getGuild(), Bundle.STRINGS, "user_kicked", target.getAsMention()))
-                    .addField(LanguageUtil.getString(target.getGuild(), Bundle.CAPTION, "reason"), reason, false)
-                    .build()).queue();
-            LOGGER.info(String.format("%s Kicked %s", target.getGuild(), target.getUser()));
-        } else {
-            textChannel.sendMessage(LanguageUtil.getString(target.getGuild(), Bundle.ERROR, "higher_member")).queue();
+        if (Command.CommandPermission.STAFF.test(target)) {
+            textChannel.sendMessage(
+                    new EmbedBuilder()
+                            .setTitle(LanguageUtil.getString(target.getGuild(), Bundle.CAPTION, "error"))
+                            .setDescription(LanguageUtil.getString(target.getGuild(), Bundle.ERROR, "higher_member"))
+                            .setColor(ColorUtil.RED)
+                            .build()
+            ).queue();
+            return;
         }
+
+        target.getGuild().getController().kick(target, reason).queue();
+
+        textChannel.sendMessage(new EmbedBuilder()
+                .setColor(ColorUtil.RED)
+                .setTitle(LanguageUtil.getString(target.getGuild(), Bundle.CAPTION, "sanction_application"))
+                .setDescription(LanguageUtil.getArguedString(target.getGuild(), Bundle.STRINGS, "user_kicked", target.getAsMention()))
+                .addField(LanguageUtil.getString(target.getGuild(), Bundle.CAPTION, "reason"), reason, false)
+                .build()).queue();
+        LOGGER.info(String.format("%s Kicked %s", target.getGuild(), target.getUser()));
     }
 
     public static void registerBan(Member target, TextChannel textChannel, String reason) {
-        if (!Command.CommandPermission.STAFF.test(target)) {
-            target.getGuild().getController().ban(target, 7, reason).queue();
-
-            textChannel.sendMessage(new EmbedBuilder()
-                    .setColor(ColorUtil.RED)
-                    .setTitle(LanguageUtil.getString(target.getGuild(), Bundle.CAPTION, "sanction_application"))
-                    .setDescription(LanguageUtil.getArguedString(target.getGuild(), Bundle.STRINGS, "user_banned", target.getAsMention()))
-                    .addField(LanguageUtil.getString(target.getGuild(), Bundle.CAPTION, "reason"), reason, false)
-                    .build()).queue();
-            LOGGER.info(String.format("%s Banned %s", target.getGuild(), target.getUser()));
-        } else {
-            textChannel.sendMessage(LanguageUtil.getString(target.getGuild(), Bundle.ERROR, "higher_member")).queue();
+        if (Command.CommandPermission.STAFF.test(target)) {
+            textChannel.sendMessage(
+                    new EmbedBuilder()
+                            .setTitle(LanguageUtil.getString(target.getGuild(), Bundle.CAPTION, "error"))
+                            .setDescription(LanguageUtil.getString(target.getGuild(), Bundle.ERROR, "higher_member"))
+                            .setColor(ColorUtil.RED)
+                            .build()
+            ).queue();
+            return;
         }
+
+        target.getGuild().getController().ban(target, 7, reason).queue();
+
+        textChannel.sendMessage(new EmbedBuilder()
+                .setColor(ColorUtil.RED)
+                .setTitle(LanguageUtil.getString(target.getGuild(), Bundle.CAPTION, "sanction_application"))
+                .setDescription(LanguageUtil.getArguedString(target.getGuild(), Bundle.STRINGS, "user_banned", target.getAsMention()))
+                .addField(LanguageUtil.getString(target.getGuild(), Bundle.CAPTION, "reason"), reason, false)
+                .build()).queue();
+        LOGGER.info(String.format("%s Banned %s", target.getGuild(), target.getUser()));
     }
 
 }
