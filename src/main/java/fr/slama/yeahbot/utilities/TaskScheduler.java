@@ -52,6 +52,10 @@ public final class TaskScheduler implements Runnable {
         this.predicate = null;
     }
 
+    public static void scheduleDelayed(final Runnable runnable, final long initialDelay) {
+        EXECUTOR_SERVICE.submit(new TaskScheduler(runnable, initialDelay));
+    }
+
     public static void scheduleRepeating(final Runnable runnable, final long period) {
         EXECUTOR_SERVICE.submit(new TaskScheduler(runnable, 0, period));
     }

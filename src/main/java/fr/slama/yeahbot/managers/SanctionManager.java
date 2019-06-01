@@ -49,20 +49,28 @@ public class SanctionManager {
                     .setColor(ColorUtil.RED)
                     .setTitle(LanguageUtil.getString(target.getGuild(), Bundle.CAPTION, "sanction_application"))
                     .setDescription(LanguageUtil.getArguedString(target.getGuild(), Bundle.STRINGS, "user_muted", target.getAsMention(), i,
-                            LanguageUtil.getString(target.getGuild(), Bundle.UNIT, unit.toString().toLowerCase())))
+                            LanguageUtil.getString(target.getGuild(), Bundle.UNIT, unit.toString().toLowerCase() + (timeout > 1 ? "s" : ""))))
                     .build()).queue();
 
-            TaskScheduler.scheduleRepeating(() -> {
-                textChannel.getGuild().getController()
-                        .removeRolesFromMember(target, GuildUtil.getMutedRole(target.getGuild(), false))
-                        .queue();
-                mutes.getMutesMap().remove(target.getUser().getIdLong());
-                RedisData.setMutes(target.getGuild(), mutes);
-            }, unit.toMillis(i));
+            TaskScheduler.scheduleDelayed(() -> unmute(textChannel, target), unit.toMillis(i));
 
             LOGGER.info(String.format("%s Muted %s", target.getGuild(), target.getUser()));
         } catch (InsufficientPermissionException ignored) {
         }
+    }
+
+    private static void unmute(TextChannel textChannel, Member target) {
+        Mutes mutes = RedisData.getMutes(target.getGuild());
+
+        if (!mutes.getMutesMap().containsKey(target.getUser().getIdLong())) return;
+
+        System.out.println("coi");
+
+        textChannel.getGuild().getController()
+                .removeRolesFromMember(target, GuildUtil.getMutedRole(target.getGuild(), false))
+                .queue();
+        mutes.getMutesMap().remove(target.getUser().getIdLong());
+        RedisData.setMutes(target.getGuild(), mutes);
     }
 
     public static void registerKick(Member target, TextChannel textChannel, String reason) {
