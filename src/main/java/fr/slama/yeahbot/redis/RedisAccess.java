@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 public class RedisAccess {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RedisAccess.class);
-    private static RedisAccess INSTANCE;
+    static RedisAccess INSTANCE;
     private RedissonClient redissonClient;
 
     private RedisAccess(RedisCredentials credentials) {
