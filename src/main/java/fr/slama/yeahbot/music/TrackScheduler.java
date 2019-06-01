@@ -89,7 +89,7 @@ public class TrackScheduler extends AudioEventAdapter {
         musicPlayer.getTextChannel().sendMessage(
                 new EmbedBuilder()
                         .setColor(ColorUtil.ORANGE)
-                        .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "disconnecting"))
+                        .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "audio_player"))
                         .setDescription(LanguageUtil.getString(guild, Bundle.STRINGS, "playlist_over"))
                         .build()
         ).queue();

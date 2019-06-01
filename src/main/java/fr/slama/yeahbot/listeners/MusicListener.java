@@ -4,6 +4,9 @@ import fr.slama.yeahbot.YeahBot;
 import fr.slama.yeahbot.language.Bundle;
 import fr.slama.yeahbot.language.LanguageUtil;
 import fr.slama.yeahbot.music.MusicManager;
+import fr.slama.yeahbot.utilities.ColorUtil;
+import net.dv8tion.jda.core.EmbedBuilder;
+import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.events.guild.voice.GuildVoiceLeaveEvent;
 import net.dv8tion.jda.core.events.guild.voice.GuildVoiceMoveEvent;
@@ -30,16 +33,22 @@ public class MusicListener extends ListenerAdapter {
     }
 
     private void check(GuildVoiceUpdateEvent event) {
-        if (!event.getMember().equals(event.getGuild().getSelfMember()) &&
-                event.getChannelLeft().equals(event.getGuild().getSelfMember().getVoiceState().getChannel()) &&
-                event.getChannelLeft().getMembers().stream().filter(m -> !m.getUser().isBot()).toArray().length < 1) {
-            VoiceChannel channel = event.getChannelLeft();
-            channel.getGuild().getAudioManager().closeAudioConnection();
-            manager.getPlayer(channel.getGuild()).getTextChannel().sendMessage(
-                    LanguageUtil.getArguedString(channel.getGuild(), Bundle.STRINGS, "alone_in_channel", channel.getName())
+        VoiceChannel channel = event.getChannelLeft();
+        TextChannel textChannel = manager.getPlayer(channel.getGuild()).getTextChannel();
+
+        if (!event.getGuild().getAudioManager().isConnected()) return;
+
+        if (event.getMember().getUser().getIdLong() == event.getJDA().getSelfUser().getIdLong() ||
+                (event.getChannelLeft().equals(event.getGuild().getSelfMember().getVoiceState().getChannel()) &&
+                        event.getChannelLeft().getMembers().stream().filter(m -> !m.getUser().isBot()).toArray().length < 1)) {
+            textChannel.sendMessage(
+                    new EmbedBuilder()
+                            .setTitle(LanguageUtil.getString(channel.getGuild(), Bundle.CAPTION, "audio_player"))
+                            .setDescription(LanguageUtil.getString(channel.getGuild(), Bundle.STRINGS, "stopping_music"))
+                            .setColor(ColorUtil.ORANGE)
+                            .build()
             ).queue();
             manager.getPlayer(channel.getGuild()).getTrackScheduler().stop();
         }
     }
-
 }
