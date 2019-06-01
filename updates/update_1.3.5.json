@@ -1,21 +1,43 @@
 {
   "version": "1.3.5",
-  "date": 1558476000000,
+  "date": 1559426400000,
   "fr": {
     "title": "Bulletin de mise à jour",
-    "adds": [],
-    "removes": [],
+    "adds": [
+      "Ajout de la commande 'unmute'."
+    ],
+    "removes": [
+      "Suppression du paramètre 'Quantité maximale de résultats de recherche'."
+    ],
     "changes": [
-      "Résolution d'un bug avec les commandes 'repeat' et 'shuffle'."
+      "Résolution d'un bug avec les commandes 'repeat' et 'shuffle'.",
+      "Mise à jour de JDA.",
+      "Résolution d'un bug avec la commande 'play'.",
+      "Résolution d'un bug avec le système de sanction.",
+      "Résolution d'un bug avec le lecteur audio.",
+      "Remaniement de la commande 'prune'.",
+      "Embellissement de quelques messages.",
+      "La mise à jour d'un paramètre est désormais détaillée avec l'ancienne et la nouvelle valeur."
     ],
     "coming": []
   },
   "en": {
     "title": "Update report",
-    "adds": [],
-    "removes": [],
+    "adds": [
+      "Added 'unmute' command."
+    ],
+    "removes": [
+      "Removed 'Maximum search results amount' setting."
+    ],
     "changes": [
-      "Fixed a bug with the 'repeat' and 'shuffle' commands."
+      "Fixed a bug with the 'repeat' and 'shuffle' commands.",
+      "Updated JDA.",
+      "Fixed a bug with the 'play' command.",
+      "Fixed a bug with the sanction system.",
+      "Fixed a bug with the audio player.",
+      "Revision of the 'prune' command.",
+      "Embellishment of some messages.",
+      "Setting update is now fancier with old and new value."
     ],
     "coming": []
   }
