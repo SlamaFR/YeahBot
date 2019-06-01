@@ -161,6 +161,26 @@ public class Moderation {
 
     }
 
+    @Command(name = "unmute",
+            discordPermission = Permission.MANAGE_ROLES,
+            permission = Command.CommandPermission.STAFF,
+            category = Command.CommandCategory.MODERATION,
+            executor = Command.CommandExecutor.USER)
+    private void unmute(Guild guild, String[] args, Message message, TextChannel textChannel, BotCommand command) {
+
+        if (guild == null) return;
+
+        if (message.getMentionedMembers().isEmpty()) {
+            command.sendUsageEmbed(textChannel);
+            return;
+        }
+
+        for (Member member : message.getMentionedMembers()) {
+            SanctionManager.unmute(textChannel, member);
+        }
+
+    }
+
     @Command(name = "kick",
             discordPermission = Permission.KICK_MEMBERS,
             permission = Command.CommandPermission.STAFF,

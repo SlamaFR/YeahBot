@@ -59,12 +59,10 @@ public class SanctionManager {
         }
     }
 
-    private static void unmute(TextChannel textChannel, Member target) {
+    public static void unmute(TextChannel textChannel, Member target) {
         Mutes mutes = RedisData.getMutes(target.getGuild());
 
         if (!mutes.getMutesMap().containsKey(target.getUser().getIdLong())) return;
-
-        System.out.println("coi");
 
         textChannel.getGuild().getController()
                 .removeRolesFromMember(target, GuildUtil.getMutedRole(target.getGuild(), false))
