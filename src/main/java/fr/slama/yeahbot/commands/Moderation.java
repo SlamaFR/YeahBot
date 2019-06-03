@@ -166,7 +166,7 @@ public class Moderation {
             permission = Command.CommandPermission.STAFF,
             category = Command.CommandCategory.MODERATION,
             executor = Command.CommandExecutor.USER)
-    private void unmute(Guild guild, String[] args, Message message, TextChannel textChannel, BotCommand command) {
+    private void unmute(Guild guild, Message message, TextChannel textChannel, BotCommand command) {
 
         if (guild == null) return;
 
