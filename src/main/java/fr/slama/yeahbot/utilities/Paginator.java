@@ -139,7 +139,7 @@ public class Paginator<T> {
                     e -> e.getUser().getIdLong() == user.getIdLong() &&
                             (choices.contains(e.getReactionEmote().getName()) || choices.contains(e.getReactionEmote().getId())) &&
                             e.getMessageIdLong() == msg.getIdLong(),
-                    e -> {
+                    (e, ew) -> {
                         e.getReaction().removeReaction(user).queue(SUCCESS, FAILURE);
 
                         if (e.getReactionEmote().getId() != null &&

@@ -6,7 +6,7 @@ import net.dv8tion.jda.core.hooks.EventListener;
 
 import java.io.Closeable;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
 /**
@@ -16,19 +16,26 @@ public class EventWaiter implements EventListener, Closeable {
 
     private final Class classType;
     private final Predicate condition;
-    private final Consumer action;
+    private final BiConsumer action;
+    private boolean autoClose;
 
     private final EventWaiter INSTANCE;
 
-    public <T extends Event> EventWaiter(Class<T> classType, Predicate<T> condition, Consumer<T> action) {
-        this(classType, condition, action, -1, null, null);
+    public <T extends Event, U extends EventWaiter> EventWaiter(Class<T> classType, Predicate<T> condition, BiConsumer<T, U> action) {
+        this(classType, condition, action, true);
     }
 
-    public <T extends Event> EventWaiter(Class<T> classType, Predicate<T> condition, Consumer<T> action,
-                                         long timeout, TimeUnit unit, Runnable timeoutAction) {
+    public <T extends Event, U extends EventWaiter> EventWaiter(Class<T> classType, Predicate<T> condition, BiConsumer<T, U> action, boolean autoClose) {
+        this(classType, condition, action, -1, null, null);
+        this.autoClose = autoClose;
+    }
+
+    public <T extends Event, U extends EventWaiter> EventWaiter(Class<T> classType, Predicate<T> condition, BiConsumer<T, U> action,
+                                                                long timeout, TimeUnit unit, Runnable timeoutAction) {
 
         this.classType = classType;
         this.condition = condition;
+        this.autoClose = true;
         this.action = action;
         this.INSTANCE = this;
 
@@ -53,8 +60,8 @@ public class EventWaiter implements EventListener, Closeable {
     @SuppressWarnings("unchecked")
     public final void onEvent(Event event) {
         if (event.getClass().equals(classType) && (condition.test(event))) {
-            action.accept(event);
-            INSTANCE.close();
+            action.accept(event, this);
+            if (this.autoClose) INSTANCE.close();
         }
     }
 

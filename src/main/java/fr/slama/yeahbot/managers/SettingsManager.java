@@ -93,7 +93,7 @@ public class SettingsManager {
                         )
                         .setFooter(LanguageUtil.getString(guild, Bundle.CAPTION, "waiting_for_response"), null)
                         .build()
-        ).queue(message -> new EventWaiter(GuildMessageReceivedEvent.class, condition, e -> {
+        ).queue(message -> new EventWaiter(GuildMessageReceivedEvent.class, condition, (e, ew) -> {
             String newValue = LanguageUtil.getString(guild, Bundle.CAPTION, "none");
 
             try {
@@ -143,7 +143,7 @@ public class SettingsManager {
                     e -> e.getUser().getIdLong() == user.getIdLong() &&
                             e.getMessageIdLong() == message.getIdLong() &&
                             choices.contains(e.getReactionEmote().getId()),
-                    e -> {
+                    (e, ew) -> {
                         String newValue;
                         try {
                             if (e.getReactionEmote().getId().equals(EmoteUtil.NO_EMOTE)) {
@@ -195,7 +195,7 @@ public class SettingsManager {
         String oldValue = value;
         textChannel.sendMessage(builder.build()).queue(message -> new EventWaiter(GuildMessageReceivedEvent.class,
                 e -> getCondition(e, textChannel, user),
-                e -> {
+                (e, ew) -> {
                     String newValue = e.getMessage().getContentRaw();
                     try {
                         if (newValue.equalsIgnoreCase("cancel")) {
