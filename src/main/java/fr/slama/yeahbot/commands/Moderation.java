@@ -21,6 +21,7 @@ import net.dv8tion.jda.core.requests.RequestFuture;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -55,11 +56,7 @@ public class Moderation {
 
         if (amount > 1001 || amount < 1) {
             textChannel.sendMessage(
-                    new EmbedBuilder()
-                            .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "error"))
-                            .setDescription(LanguageUtil.getString(guild, Bundle.ERROR, "message_amount"))
-                            .setColor(ColorUtil.RED)
-                            .build()
+                    new CommandError(command, command.getArguments(guild)[0], guild, CommandError.ErrorType.INCORRECT_RANGE, "1", "1000").toEmbed()
             ).queue();
             return;
         }
@@ -86,13 +83,16 @@ public class Moderation {
                 MessageEmbed embed = new EmbedBuilder()
                         .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "success"))
                         .setDescription(LanguageUtil.getArguedString(guild, Bundle.CAPTION, "messages_deleted", messages.size()))
+                        .setFooter(LanguageUtil.getTimeExpiration(guild, 10, TimeUnit.SECONDS), null)
                         .setColor(ColorUtil.GREEN)
                         .build();
 
+                Consumer<Message> timeout = m -> m.delete().queueAfter(10, TimeUnit.SECONDS);
+
                 try {
-                    msg.editMessage(embed).queue();
+                    msg.editMessage(embed).queue(timeout);
                 } catch (ErrorResponseException e) {
-                    textChannel.sendMessage(embed).queue();
+                    textChannel.sendMessage(embed).queue(timeout);
                 }
             });
         });
