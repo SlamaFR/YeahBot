@@ -46,7 +46,7 @@ public class Moderation {
         int amount;
 
         try {
-            amount = Integer.parseInt(args[0]);
+            amount = Integer.parseInt(args[0]) + 1;
         } catch (NumberFormatException | IndexOutOfBoundsException e) {
             textChannel.sendMessage(
                     new CommandError(command, command.getArguments(guild)[0], guild, CommandError.ErrorType.INTEGER).toEmbed()
@@ -54,14 +54,12 @@ public class Moderation {
             return;
         }
 
-        if (amount > 1001 || amount < 1) {
+        if (amount > 1001 || amount < 2) {
             textChannel.sendMessage(
                     new CommandError(command, command.getArguments(guild)[0], guild, CommandError.ErrorType.INCORRECT_RANGE, "1", "1000").toEmbed()
             ).queue();
             return;
         }
-
-        message.delete().queue();
 
         List<Message> messages = textChannel.getIterableHistory()
                 .stream()
@@ -82,7 +80,7 @@ public class Moderation {
 
                 MessageEmbed embed = new EmbedBuilder()
                         .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "success"))
-                        .setDescription(LanguageUtil.getArguedString(guild, Bundle.CAPTION, "messages_deleted", messages.size()))
+                        .setDescription(LanguageUtil.getArguedString(guild, Bundle.CAPTION, "messages_deleted", messages.size() - 1))
                         .setFooter(LanguageUtil.getTimeExpiration(guild, 10, TimeUnit.SECONDS), null)
                         .setColor(ColorUtil.GREEN)
                         .build();
