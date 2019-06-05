@@ -83,4 +83,9 @@ public class LanguageUtil {
     public static String getTimeUnit(Guild guild, TimeUnit unit, long time) {
         return LanguageUtil.getString(guild, Bundle.UNIT, unit.toString().toLowerCase() + (time > 1 ? "s" : ""));
     }
+
+    public static String getTimeExpiration(Guild guild, long time, TimeUnit unit) {
+        return LanguageUtil.getArguedString(guild, Bundle.CAPTION, "custom_time_expiration", time, getTimeUnit(guild, unit, time));
+    }
+
 }
