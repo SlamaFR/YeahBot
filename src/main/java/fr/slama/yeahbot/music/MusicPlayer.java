@@ -19,7 +19,7 @@ public class MusicPlayer {
     private final Guild guild;
     private TextChannel textChannel;
 
-    MusicPlayer(AudioPlayer audioPlayer, Guild guild, Map<Long, MusicPlayer> players) {
+    public MusicPlayer(AudioPlayer audioPlayer, Guild guild, Map<Long, MusicPlayer> players) {
         this.audioPlayer = audioPlayer;
         this.guild = guild;
         trackScheduler = new TrackScheduler(this, players);
@@ -46,11 +46,11 @@ public class MusicPlayer {
         return trackScheduler;
     }
 
-    AudioHandler getAudioHandler() {
+    public AudioHandler getAudioHandler() {
         return new AudioHandler(audioPlayer);
     }
 
-    synchronized void playTrack(AudioTrack audioTrack, Member member, boolean firstPosition) {
+    public synchronized void playTrack(AudioTrack audioTrack, Member member, boolean firstPosition) {
         trackScheduler.addToQueue(new Track(audioTrack, member.getUser().getIdLong()), firstPosition, true);
         member.getGuild().getAudioManager().openAudioConnection(member.getVoiceState().getChannel());
     }

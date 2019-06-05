@@ -1,4 +1,4 @@
-package fr.slama.yeahbot.music;
+package fr.slama.yeahbot.managers;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
@@ -11,6 +11,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import fr.slama.yeahbot.language.Bundle;
 import fr.slama.yeahbot.language.LanguageUtil;
 import fr.slama.yeahbot.listeners.SelectionListener;
+import fr.slama.yeahbot.music.MusicPlayer;
 import fr.slama.yeahbot.redis.RedisData;
 import fr.slama.yeahbot.redis.buckets.Settings;
 import fr.slama.yeahbot.utilities.ColorUtil;

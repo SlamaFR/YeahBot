@@ -1,5 +1,7 @@
-package fr.slama.yeahbot.sql;
+package fr.slama.yeahbot.managers;
 
+import fr.slama.yeahbot.sql.DbConnection;
+import fr.slama.yeahbot.sql.DbCredentials;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

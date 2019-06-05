@@ -78,7 +78,7 @@ public class Util {
         message.delete().queue();
 
         List<String> attributes = Arrays.asList("title", "description", "color", "field", "author", "image",
-                "thumbnail", "footer");
+                "thumbnail");
 
         MessageEmbed waitingEmbed = new EmbedBuilder()
                 .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "building_embed"))
