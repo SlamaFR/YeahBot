@@ -15,14 +15,18 @@ import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import java.awt.*;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created on 09/09/2018.
  */
 public class Util {
+
+    private final static List<String> colors = Arrays.stream(ColorUtil.class.getDeclaredFields())
+            .map(f -> f.getName().toLowerCase())
+            .collect(Collectors.toList());
 
     @Command(name = "pvchan",
             discordPermission = {Permission.MANAGE_PERMISSIONS, Permission.MANAGE_CHANNEL},
@@ -67,23 +71,14 @@ public class Util {
             category = Command.CommandCategory.UTIL,
             permission = Command.CommandPermission.STAFF,
             executor = Command.CommandExecutor.USER)
-    private void embed(Guild guild, TextChannel textChannel, Message message, User user) {
+    private void embed(Guild guild, TextChannel textChannel, Member member, Message message) {
 
         if (guild == null) return;
 
         message.delete().queue();
-        List<Message> messages = new ArrayList<>();
 
-        List<String> attributes = Arrays.asList(
-                "title",
-                "description",
-                "color",
-                "field",
-                "author",
-                "image",
-                "thumbnail",
-                "footer"
-        );
+        List<String> attributes = Arrays.asList("title", "description", "color", "field", "author", "image",
+                "thumbnail", "footer");
 
         MessageEmbed waitingEmbed = new EmbedBuilder()
                 .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "building_embed"))
@@ -91,6 +86,11 @@ public class Util {
                 .addField(
                         LanguageUtil.getString(guild, Bundle.CAPTION, "embed_builder_directions_list"),
                         LanguageUtil.getString(guild, Bundle.STRINGS, "embed_builder_directions_list"),
+                        true
+                )
+                .addField(
+                        LanguageUtil.getString(guild, Bundle.CAPTION, "embed_builder_colors_list"),
+                        String.format("`%s`", String.join(", ", colors)),
                         true
                 )
                 .setFooter(LanguageUtil.getString(guild, Bundle.CAPTION, "waiting_for_response_embed"), null)
@@ -111,10 +111,19 @@ public class Util {
                                 textChannel.deleteMessages(Arrays.asList(e.getMessage(), waiting, msg)).queue();
                                 ew.close();
                                 return;
-                            } else if (attribute.equalsIgnoreCase("finish")) {
+                            } else if (e.getMessage().getContentRaw().toLowerCase().startsWith("finish")) {
+                                if (!e.getMessage().getMentionedChannels().isEmpty()) {
+                                    if (!embed.isEmpty())
+                                        e.getMessage().getMentionedChannels().get(0).sendMessage(embed.setFooter(
+                                                LanguageUtil.getArguedString(guild, Bundle.STRINGS, "from", member.getEffectiveName()), null
+                                        ).build()).queue();
+                                } else {
+                                    if (!embed.isEmpty()) textChannel.sendMessage(embed.setFooter(
+                                            LanguageUtil.getArguedString(guild, Bundle.STRINGS, "from", member.getEffectiveName()), null
+                                    ).build()).queue();
+                                }
                                 textChannel.deleteMessages(Arrays.asList(e.getMessage(), waiting, msg)).queue();
                                 ew.close();
-                                if (!embed.isEmpty()) textChannel.sendMessage(embed.build()).queue();
                                 return;
                             }
 
@@ -143,6 +152,7 @@ public class Util {
                 embed.setTitle(args[0]);
                 break;
             case "description":
+            case "desc":
                 embed.setDescription(args[0]);
                 break;
             case "color":
@@ -199,19 +209,6 @@ public class Util {
                 break;
             case "thumbnail":
                 embed.setThumbnail(args[0]);
-                break;
-            case "footer":
-                if (args.length >= 1) {
-                    String footer = args[0];
-                    String url;
-                    try {
-                        new URL(args[1]);
-                        url = args[1];
-                    } catch (MalformedURLException | IndexOutOfBoundsException e) {
-                        url = null;
-                    }
-                    embed.setFooter(footer, url);
-                }
                 break;
             default:
                 return embed;
