@@ -25,5 +25,6 @@ public class ColorUtil {
     public static final Color DARK_WHITE = new Color(189, 195, 199);
     public static final Color GRAY = new Color(149, 165, 166);
     public static final Color DARK_GRAY = new Color(127, 140, 141);
+    public static final Color RESET = new Color(79, 84, 92);
 
 }
