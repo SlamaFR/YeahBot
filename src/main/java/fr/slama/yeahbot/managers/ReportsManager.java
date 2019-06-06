@@ -7,6 +7,7 @@ import fr.slama.yeahbot.redis.RedisData;
 import fr.slama.yeahbot.redis.buckets.Reports;
 import fr.slama.yeahbot.redis.buckets.Settings;
 import fr.slama.yeahbot.utilities.ColorUtil;
+import fr.slama.yeahbot.utilities.GuildUtil;
 import fr.slama.yeahbot.utilities.SpamType;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Member;
@@ -30,14 +31,10 @@ public class ReportsManager {
 
         Settings settings = RedisData.getSettings(author.getGuild());
 
-        TextChannel logChannel = null;
-
-        if (!textChannel.getGuild().getTextChannelsByName("yeahbot-logs", true).isEmpty()) {
-            logChannel = textChannel.getGuild().getTextChannelsByName("yeahbot-logs", true).get(0);
-        }
+        TextChannel logChannel = GuildUtil.getLogChannel(author.getGuild());
 
         EmbedBuilder embedBuilder = new EmbedBuilder()
-                .setColor(ColorUtil.YELLOW)
+                .setColor(ColorUtil.ORANGE)
                 .setTitle(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "report_spam"))
                 .addField(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "user"), author.getAsMention(), true)
                 .addField(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "text_channel"), textChannel.getAsMention(), true)
@@ -45,7 +42,7 @@ public class ReportsManager {
                 .addField(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "type"), LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "spam_" + type.toString()), true)
                 .addField(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "jump_to_message"),
                         (textChannel.getMessageById(message.getId()) != null
-                                ? String.format(":arrow_right: [%s](%s)", LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "click_here"), message.getJumpUrl())
+                                ? String.format("[%s](%s)", LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "click_here"), message.getJumpUrl())
                                 : String.format("`%s`", LanguageUtil.getString(textChannel.getGuild(), Bundle.ERROR, "message_unavailable"))
                         ), true)
                 .setTimestamp(Instant.now());
@@ -163,21 +160,17 @@ public class ReportsManager {
 
         Settings settings = RedisData.getSettings(textChannel.getGuild());
 
-        TextChannel logChannel = null;
-
-        if (!textChannel.getGuild().getTextChannelsByName("yeahbot-logs", true).isEmpty()) {
-            logChannel = textChannel.getGuild().getTextChannelsByName("yeahbot-logs", true).get(0);
-        }
+        TextChannel logChannel = GuildUtil.getLogChannel(author.getGuild());
 
         EmbedBuilder embedBuilder = new EmbedBuilder()
-                .setColor(ColorUtil.YELLOW)
+                .setColor(ColorUtil.ORANGE)
                 .setTitle(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "report_swearing"))
                 .addField(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "user"), author.getAsMention(), true)
                 .addField(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "text_channel"), textChannel.getAsMention(), true)
                 .addField(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "report_amount"), String.format("**`%d`**", reports.getSwearingReports().get(memberId)), true)
                 .addField(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "jump_to_message"),
                         (textChannel.getMessageById(message.getId()) != null
-                                ? String.format(":arrow_right: [%s](%s)", LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "click_here"), message.getJumpUrl())
+                                ? String.format("[%s](%s)", LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "click_here"), message.getJumpUrl())
                                 : String.format("`%s`", LanguageUtil.getString(textChannel.getGuild(), Bundle.ERROR, "message_unavailable"))
                         ), true)
                 .setTimestamp(Instant.now());
@@ -255,11 +248,7 @@ public class ReportsManager {
 
         Settings settings = RedisData.getSettings(textChannel.getGuild());
 
-        TextChannel logChannel = null;
-
-        if (!textChannel.getGuild().getTextChannelsByName("yeahbot-logs", true).isEmpty()) {
-            logChannel = textChannel.getGuild().getTextChannelsByName("yeahbot-logs", true).get(0);
-        }
+        TextChannel logChannel = GuildUtil.getLogChannel(author.getGuild());
 
         EmbedBuilder embedBuilder = new EmbedBuilder()
                 .setColor(ColorUtil.ORANGE)
@@ -269,7 +258,7 @@ public class ReportsManager {
                 .addField(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "report_amount"), String.format("**`%d`**", reports.getAdvertisingReports().get(memberId)), true)
                 .addField(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "jump_to_message"),
                         (textChannel.getMessageById(message.getId()) != null
-                                ? String.format(":arrow_right: [%s](%s)", LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "click_here"), message.getJumpUrl())
+                                ? String.format("[%s](%s)", LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "click_here"), message.getJumpUrl())
                                 : String.format("`%s`", LanguageUtil.getString(textChannel.getGuild(), Bundle.ERROR, "message_unavailable"))
                         ), true)
                 .setTimestamp(Instant.now());

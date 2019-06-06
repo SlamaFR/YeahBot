@@ -238,12 +238,7 @@ public class Moderation {
 
         if (message.getMentionedMembers().isEmpty()) {
             textChannel.sendMessage(
-                    new CommandError(
-                            cmd,
-                            cmd.getArguments(guild)[0],
-                            guild,
-                            CommandError.ErrorType.MISSING_VALUE
-                    ).toEmbed()
+                    new CommandError(cmd, cmd.getArguments(guild)[0], guild, CommandError.ErrorType.MISSING_VALUE).toEmbed()
             ).queue();
             return;
         }

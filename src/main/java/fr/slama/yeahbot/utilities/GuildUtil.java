@@ -66,4 +66,10 @@ public class GuildUtil {
 
     }
 
+    public static TextChannel getLogChannel(Guild guild) {
+        if (guild.getTextChannelsByName("yeahbot-logs", true).isEmpty())
+            return null;
+        return guild.getTextChannelsByName("yeahbot-logs", true).get(0);
+    }
+
 }
