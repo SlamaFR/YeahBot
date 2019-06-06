@@ -359,10 +359,11 @@ public class Miscellaneous {
         YeahBot.getInstance().setRunning(false);
     }
 
-    @Command(name = "setprefix",
+    @Command(name = "prefix",
+            aliases = "setprefix",
             permission = Command.CommandPermission.STAFF,
             executor = Command.CommandExecutor.USER)
-    private void setPrefix(Guild guild, TextChannel textChannel, String[] args, BotCommand cmd) {
+    private void prefix(Guild guild, TextChannel textChannel, String[] args, BotCommand cmd) {
 
         if (guild == null) return;
 
