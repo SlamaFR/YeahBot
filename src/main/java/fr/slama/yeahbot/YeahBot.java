@@ -31,7 +31,7 @@ import java.util.Scanner;
  */
 public class YeahBot extends ListenerAdapter implements Runnable {
 
-    public static final Config CONFIG = Config.parseFile("./config.yml");
+    private static final Config CONFIG = Config.parseFile("./config.yml");
     private static final Logger LOGGER = LoggerFactory.getLogger(YeahBot.class);
     private static YeahBot INSTANCE;
     private static boolean dev;
@@ -137,6 +137,10 @@ public class YeahBot extends ListenerAdapter implements Runnable {
 
         LOGGER.info("Stopping bot...");
         System.exit(0);
+    }
+
+    public static Config getConfig() {
+        return CONFIG;
     }
 
     public DatabaseManager getDatabaseManager() {

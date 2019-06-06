@@ -114,12 +114,12 @@ public class Util {
                             } else if (e.getMessage().getContentRaw().toLowerCase().startsWith("finish")) {
                                 if (!e.getMessage().getMentionedChannels().isEmpty()) {
                                     if (!embed.isEmpty())
-                                        e.getMessage().getMentionedChannels().get(0).sendMessage(embed.setFooter(
-                                                LanguageUtil.getArguedString(guild, Bundle.STRINGS, "from", member.getEffectiveName()), null
+                                        e.getMessage().getMentionedChannels().get(0).sendMessage(embed.setAuthor(
+                                                member.getEffectiveName(), null, member.getUser().getAvatarUrl()
                                         ).build()).queue();
                                 } else {
-                                    if (!embed.isEmpty()) textChannel.sendMessage(embed.setFooter(
-                                            LanguageUtil.getArguedString(guild, Bundle.STRINGS, "from", member.getEffectiveName()), null
+                                    if (!embed.isEmpty()) textChannel.sendMessage(embed.setAuthor(
+                                            member.getEffectiveName(), null, member.getUser().getAvatarUrl()
                                     ).build()).queue();
                                 }
                                 textChannel.deleteMessages(Arrays.asList(e.getMessage(), waiting, msg)).queue();
@@ -172,43 +172,24 @@ public class Util {
                     }
                 }
                 break;
-            case "author":
-                if (args.length >= 1) {
-                    String author = args[0];
-                    if (args.length >= 2) {
-
-                        String url;
-                        try {
-                            new URL(args[1]);
-                            url = args[1];
-                        } catch (MalformedURLException e) {
-                            url = null;
-                        }
-
-                        if (args.length == 3) {
-
-                            String iconUrl;
-                            try {
-                                new URL(args[2]);
-                                iconUrl = args[2];
-                            } catch (MalformedURLException e) {
-                                iconUrl = null;
-                            }
-
-                            embed.setAuthor(author, url, iconUrl);
-                        } else {
-                            embed.setAuthor(author, url);
-                        }
-                    } else {
-                        embed.setAuthor(author);
-                    }
-                }
-                break;
             case "image":
                 embed.setImage(args[0]);
                 break;
             case "thumbnail":
                 embed.setThumbnail(args[0]);
+                break;
+            case "footer":
+                if (args.length >= 1) {
+                    String footer = args[0];
+                    String url;
+                    try {
+                        new URL(args[1]);
+                        url = args[1];
+                    } catch (MalformedURLException | IndexOutOfBoundsException e) {
+                        url = null;
+                    }
+                    embed.setFooter(footer, url);
+                }
                 break;
             default:
                 return embed;

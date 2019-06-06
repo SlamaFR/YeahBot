@@ -14,22 +14,26 @@ import org.slf4j.LoggerFactory;
 public class RedisAccess {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RedisAccess.class);
-    static RedisAccess INSTANCE;
-    private RedissonClient redissonClient;
+    private static RedisAccess INSTANCE;
+    private final RedissonClient redissonClient;
 
     private RedisAccess(RedisCredentials credentials) {
         INSTANCE = this;
         this.redissonClient = initRedisson(credentials);
     }
 
+    public static RedisAccess getInstance() {
+        return INSTANCE;
+    }
+
     public static void init() {
         LOGGER.info("Connection to Redis...");
-        new RedisAccess(new RedisCredentials(YeahBot.CONFIG.redis.host, YeahBot.CONFIG.redis.password, YeahBot.CONFIG.redis.port));
+        new RedisAccess(new RedisCredentials(YeahBot.getConfig().redis.host, YeahBot.getConfig().redis.password, YeahBot.getConfig().redis.port));
     }
 
     public static void close() {
         LOGGER.info("Closing Redis connection...");
-        RedisAccess.INSTANCE.getRedissonClient().shutdown();
+        RedisAccess.getInstance().getRedissonClient().shutdown();
     }
 
     private RedissonClient initRedisson(RedisCredentials credentials) {

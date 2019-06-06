@@ -302,7 +302,11 @@ public class Moderation {
         }
 
         textChannel.sendMessage(
-                LanguageUtil.getString(guild, Bundle.STRINGS, "locked")
+                new EmbedBuilder()
+                        .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "success"))
+                        .setDescription(LanguageUtil.getString(guild, Bundle.STRINGS, "locked"))
+                        .setColor(ColorUtil.GREEN)
+                        .build()
         ).queue();
 
     }

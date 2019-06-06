@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import static fr.slama.yeahbot.YeahBot.CONFIG;
+import static fr.slama.yeahbot.YeahBot.getConfig;
 
 /**
  * Created on 23/09/2018.
@@ -19,7 +19,13 @@ public class DatabaseManager {
     private DbConnection connection;
 
     public DatabaseManager() {
-        this.connection = new DbConnection(new DbCredentials(CONFIG.database.host, CONFIG.database.username, CONFIG.database.password, CONFIG.database.name, CONFIG.database.port));
+        this.connection = new DbConnection(new DbCredentials(
+                getConfig().database.host,
+                getConfig().database.username,
+                getConfig().database.password,
+                getConfig().database.name,
+                getConfig().database.port
+        ));
     }
 
     public void close() {

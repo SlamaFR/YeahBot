@@ -113,9 +113,9 @@ public class TrackScheduler extends AudioEventAdapter {
     public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
         if (endReason.mayStartNext) {
 
-            if (playedTrack >= YeahBot.CONFIG.maxTracks) {
+            if (playedTrack >= YeahBot.getConfig().maxTracks) {
                 musicPlayer.getTextChannel().sendMessage(
-                        LanguageUtil.getArguedString(guild, Bundle.STRINGS, "audio_player_limit_reached", YeahBot.CONFIG.maxTracks)
+                        LanguageUtil.getArguedString(guild, Bundle.STRINGS, "audio_player_limit_reached", YeahBot.getConfig().maxTracks)
                 ).queue();
                 stop();
                 return;
@@ -147,9 +147,9 @@ public class TrackScheduler extends AudioEventAdapter {
     @Override
     public void onTrackStart(AudioPlayer player, AudioTrack track) {
 
-        if (playedTrack >= YeahBot.CONFIG.maxTracks) {
+        if (playedTrack >= YeahBot.getConfig().maxTracks) {
             musicPlayer.getTextChannel().sendMessage(
-                    LanguageUtil.getArguedString(guild, Bundle.STRINGS, "audio_player_limit_reached", YeahBot.CONFIG.maxTracks)
+                    LanguageUtil.getArguedString(guild, Bundle.STRINGS, "audio_player_limit_reached", YeahBot.getConfig().maxTracks)
             ).queue();
             stop();
             return;

@@ -99,8 +99,8 @@ public @interface Command {
         OWNER {
             @Override
             public boolean test(Member member) {
-                if (YeahBot.CONFIG != null)
-                    return Arrays.stream(YeahBot.CONFIG.owners).anyMatch(id -> member.getUser().getId().equals(id));
+                if (YeahBot.getConfig() != null)
+                    return Arrays.stream(YeahBot.getConfig().owners).anyMatch(id -> member.getUser().getId().equals(id));
                 return false;
             }
         };

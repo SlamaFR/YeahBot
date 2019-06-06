@@ -37,7 +37,7 @@ public class RedisData {
 
 
     public static Settings getSettings(Guild guild) {
-        RBucket<Settings> bucket = RedisAccess.INSTANCE.getRedissonClient().getBucket(getSettingsKey(guild));
+        RBucket<Settings> bucket = RedisAccess.getInstance().getRedissonClient().getBucket(getSettingsKey(guild));
         Settings settings = bucket.get();
         if (settings == null) {
             try {
@@ -55,12 +55,12 @@ public class RedisData {
     }
 
     public static void setSettings(Guild guild, Settings settings) {
-        RBucket<Settings> bucket = RedisAccess.INSTANCE.getRedissonClient().getBucket(getSettingsKey(guild));
+        RBucket<Settings> bucket = RedisAccess.getInstance().getRedissonClient().getBucket(getSettingsKey(guild));
         bucket.set(settings);
     }
 
     public static Reports getReports(Guild guild) {
-        RBucket<Reports> bucket = RedisAccess.INSTANCE.getRedissonClient().getBucket(getReportsKey(guild));
+        RBucket<Reports> bucket = RedisAccess.getInstance().getRedissonClient().getBucket(getReportsKey(guild));
         Reports reports = bucket.get();
         if (reports == null) {
             try {
@@ -78,12 +78,12 @@ public class RedisData {
     }
 
     public static void setReports(Guild guild, Reports reports) {
-        RBucket<Reports> bucket = RedisAccess.INSTANCE.getRedissonClient().getBucket(getReportsKey(guild));
+        RBucket<Reports> bucket = RedisAccess.getInstance().getRedissonClient().getBucket(getReportsKey(guild));
         bucket.set(reports);
     }
 
     public static Mutes getMutes(Guild guild) {
-        RBucket<Mutes> bucket = RedisAccess.INSTANCE.getRedissonClient().getBucket(getMutesKey(guild));
+        RBucket<Mutes> bucket = RedisAccess.getInstance().getRedissonClient().getBucket(getMutesKey(guild));
         Mutes mutes = bucket.get();
         if (mutes == null) {
             try {
@@ -101,12 +101,12 @@ public class RedisData {
     }
 
     public static void setMutes(Guild guild, Mutes mutes) {
-        RBucket<Mutes> bucket = RedisAccess.INSTANCE.getRedissonClient().getBucket(getMutesKey(guild));
+        RBucket<Mutes> bucket = RedisAccess.getInstance().getRedissonClient().getBucket(getMutesKey(guild));
         bucket.set(mutes);
     }
 
     public static PrivateChannels getPrivateChannels(Guild guild) {
-        RBucket<PrivateChannels> bucket = RedisAccess.INSTANCE.getRedissonClient().getBucket(getChannelsKey(guild));
+        RBucket<PrivateChannels> bucket = RedisAccess.getInstance().getRedissonClient().getBucket(getChannelsKey(guild));
         PrivateChannels channels = bucket.get();
         if (channels == null) {
             try {
@@ -125,12 +125,12 @@ public class RedisData {
     }
 
     public static void setPrivateChannels(Guild guild, PrivateChannels channels) {
-        RBucket<PrivateChannels> bucket = RedisAccess.INSTANCE.getRedissonClient().getBucket(getChannelsKey(guild));
+        RBucket<PrivateChannels> bucket = RedisAccess.getInstance().getRedissonClient().getBucket(getChannelsKey(guild));
         bucket.set(channels);
     }
 
     public static Playlists getPlaylists(Guild guild) {
-        RBucket<Playlists> bucket = RedisAccess.INSTANCE.getRedissonClient().getBucket(getPlaylistsKey(guild));
+        RBucket<Playlists> bucket = RedisAccess.getInstance().getRedissonClient().getBucket(getPlaylistsKey(guild));
         Playlists playlists = bucket.get();
         if (playlists == null) {
             try {
@@ -149,7 +149,7 @@ public class RedisData {
     }
 
     public static void setPlaylists(Guild guild, Playlists playlists) {
-        RBucket<Playlists> bucket = RedisAccess.INSTANCE.getRedissonClient().getBucket(getPlaylistsKey(guild));
+        RBucket<Playlists> bucket = RedisAccess.getInstance().getRedissonClient().getBucket(getPlaylistsKey(guild));
         bucket.set(playlists);
     }
 
