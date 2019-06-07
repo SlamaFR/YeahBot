@@ -15,7 +15,7 @@ import java.util.function.Predicate;
 public final class TaskScheduler implements Runnable {
 
     private static final Function<String, ThreadFactory> FACTORY = name -> new ThreadFactoryBuilder().setNameFormat("[" + name + "-Pool-%d] ").build();
-    public static final ExecutorService EXECUTOR_SERVICE = Executors.newCachedThreadPool(FACTORY.apply("TaskScheduler"));
+    private static final ExecutorService EXECUTOR_SERVICE = Executors.newCachedThreadPool(FACTORY.apply("TaskScheduler"));
 
     private final Runnable runnable;
     private final boolean repeating;
@@ -65,8 +65,7 @@ public final class TaskScheduler implements Runnable {
     }
 
     public static void async(final Runnable runnable) {
-        TaskScheduler taskScheduler = new TaskScheduler(runnable);
-        EXECUTOR_SERVICE.submit(taskScheduler);
+        EXECUTOR_SERVICE.submit(new TaskScheduler(runnable));
     }
 
     public static void async(final Runnable runnable, final long after) {
@@ -85,25 +84,19 @@ public final class TaskScheduler implements Runnable {
 
         while (repeating && !stop) {
             if (predicate != null && !predicate.test(LocalDate.now()))
-                waitNow();
+                waitNow(period);
             runnable.run();
-            waitNow();
+            waitNow(period);
         }
     }
 
     private void initWait() {
-        if (initialDelay > 0) {
-            try {
-                Thread.sleep(initialDelay);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+        if (initialDelay > 0) waitNow(initialDelay);
     }
 
-    private void waitNow() {
+    private void waitNow(long millis) {
         try {
-            Thread.sleep(period);
+            Thread.sleep(millis);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

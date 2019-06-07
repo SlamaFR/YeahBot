@@ -122,9 +122,9 @@ public class Paginator<T> {
 
             List<String> presentReactions = new ArrayList<>();
 
-            this.message.getReactions().forEach(messageReaction -> {
-                presentReactions.add(messageReaction.getReactionEmote().getName());
-            });
+            this.message.getReactions().forEach(messageReaction -> presentReactions.add(
+                    messageReaction.getReactionEmote().getName()
+            ));
 
             for (String choice : choices) {
                 if (presentReactions.contains(choice)) continue;
@@ -135,7 +135,7 @@ public class Paginator<T> {
                 }
             }
 
-            new EventWaiter(MessageReactionAddEvent.class,
+            new EventWaiter.Builder(MessageReactionAddEvent.class,
                     e -> e.getUser().getIdLong() == user.getIdLong() &&
                             (choices.contains(e.getReactionEmote().getName()) || choices.contains(e.getReactionEmote().getId())) &&
                             e.getMessageIdLong() == msg.getIdLong(),
@@ -165,16 +165,19 @@ public class Paginator<T> {
                                 }
                                 break;
                         }
-                    }, this.timeout, this.unit,
-                    () -> {
+                    })
+                    .timeout(this.timeout, this.unit)
+                    .timeoutAction(() -> {
                         msg.delete().queue(SUCCESS, FAILURE);
                         this.timeoutAction.run();
-                    });
+                    })
+                    .build();
 
         }, FAILURE);
     }
 
     public static class Builder<T> {
+
         private TextChannel textChannel;
         private User user;
         private List<T> objectList;
@@ -189,9 +192,6 @@ public class Paginator<T> {
         private boolean closeable = false;
         private Consumer<T> selectionResult;
         private Runnable timeoutAction;
-
-        public Builder() {
-        }
 
         public Builder<T> textChannel(TextChannel textChannel) {
             this.textChannel = textChannel;

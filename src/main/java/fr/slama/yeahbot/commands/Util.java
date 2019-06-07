@@ -13,8 +13,6 @@ import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 import java.awt.*;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -77,9 +75,6 @@ public class Util {
 
         message.delete().queue();
 
-        List<String> attributes = Arrays.asList("title", "description", "color", "field", "author", "image",
-                "thumbnail");
-
         MessageEmbed waitingEmbed = new EmbedBuilder()
                 .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "building_embed"))
                 .setDescription(LanguageUtil.getString(guild, Bundle.STRINGS, "embed_builder_description"))
@@ -98,50 +93,47 @@ public class Util {
 
         EmbedBuilder embed = new EmbedBuilder();
 
-        textChannel.sendMessage(waitingEmbed).queue(waiting -> {
-            textChannel.sendMessage(new EmbedBuilder().addBlankField(false).build()).queue(msg -> new EventWaiter(
-                    GuildMessageReceivedEvent.class,
-                    e -> true,
-                    (e, ew) -> {
-                        String[] args = e.getMessage().getContentRaw().split(":", 2);
-                        if (args.length >= 1) {
-                            String attribute = args[0];
+        textChannel.sendMessage(waitingEmbed).queue(waiting -> textChannel.sendMessage(new EmbedBuilder()
+                .setDescription(EmbedBuilder.ZERO_WIDTH_SPACE)
+                .build()).queue(msg -> new EventWaiter.Builder(GuildMessageReceivedEvent.class,
+                e -> true,
+                (e, ew) -> {
+                    String[] args = e.getMessage().getContentRaw().split(":", 2);
+                    if (args.length >= 1) {
+                        String attribute = args[0];
 
-                            if (attribute.equalsIgnoreCase("cancel")) {
-                                textChannel.deleteMessages(Arrays.asList(e.getMessage(), waiting, msg)).queue();
-                                ew.close();
-                                return;
-                            } else if (e.getMessage().getContentRaw().toLowerCase().startsWith("finish")) {
-                                if (!e.getMessage().getMentionedChannels().isEmpty()) {
-                                    if (!embed.isEmpty())
-                                        e.getMessage().getMentionedChannels().get(0).sendMessage(embed.setAuthor(
-                                                member.getEffectiveName(), null, member.getUser().getAvatarUrl()
-                                        ).build()).queue();
-                                } else {
-                                    if (!embed.isEmpty()) textChannel.sendMessage(embed.setAuthor(
+                        if (attribute.equalsIgnoreCase("cancel")) {
+                            textChannel.deleteMessages(Arrays.asList(e.getMessage(), waiting, msg)).queue();
+                            ew.close();
+                            return;
+                        } else if (e.getMessage().getContentRaw().toLowerCase().startsWith("finish")) {
+                            if (!e.getMessage().getMentionedChannels().isEmpty()) {
+                                if (!embed.isEmpty())
+                                    e.getMessage().getMentionedChannels().get(0).sendMessage(embed.setAuthor(
                                             member.getEffectiveName(), null, member.getUser().getAvatarUrl()
                                     ).build()).queue();
-                                }
-                                textChannel.deleteMessages(Arrays.asList(e.getMessage(), waiting, msg)).queue();
-                                ew.close();
-                                return;
+                            } else {
+                                if (!embed.isEmpty()) textChannel.sendMessage(embed.setAuthor(
+                                        member.getEffectiveName(), null, member.getUser().getAvatarUrl()
+                                ).build()).queue();
                             }
-
-                            if (args.length >= 2) {
-
-                                String arguments = String.join("", Arrays.copyOfRange(args, 1, args.length));
-
-                                if (attributes.contains(attribute)) {
-                                    EmbedBuilder builder = new EmbedBuilder(handleResponse(attribute, arguments, embed));
-                                    if (builder.isEmpty()) builder.addBlankField(false);
-                                    msg.editMessage(builder.build()).queue();
-                                }
-                            }
+                            textChannel.deleteMessages(Arrays.asList(e.getMessage(), waiting, msg)).queue();
+                            ew.close();
+                            return;
                         }
-                        e.getMessage().delete().queue();
-                    }, false));
-        });
 
+                        if (args.length >= 2) {
+                            String arguments = String.join("", Arrays.copyOfRange(args, 1, args.length));
+
+                            EmbedBuilder builder = new EmbedBuilder(handleResponse(attribute, arguments, embed));
+                            if (builder.isEmpty()) builder.setDescription(EmbedBuilder.ZERO_WIDTH_SPACE);
+                            msg.editMessage(builder.build()).queue();
+                        }
+                    }
+                    e.getMessage().delete().queue();
+                })
+                .autoClose(false)
+                .build()));
     }
 
     private EmbedBuilder handleResponse(String attribute, String arguments, EmbedBuilder embed) {
@@ -157,12 +149,7 @@ public class Util {
                     embed.setDescription(args[0]);
                     return embed;
                 case "color":
-                    try {
-                        embed.setColor((Color) ColorUtil.class.getField(args[0].toUpperCase()).get(ColorUtil.class));
-                    } catch (NoSuchFieldException | IllegalAccessException ignored) {
-                        return embed;
-                    }
-                    return embed;
+                    return embed.setColor((Color) ColorUtil.class.getField(args[0].toUpperCase()).get(ColorUtil.class));
                 case "field":
                     if (args.length >= 3) {
                         if (args[2].equalsIgnoreCase("y")) {
@@ -178,20 +165,11 @@ public class Util {
                     embed.setImage(args[0]);
                     return embed;
                 case "thumbnail":
+                case "thumb":
                     embed.setThumbnail(args[0]);
                     return embed;
                 case "footer":
-                    if (args.length >= 1) {
-                        String footer = args[0];
-                        String url;
-                        try {
-                            new URL(args[1]);
-                            url = args[1];
-                        } catch (MalformedURLException | IndexOutOfBoundsException e) {
-                            url = null;
-                        }
-                        embed.setFooter(footer, url);
-                    }
+                    embed.setFooter(args[0], null);
                     return embed;
                 default:
                     return embed;

@@ -93,7 +93,7 @@ public class SettingsManager {
                         )
                         .setFooter(LanguageUtil.getString(guild, Bundle.CAPTION, "waiting_for_response"), null)
                         .build()
-        ).queue(message -> new EventWaiter(GuildMessageReceivedEvent.class, condition, (e, ew) -> {
+        ).queue(message -> new EventWaiter.Builder(GuildMessageReceivedEvent.class, condition, (e, ew) -> {
             String newValue = LanguageUtil.getString(guild, Bundle.CAPTION, "none");
 
             try {
@@ -120,7 +120,7 @@ public class SettingsManager {
             RedisData.setSettings(guild, settings);
             textChannel.deleteMessages(Arrays.asList(message, e.getMessage())).queue(SUCCESS, FAILURE);
             sendUpdateEmbed(textChannel, field, value, newValue);
-        }), FAILURE);
+        }).build(), FAILURE);
     }
 
     private static void setBoolean(Field field, Guild guild, TextChannel textChannel, User user) throws IllegalAccessException {
@@ -139,10 +139,9 @@ public class SettingsManager {
             List<String> choices = EmoteUtil.getQuestionEmotes();
             for (String emote : choices)
                 message.addReaction(YeahBot.getInstance().getShardManager().getEmoteById(emote)).queue(SUCCESS, FAILURE);
-            new EventWaiter(MessageReactionAddEvent.class,
-                    e -> e.getUser().getIdLong() == user.getIdLong() &&
-                            e.getMessageIdLong() == message.getIdLong() &&
-                            choices.contains(e.getReactionEmote().getId()),
+            new EventWaiter.Builder(MessageReactionAddEvent.class, e -> e.getUser().getIdLong() == user.getIdLong() &&
+                    e.getMessageIdLong() == message.getIdLong() &&
+                    choices.contains(e.getReactionEmote().getId()),
                     (e, ew) -> {
                         String newValue;
                         try {
@@ -162,7 +161,10 @@ public class SettingsManager {
                         RedisData.setSettings(guild, settings);
                         message.delete().queue(SUCCESS, FAILURE);
                         sendUpdateEmbed(textChannel, field, oldValue, newValue);
-                    }, 30, TimeUnit.SECONDS, () -> message.delete().queue(SUCCESS, FAILURE));
+                    })
+                    .timeout(30, TimeUnit.SECONDS)
+                    .timeoutAction(() -> message.delete().queue(SUCCESS, FAILURE))
+                    .build();
         }, FAILURE);
     }
 
@@ -193,7 +195,7 @@ public class SettingsManager {
         }
 
         String oldValue = value;
-        textChannel.sendMessage(builder.build()).queue(message -> new EventWaiter(GuildMessageReceivedEvent.class,
+        textChannel.sendMessage(builder.build()).queue(message -> new EventWaiter.Builder(GuildMessageReceivedEvent.class,
                 e -> getCondition(e, textChannel, user),
                 (e, ew) -> {
                     String newValue = e.getMessage().getContentRaw();
@@ -219,7 +221,7 @@ public class SettingsManager {
                     RedisData.setSettings(guild, settings);
                     textChannel.deleteMessages(Arrays.asList(message, e.getMessage())).queue(SUCCESS, FAILURE);
                     sendUpdateEmbed(textChannel, field, oldValue, newValue);
-                }), FAILURE);
+                }).build(), FAILURE);
     }
 
     private static String getLongValue(TextChannel m) {

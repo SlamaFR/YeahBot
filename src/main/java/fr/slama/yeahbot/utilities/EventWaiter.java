@@ -14,40 +14,29 @@ import java.util.function.Predicate;
  */
 public class EventWaiter implements EventListener, Closeable {
 
+    private final EventWaiter INSTANCE;
+
     private final Class classType;
     private final Predicate condition;
     private final BiConsumer action;
     private boolean autoClose;
 
-    private final EventWaiter INSTANCE;
-
-    public <T extends Event, U extends EventWaiter> EventWaiter(Class<T> classType, Predicate<T> condition, BiConsumer<T, U> action) {
-        this(classType, condition, action, true);
-    }
-
-    public <T extends Event, U extends EventWaiter> EventWaiter(Class<T> classType, Predicate<T> condition, BiConsumer<T, U> action, boolean autoClose) {
-        this(classType, condition, action, -1, null, null);
-        this.autoClose = autoClose;
-    }
-
-    public <T extends Event, U extends EventWaiter> EventWaiter(Class<T> classType, Predicate<T> condition, BiConsumer<T, U> action,
-                                                                long timeout, TimeUnit unit, Runnable timeoutAction) {
-
-        this.classType = classType;
-        this.condition = condition;
-        this.autoClose = true;
-        this.action = action;
+    private EventWaiter(Builder builder) {
+        this.classType = builder.classType;
+        this.condition = builder.condition;
+        this.autoClose = builder.autoClose;
+        this.action = builder.action;
         this.INSTANCE = this;
 
         YeahBot.getInstance().getShardManager().addEventListener(INSTANCE);
 
         Runnable runnable = () -> {
-            if (timeoutAction != null) timeoutAction.run();
+            if (builder.timeoutAction != null) builder.timeoutAction.run();
             INSTANCE.close();
         };
 
-        if (timeout > 0 && unit != null) {
-            TaskScheduler.async(runnable, unit.toMillis(timeout));
+        if (builder.timeout > 0 && builder.unit != null) {
+            TaskScheduler.async(runnable, builder.unit.toMillis(builder.timeout));
         }
     }
 
@@ -58,10 +47,47 @@ public class EventWaiter implements EventListener, Closeable {
 
     @Override
     @SuppressWarnings("unchecked")
-    public final void onEvent(Event event) {
+    public void onEvent(Event event) {
         if (event.getClass().equals(classType) && (condition.test(event))) {
             action.accept(event, this);
             if (this.autoClose) INSTANCE.close();
+        }
+    }
+
+    public static class Builder {
+
+        private final Class classType;
+        private final Predicate condition;
+        private final BiConsumer action;
+        private Runnable timeoutAction;
+        private boolean autoClose = true;
+        private long timeout = -1;
+        private TimeUnit unit;
+
+        public <T extends Event> Builder(Class<T> classType, Predicate<T> condition, BiConsumer<T, EventWaiter> action) {
+            this.classType = classType;
+            this.condition = condition;
+            this.action = action;
+        }
+
+        public Builder autoClose(boolean autoClose) {
+            this.autoClose = autoClose;
+            return this;
+        }
+
+        public Builder timeout(long timeout, TimeUnit unit) {
+            this.timeout = timeout;
+            this.unit = unit;
+            return this;
+        }
+
+        public Builder timeoutAction(Runnable timeoutAction) {
+            this.timeoutAction = timeoutAction;
+            return this;
+        }
+
+        public EventWaiter build() {
+            return new EventWaiter(this);
         }
     }
 
