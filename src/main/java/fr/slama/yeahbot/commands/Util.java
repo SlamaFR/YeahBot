@@ -103,8 +103,8 @@ public class Util {
                     GuildMessageReceivedEvent.class,
                     e -> true,
                     (e, ew) -> {
-                        try {
-                            String[] args = e.getMessage().getContentRaw().split(":", 2);
+                        String[] args = e.getMessage().getContentRaw().split(":", 2);
+                        if (args.length >= 2) {
                             String attribute = args[0];
 
                             if (attribute.equalsIgnoreCase("cancel")) {
@@ -127,7 +127,6 @@ public class Util {
                                 return;
                             }
 
-                            e.getMessage().delete().queue();
                             String arguments = String.join("", Arrays.copyOfRange(args, 1, args.length));
 
                             if (!attributes.contains(attribute)) return;
@@ -136,65 +135,68 @@ public class Util {
                             if (builder.isEmpty()) builder.addBlankField(false);
                             msg.editMessage(builder.build()).queue();
 
-                        } catch (IndexOutOfBoundsException ex) {
-                            //TODO: ignore
                         }
+                        e.getMessage().delete().queue();
                     }, false));
         });
 
     }
 
-    private EmbedBuilder handleResponse(String attribute, String arguments, EmbedBuilder embed) throws IndexOutOfBoundsException {
+    private EmbedBuilder handleResponse(String attribute, String arguments, EmbedBuilder embed) {
         String[] args = arguments.split("\\|\\|");
 
-        switch (attribute.toLowerCase()) {
-            case "title":
-                embed.setTitle(args[0]);
-                break;
-            case "description":
-            case "desc":
-                embed.setDescription(args[0]);
-                break;
-            case "color":
-                try {
-                    embed.setColor((Color) ColorUtil.class.getField(args[0].toUpperCase()).get(ColorUtil.class));
-                } catch (NoSuchFieldException | IllegalAccessException ignored) {
-                }
-                break;
-            case "field":
-                if (args.length >= 3) {
-                    if (args[2].equalsIgnoreCase("y")) {
-                        embed.addField(args[0], args[1], true);
-                        break;
-                    } else if (args[2].equalsIgnoreCase("n")) {
-                        embed.addField(args[0], args[1], false);
-                        break;
-                    }
-                }
-                break;
-            case "image":
-                embed.setImage(args[0]);
-                break;
-            case "thumbnail":
-                embed.setThumbnail(args[0]);
-                break;
-            case "footer":
-                if (args.length >= 1) {
-                    String footer = args[0];
-                    String url;
+        try {
+            switch (attribute.toLowerCase()) {
+                case "title":
+                    embed.setTitle(args[0]);
+                    break;
+                case "description":
+                case "desc":
+                    embed.setDescription(args[0]);
+                    break;
+                case "color":
                     try {
-                        new URL(args[1]);
-                        url = args[1];
-                    } catch (MalformedURLException | IndexOutOfBoundsException e) {
-                        url = null;
+                        embed.setColor((Color) ColorUtil.class.getField(args[0].toUpperCase()).get(ColorUtil.class));
+                    } catch (NoSuchFieldException | IllegalAccessException ignored) {
+                        return embed;
                     }
-                    embed.setFooter(footer, url);
-                }
-                break;
-            default:
-                return embed;
+                    break;
+                case "field":
+                    if (args.length >= 3) {
+                        if (args[2].equalsIgnoreCase("y")) {
+                            embed.addField(args[0], args[1], true);
+                            break;
+                        } else if (args[2].equalsIgnoreCase("n")) {
+                            embed.addField(args[0], args[1], false);
+                            break;
+                        }
+                    }
+                    break;
+                case "image":
+                    embed.setImage(args[0]);
+                    break;
+                case "thumbnail":
+                    embed.setThumbnail(args[0]);
+                    break;
+                case "footer":
+                    if (args.length >= 1) {
+                        String footer = args[0];
+                        String url;
+                        try {
+                            new URL(args[1]);
+                            url = args[1];
+                        } catch (MalformedURLException | IndexOutOfBoundsException e) {
+                            url = null;
+                        }
+                        embed.setFooter(footer, url);
+                    }
+                    break;
+                default:
+                    return embed;
+            }
+        } catch (IndexOutOfBoundsException e) {
+            return embed;
         }
-
         return embed;
     }
 
