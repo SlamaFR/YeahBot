@@ -1,0 +1,32 @@
+{
+  "version": "1.3.6",
+  "date": 1559426400000,
+  "fr": {
+    "title": "Bulletin de mise à jour",
+    "adds": [
+      "Ajout de la commande 'embed'.",
+      "Ajout de l'alias 'prefix' à la commande 'setprefix'."
+    ],
+    "removes": [],
+    "changes": [
+      "Amélioration graphique des mises à jour sur le site.",
+      "Le message de confirmation de la commande 'prune' expire désormais.",
+      "Résolution d'un bug avec la commande 'prune'."
+    ],
+    "coming": []
+  },
+  "en": {
+    "title": "Update report",
+    "adds": [
+      "Added 'embed' command.",
+      "Added 'prefix' alias to the 'setprefix' command."
+    ],
+    "removes": [],
+    "changes": [
+      "Graphical enhancement of updates on the website.",
+      "The 'prune' command confirm message now expires.",
+      "Fixed a bug with the 'prune' command."
+    ],
+    "coming": []
+  }
+}
