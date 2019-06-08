@@ -486,6 +486,7 @@ public class Miscellaneous {
 
             JSONReader reader = new JSONReader(file);
             JSONObject object = reader.toJSONObject();
+            float count = 0;
 
             for (Guild guild : YeahBot.getInstance().getShardManager().getGuilds()) {
 
@@ -565,14 +566,21 @@ public class Miscellaneous {
                 try {
                     if (Arrays.asList(args).contains("force") && guild.getDefaultChannel() != null) {
                         guild.getDefaultChannel().sendMessage(builder.build()).queue();
-                        return;
+                        continue;
                     }
+
                     guild.getTextChannelById(settings.updateChannel).sendMessage(builder.build()).queue();
+                    if (settings.updateChannel > 0) count++;
                 } catch (PermissionException ignored) {
                     LOGGER.warn("[Update] Failed to broadcast on %s", guild);
                 }
 
             }
+
+            int total = YeahBot.getInstance().getShardManager().getGuilds().size();
+            float rate = count / total;
+
+            LOGGER.info("Sent on " + rate * 100 + "% guild (" + count + "/" + total + ")");
 
         } catch (IOException e) {
             LOGGER.error("Error while fetching data!");
