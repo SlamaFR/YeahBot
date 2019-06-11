@@ -20,6 +20,7 @@ import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.exceptions.PermissionException;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -486,7 +487,7 @@ public class Miscellaneous {
 
             JSONReader reader = new JSONReader(file);
             JSONObject object = reader.toJSONObject();
-            float count = 0;
+            int count = 0;
 
             for (Guild guild : YeahBot.getInstance().getShardManager().getGuilds()) {
 
@@ -498,30 +499,10 @@ public class Miscellaneous {
 
                 JSONObject lang = object.getJSONObject(settings.locale);
 
-                StringBuilder adds = new StringBuilder();
-                StringBuilder removes = new StringBuilder();
-                StringBuilder changes = new StringBuilder();
-                StringBuilder coming = new StringBuilder();
-
-                for (Object string : lang.getJSONArray("adds")) {
-                    if (adds.length() > 1) adds.append("\n\n");
-                    adds.append(String.format("+ %s", string));
-                }
-
-                for (Object string : lang.getJSONArray("removes")) {
-                    if (removes.length() > 1) removes.append("\n\n");
-                    removes.append(String.format("- %s", string));
-                }
-
-                for (Object string : lang.getJSONArray("changes")) {
-                    if (changes.length() > 1) changes.append("\n\n");
-                    changes.append(String.format("# %s", string));
-                }
-
-                for (Object string : lang.getJSONArray("coming")) {
-                    if (coming.length() > 1) coming.append("\n\n");
-                    coming.append(String.format("- %s", string));
-                }
+                String adds = buildMarkdown(lang.getJSONArray("adds"), "+");
+                String removes = buildMarkdown(lang.getJSONArray("removes"), "-");
+                String changes = buildMarkdown(lang.getJSONArray("changes"), "#");
+                String coming = buildMarkdown(lang.getJSONArray("coming"), "-");
 
                 EmbedBuilder builder = new EmbedBuilder()
                         .setColor(ColorUtil.GREEN)
@@ -532,34 +513,30 @@ public class Miscellaneous {
                 if (adds.length() > 0)
                     builder.addField(
                             LanguageUtil.getString(guild, Bundle.CAPTION, "adds"),
-                            String.format("```diff\n%s```", adds.toString()),
-                            false
+                            String.format("```diff\n%s```", adds), false
                     );
 
                 if (removes.length() > 0)
                     builder.addField(
                             LanguageUtil.getString(guild, Bundle.CAPTION, "removes"),
-                            String.format("```diff\n%s```", removes.toString()),
-                            false
+                            String.format("```diff\n%s```", removes), false
                     );
 
                 if (changes.length() > 0)
                     builder.addField(
                             LanguageUtil.getString(guild, Bundle.CAPTION, "changes"),
-                            String.format("```md\n%s```", changes.toString()),
-                            false
+                            String.format("```md\n%s```", changes), false
                     );
 
                 if (coming.length() > 0)
                     builder.addField(
                             LanguageUtil.getString(guild, Bundle.CAPTION, "coming"),
-                            String.format("```\n%s```", coming.toString()),
-                            false
+                            String.format("```\n%s```", coming), false
                     );
 
                 builder.addField(
                         LanguageUtil.getString(guild, Bundle.CAPTION, "all_updates"),
-                        String.format("[%s](%s)", LanguageUtil.getString(guild, Bundle.CAPTION, "click_here"), "https://www.yeahbot.net/updates"),
+                        LanguageUtil.getLink(guild, "https://www.yeahbot.net/updates"),
                         false
                 );
 
@@ -572,15 +549,15 @@ public class Miscellaneous {
                     guild.getTextChannelById(settings.updateChannel).sendMessage(builder.build()).queue();
                     if (settings.updateChannel > 0) count++;
                 } catch (PermissionException ignored) {
-                    LOGGER.warn("[Update] Failed to broadcast on %s", guild);
+                    LOGGER.warn("[Broadcast] Failed to broadcast on {}", guild);
                 }
 
             }
 
             int total = YeahBot.getInstance().getShardManager().getGuilds().size();
-            float rate = count / total;
+            float rate = (float) count / total;
 
-            LOGGER.info("Sent on " + rate * 100 + "% guild (" + count + "/" + total + ")");
+            LOGGER.info("[Broadcast] Sent on " + rate * 100 + "% guild (" + count + "/" + total + ")");
 
         } catch (IOException e) {
             LOGGER.error("Error while fetching data!");
@@ -588,6 +565,15 @@ public class Miscellaneous {
             LOGGER.error("Error while parsing data!", e);
         }
 
+    }
+
+    private String buildMarkdown(JSONArray array, String bullet) {
+        StringBuilder builder = new StringBuilder();
+        for (Object string : array) {
+            if (builder.length() > 1) builder.append("\n\n");
+            builder.append(String.format("%s %s", bullet, string));
+        }
+        return builder.toString();
     }
 
 }

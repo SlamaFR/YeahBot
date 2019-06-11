@@ -5,7 +5,6 @@ import fr.slama.yeahbot.commands.*;
 import fr.slama.yeahbot.language.Bundle;
 import fr.slama.yeahbot.language.LanguageUtil;
 import fr.slama.yeahbot.redis.RedisData;
-import fr.slama.yeahbot.redis.buckets.Settings;
 import fr.slama.yeahbot.utilities.ColorUtil;
 import fr.slama.yeahbot.utilities.MessageUtil;
 import net.dv8tion.jda.bot.sharding.ShardManager;
@@ -28,10 +27,12 @@ import java.util.*;
  */
 public class CommandMap {
 
+    private static final String DEFAULT_PREFIX = "!";
+
     private final Logger LOGGER = LoggerFactory.getLogger(getClass());
     private final Map<String, BotCommand> commands = new HashMap<>();
-    private ArrayList<BotCommand> disabledCommand = new ArrayList<>();
-    private List<BotCommand> registry = new ArrayList<>();
+    private final List<BotCommand> disabledCommand = new ArrayList<>();
+    private final List<BotCommand> registry = new ArrayList<>();
 
     public CommandMap() {
         registerCommands(new Fun());
@@ -42,9 +43,7 @@ public class CommandMap {
     }
 
     public static String getPrefix(Guild guild) {
-        if (guild == null) return "!";
-        Settings settings = RedisData.getSettings(guild);
-        return settings.prefix;
+        return guild == null ? DEFAULT_PREFIX : RedisData.getSettings(guild).prefix;
     }
 
     public Collection<BotCommand> getCommands() {
@@ -55,7 +54,7 @@ public class CommandMap {
         return disabledCommand;
     }
 
-    public List<BotCommand> getRegistry() {
+    public Collection<BotCommand> getRegistry() {
         return registry;
     }
 

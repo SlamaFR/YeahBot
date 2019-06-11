@@ -44,14 +44,7 @@ public class Music {
     private void play(Guild guild, TextChannel textChannel, Member member, String[] args, BotCommand cmd) {
 
         if (guild == null) return;
-
-        if (!guild.getAudioManager().isConnected() && !guild.getAudioManager().isAttemptingToConnect()) {
-            VoiceChannel channel = member.getVoiceState().getChannel();
-            if (channel == null) {
-                textChannel.sendMessage(LanguageUtil.getString(guild, Bundle.STRINGS, "must_be_connected")).queue();
-                return;
-            }
-        }
+        if (!isDisconnected(guild, member, textChannel)) return;
 
         if (args.length == 0) {
             textChannel.sendMessage(

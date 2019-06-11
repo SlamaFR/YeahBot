@@ -10,6 +10,8 @@ import fr.slama.yeahbot.settings.LongType;
 import java.util.ArrayList;
 import java.util.List;
 
+import static fr.slama.yeahbot.settings.AvailableVariables.Variables.*;
+
 /**
  * Created on 16/11/2018.
  */
@@ -53,17 +55,17 @@ public class Settings {
     @IgnoreSetting
     public List<Long> advertisingIgnoredChannels = new ArrayList<>();
 
-    @AvailableVariables(variables = {AvailableVariables.Variables.USER})
+    @AvailableVariables(variables = {USER})
     public String advertisingWarningSentence = "";
-    @AvailableVariables(variables = {AvailableVariables.Variables.USER})
+    @AvailableVariables(variables = {USER})
     public String capsSpamWarningSentence = "";
-    @AvailableVariables(variables = {AvailableVariables.Variables.USER})
+    @AvailableVariables(variables = {USER})
     public String emojisSpamWarningSentence = "";
-    @AvailableVariables(variables = {AvailableVariables.Variables.USER})
+    @AvailableVariables(variables = {USER})
     public String floodWarningSentence = "";
-    @AvailableVariables(variables = {AvailableVariables.Variables.USER})
+    @AvailableVariables(variables = {USER})
     public String swearingWarningSentence = "";
-    @AvailableVariables(variables = {AvailableVariables.Variables.USER})
+    @AvailableVariables(variables = {USER})
     public String reactionsSpamWarningSentence = "";
 
     public boolean sayWelcome = false;
@@ -74,13 +76,9 @@ public class Settings {
     @LongType(type = LongType.Type.CHANNEL)
     public long updateChannel = 0L;
 
-    @AvailableVariables(variables = {AvailableVariables.Variables.USER,
-            AvailableVariables.Variables.GUILD,
-            AvailableVariables.Variables.COUNT})
+    @AvailableVariables(variables = {USER, GUILD, COUNT})
     public String welcomeMessage = "";
-    @AvailableVariables(variables = {AvailableVariables.Variables.USER,
-            AvailableVariables.Variables.GUILD,
-            AvailableVariables.Variables.COUNT})
+    @AvailableVariables(variables = {USER, GUILD, COUNT})
     public String goodbyeMessage = "";
 
     public Settings() {
