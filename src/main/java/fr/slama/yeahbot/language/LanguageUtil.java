@@ -88,4 +88,8 @@ public class LanguageUtil {
         return LanguageUtil.getArguedString(guild, Bundle.CAPTION, "custom_time_expiration", time, getTimeUnit(guild, unit, time));
     }
 
+    public static String getLink(Guild guild, String url) {
+        return String.format("[%s](%s)", LanguageUtil.getString(guild, Bundle.CAPTION, "click_here"), url);
+    }
+
 }
