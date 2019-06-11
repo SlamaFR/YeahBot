@@ -40,7 +40,7 @@ public class Fun {
         textChannel.sendMessage(new EmbedBuilder()
                 .setColor(ColorUtil.PURPLE)
                 .setTitle(LanguageUtil.getString(guild, Bundle.STRINGS, "search_ready"))
-                .setDescription(String.format("[%s](%s)", LanguageUtil.getString(guild, Bundle.CAPTION, "click_here"), url))
+                .setDescription(LanguageUtil.getLink(guild, url))
                 .build()).queue();
 
     }

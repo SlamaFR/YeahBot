@@ -42,7 +42,7 @@ public class ReportsManager {
                 .addField(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "type"), LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "spam_" + type.toString()), true)
                 .addField(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "jump_to_message"),
                         (textChannel.getMessageById(message.getId()) != null
-                                ? String.format("[%s](%s)", LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "click_here"), message.getJumpUrl())
+                                ? LanguageUtil.getLink(textChannel.getGuild(), message.getJumpUrl())
                                 : String.format("`%s`", LanguageUtil.getString(textChannel.getGuild(), Bundle.ERROR, "message_unavailable"))
                         ), true)
                 .setTimestamp(Instant.now());
@@ -170,7 +170,7 @@ public class ReportsManager {
                 .addField(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "report_amount"), String.format("**`%d`**", reports.getSwearingReports().get(memberId)), true)
                 .addField(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "jump_to_message"),
                         (textChannel.getMessageById(message.getId()) != null
-                                ? String.format("[%s](%s)", LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "click_here"), message.getJumpUrl())
+                                ? LanguageUtil.getLink(textChannel.getGuild(), message.getJumpUrl())
                                 : String.format("`%s`", LanguageUtil.getString(textChannel.getGuild(), Bundle.ERROR, "message_unavailable"))
                         ), true)
                 .setTimestamp(Instant.now());
@@ -258,7 +258,7 @@ public class ReportsManager {
                 .addField(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "report_amount"), String.format("**`%d`**", reports.getAdvertisingReports().get(memberId)), true)
                 .addField(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "jump_to_message"),
                         (textChannel.getMessageById(message.getId()) != null
-                                ? String.format("[%s](%s)", LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "click_here"), message.getJumpUrl())
+                                ? LanguageUtil.getLink(textChannel.getGuild(), message.getJumpUrl())
                                 : String.format("`%s`", LanguageUtil.getString(textChannel.getGuild(), Bundle.ERROR, "message_unavailable"))
                         ), true)
                 .setTimestamp(Instant.now());
