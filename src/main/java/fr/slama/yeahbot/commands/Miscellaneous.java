@@ -14,6 +14,7 @@ import fr.slama.yeahbot.managers.SettingsManager;
 import fr.slama.yeahbot.redis.RedisData;
 import fr.slama.yeahbot.redis.buckets.Settings;
 import fr.slama.yeahbot.utilities.ColorUtil;
+import fr.slama.yeahbot.utilities.GuildUtil;
 import fr.slama.yeahbot.utilities.Paginator;
 import net.dv8tion.jda.bot.sharding.ShardManager;
 import net.dv8tion.jda.core.EmbedBuilder;
@@ -564,6 +565,43 @@ public class Miscellaneous {
         } catch (JSONException e) {
             LOGGER.error("Error while parsing data!", e);
         }
+
+    }
+
+    @Command(name = "log",
+            permission = Command.CommandPermission.STAFF,
+            discordPermission = Permission.MANAGE_CHANNEL,
+            executor = Command.CommandExecutor.USER)
+    private void log(Guild guild, TextChannel textChannel) {
+
+        if (guild == null) return;
+        if (GuildUtil.getLogChannel(guild) != null) {
+            textChannel.sendMessage(
+                    new EmbedBuilder()
+                            .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "warning"))
+                            .setDescription(LanguageUtil.getArguedString(guild, Bundle.ERROR, "log_channel_exists",
+                                    GuildUtil.getLogChannel(guild).getAsMention()))
+                            .setColor(ColorUtil.ORANGE)
+                            .build()
+            ).queue();
+            return;
+        }
+
+        guild.getController().createTextChannel("yeahbot-logs").queue(c -> {
+            c.createPermissionOverride(guild.getPublicRole())
+                    .setDeny(Permission.MESSAGE_READ).queue();
+            c.createPermissionOverride(guild.getSelfMember())
+                    .setAllow(Permission.MESSAGE_READ, Permission.MESSAGE_WRITE).queue();
+
+            textChannel.sendMessage(
+                    new EmbedBuilder()
+                            .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "success"))
+                            .setDescription(LanguageUtil.getArguedString(guild, Bundle.STRINGS, "log_channel_created",
+                                    ((TextChannel) c).getAsMention()))
+                            .setColor(ColorUtil.GREEN)
+                            .build()
+            ).queue();
+        });
 
     }
 
