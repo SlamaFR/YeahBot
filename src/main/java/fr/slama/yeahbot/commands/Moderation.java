@@ -102,7 +102,7 @@ public class Moderation {
             permission = Command.CommandPermission.STAFF,
             category = Command.CommandCategory.MODERATION,
             executor = Command.CommandExecutor.USER)
-    private void mute(Guild guild, String[] args, Message message, TextChannel textChannel, BotCommand command) {
+    private void mute(Guild guild, String[] args, Member member, Message message, TextChannel textChannel, BotCommand command) {
 
         if (guild == null) return;
 
@@ -114,6 +114,7 @@ public class Moderation {
         int duration;
         TimeUnit unit;
 
+        String reason = LanguageUtil.getString(guild, Bundle.STRINGS, "no_reason");
         String[] args1 = Arrays.copyOfRange(args, message.getMentionedMembers().size(), args.length);
         String[] time;
 
@@ -123,7 +124,8 @@ public class Moderation {
                 command.sendUsageEmbed(textChannel);
                 return;
             }
-        } catch (ArrayIndexOutOfBoundsException e) {
+            if (args1.length > 1) reason = String.join(" ", Arrays.copyOfRange(args1, 1, args1.length));
+        } catch (IndexOutOfBoundsException e) {
             command.sendUsageEmbed(textChannel);
             return;
         }
@@ -153,8 +155,8 @@ public class Moderation {
                 return;
         }
 
-        for (Member member : message.getMentionedMembers()) {
-            SanctionManager.registerMute(member, textChannel, duration, unit);
+        for (Member m : message.getMentionedMembers()) {
+            SanctionManager.registerMute(member, m, textChannel, reason, duration, unit);
         }
 
     }
@@ -184,7 +186,7 @@ public class Moderation {
             permission = Command.CommandPermission.STAFF,
             category = Command.CommandCategory.MODERATION,
             executor = Command.CommandExecutor.USER)
-    private void kick(Guild guild, String[] args, Message message, TextChannel textChannel, BotCommand command) {
+    private void kick(Guild guild, String[] args, Member member, Message message, TextChannel textChannel, BotCommand command) {
 
         if (guild == null) return;
 
@@ -197,8 +199,8 @@ public class Moderation {
 
         if (reason.isEmpty()) reason = LanguageUtil.getString(guild, Bundle.STRINGS, "no_reason");
 
-        for (Member member : message.getMentionedMembers()) {
-            SanctionManager.registerKick(member, textChannel, reason);
+        for (Member m : message.getMentionedMembers()) {
+            SanctionManager.registerKick(member, m, textChannel, reason);
         }
 
     }
@@ -208,7 +210,7 @@ public class Moderation {
             permission = Command.CommandPermission.STAFF,
             category = Command.CommandCategory.MODERATION,
             executor = Command.CommandExecutor.USER)
-    private void ban(Guild guild, String[] args, Message message, TextChannel textChannel, BotCommand command) {
+    private void ban(Guild guild, String[] args, Member member, Message message, TextChannel textChannel, BotCommand command) {
 
         if (guild == null) return;
 
@@ -221,8 +223,8 @@ public class Moderation {
 
         if (reason.isEmpty()) reason = LanguageUtil.getString(guild, Bundle.STRINGS, "no_reason");
 
-        for (Member member : message.getMentionedMembers()) {
-            SanctionManager.registerBan(member, textChannel, reason);
+        for (Member m : message.getMentionedMembers()) {
+            SanctionManager.registerBan(member, m, textChannel, reason);
         }
 
     }

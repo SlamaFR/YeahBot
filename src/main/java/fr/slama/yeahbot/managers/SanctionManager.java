@@ -15,6 +15,7 @@ import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Instant;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -24,7 +25,7 @@ public class SanctionManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SanctionManager.class);
 
-    public static void registerMute(Member target, TextChannel textChannel, int i, TimeUnit unit) {
+    public static void registerMute(Member author, Member target, TextChannel textChannel, String reason, int i, TimeUnit unit) {
         if (Command.CommandPermission.STAFF.test(target)) {
             textChannel.sendMessage(
                     new EmbedBuilder()
@@ -46,10 +47,17 @@ public class SanctionManager {
             textChannel.getGuild().getController().addRolesToMember(target, GuildUtil.getMutedRole(textChannel.getGuild(), true)).queue();
 
             textChannel.sendMessage(new EmbedBuilder()
-                    .setColor(ColorUtil.RED)
-                    .setTitle(LanguageUtil.getString(target.getGuild(), Bundle.CAPTION, "sanction_application"))
-                    .setDescription(LanguageUtil.getArguedString(target.getGuild(), Bundle.STRINGS, "user_muted", target.getAsMention(), i,
-                            LanguageUtil.getString(target.getGuild(), Bundle.UNIT, unit.toString().toLowerCase() + (timeout > 1 ? "s" : ""))))
+                    .setTitle(String.format("%s | %s",
+                            LanguageUtil.getString(target.getGuild(), Bundle.CAPTION, "sanction_application"),
+                            LanguageUtil.getString(target.getGuild(), Bundle.CAPTION, "mute")))
+                    .addField(LanguageUtil.getString(target.getGuild(), Bundle.CAPTION, target.getUser().isBot() ? "bot" : "user"),
+                            String.format("%s#%s", target.getEffectiveName(), target.getUser().getDiscriminator()), true)
+                    .addField(LanguageUtil.getString(target.getGuild(), Bundle.CAPTION, "author"),
+                            String.format("%s#%s", author.getEffectiveName(), target.getUser().getDiscriminator()), true)
+                    .addField(LanguageUtil.getString(target.getGuild(), Bundle.CAPTION, "reason"), reason, false)
+                    .setFooter(LanguageUtil.getString(target.getGuild(), Bundle.CAPTION, "until"), null)
+                    .setTimestamp(Instant.ofEpochMilli(System.currentTimeMillis() + unit.toMillis(i)))
+                    .setColor(ColorUtil.YELLOW)
                     .build()).queue();
 
             TaskScheduler.scheduleDelayed(() -> unmute(textChannel, target), unit.toMillis(i));
@@ -71,7 +79,7 @@ public class SanctionManager {
         RedisData.setMutes(target.getGuild(), mutes);
     }
 
-    public static void registerKick(Member target, TextChannel textChannel, String reason) {
+    public static void registerKick(Member author, Member target, TextChannel textChannel, String reason) {
         if (Command.CommandPermission.STAFF.test(target)) {
             textChannel.sendMessage(
                     new EmbedBuilder()
@@ -86,15 +94,21 @@ public class SanctionManager {
         target.getGuild().getController().kick(target, reason).queue();
 
         textChannel.sendMessage(new EmbedBuilder()
-                .setColor(ColorUtil.RED)
-                .setTitle(LanguageUtil.getString(target.getGuild(), Bundle.CAPTION, "sanction_application"))
-                .setDescription(LanguageUtil.getArguedString(target.getGuild(), Bundle.STRINGS, "user_kicked", target.getAsMention()))
+                .setTitle(String.format("%s | %s",
+                        LanguageUtil.getString(target.getGuild(), Bundle.CAPTION, "sanction_application"),
+                        LanguageUtil.getString(target.getGuild(), Bundle.CAPTION, "kick")))
+                .addField(LanguageUtil.getString(target.getGuild(), Bundle.CAPTION, target.getUser().isBot() ? "bot" : "user"),
+                        String.format("%s#%s", target.getEffectiveName(), target.getUser().getDiscriminator()), true)
+                .addField(LanguageUtil.getString(target.getGuild(), Bundle.CAPTION, "author"),
+                        String.format("%s#%s", author.getEffectiveName(), target.getUser().getDiscriminator()), true)
                 .addField(LanguageUtil.getString(target.getGuild(), Bundle.CAPTION, "reason"), reason, false)
+                .setColor(ColorUtil.ORANGE)
                 .build()).queue();
+
         LOGGER.info(String.format("%s Kicked %s", target.getGuild(), target.getUser()));
     }
 
-    public static void registerBan(Member target, TextChannel textChannel, String reason) {
+    public static void registerBan(Member author, Member target, TextChannel textChannel, String reason) {
         if (Command.CommandPermission.STAFF.test(target)) {
             textChannel.sendMessage(
                     new EmbedBuilder()
@@ -109,11 +123,17 @@ public class SanctionManager {
         target.getGuild().getController().ban(target, 7, reason).queue();
 
         textChannel.sendMessage(new EmbedBuilder()
-                .setColor(ColorUtil.RED)
-                .setTitle(LanguageUtil.getString(target.getGuild(), Bundle.CAPTION, "sanction_application"))
-                .setDescription(LanguageUtil.getArguedString(target.getGuild(), Bundle.STRINGS, "user_banned", target.getAsMention()))
+                .setTitle(String.format("%s | %s",
+                        LanguageUtil.getString(target.getGuild(), Bundle.CAPTION, "sanction_application"),
+                        LanguageUtil.getString(target.getGuild(), Bundle.CAPTION, "ban")))
+                .addField(LanguageUtil.getString(target.getGuild(), Bundle.CAPTION, target.getUser().isBot() ? "bot" : "user"),
+                        String.format("%s#%s", target.getEffectiveName(), target.getUser().getDiscriminator()), true)
+                .addField(LanguageUtil.getString(target.getGuild(), Bundle.CAPTION, "author"),
+                        String.format("%s#%s", author.getEffectiveName(), target.getUser().getDiscriminator()), true)
                 .addField(LanguageUtil.getString(target.getGuild(), Bundle.CAPTION, "reason"), reason, false)
+                .setColor(ColorUtil.RED)
                 .build()).queue();
+
         LOGGER.info(String.format("%s Banned %s", target.getGuild(), target.getUser()));
     }
 

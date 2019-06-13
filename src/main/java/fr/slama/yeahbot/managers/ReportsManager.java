@@ -22,8 +22,9 @@ import java.util.concurrent.TimeUnit;
  */
 public class ReportsManager {
 
-    public static void reportSpam(Member author, Message message, TextChannel textChannel, SpamType type) {
+    public static void reportSpam(Message message, TextChannel textChannel, SpamType type) {
 
+        Member author = message.getMember();
         long memberId = author.getUser().getIdLong();
 
         Reports reports = RedisData.getReports(author.getGuild());
@@ -48,51 +49,52 @@ public class ReportsManager {
                 .setTimestamp(Instant.now());
 
         boolean applied = false;
+        String reason = LanguageUtil.getString(author.getGuild(), Bundle.CAPTION, "reason_spam");
 
         switch (reports.getSpamReports().get(memberId)) {
             case 3:
                 applied = true;
                 embedBuilder.setFooter(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "sanction_applied"), null);
-                SanctionManager.registerMute(author, textChannel, 5, TimeUnit.MINUTES);
+                SanctionManager.registerMute(author.getGuild().getSelfMember(), author, textChannel, reason, 5, TimeUnit.MINUTES);
                 break;
             case 5:
                 applied = true;
                 embedBuilder.setFooter(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "sanction_applied"), null);
-                SanctionManager.registerMute(author, textChannel, 30, TimeUnit.MINUTES);
+                SanctionManager.registerMute(author.getGuild().getSelfMember(), author, textChannel, reason, 30, TimeUnit.MINUTES);
                 break;
             case 7:
                 applied = true;
                 embedBuilder.setFooter(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "sanction_applied"), null);
-                SanctionManager.registerMute(author, textChannel, 2, TimeUnit.HOURS);
+                SanctionManager.registerMute(author.getGuild().getSelfMember(), author, textChannel, reason, 2, TimeUnit.HOURS);
                 break;
             case 10:
                 applied = true;
                 embedBuilder.setFooter(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "sanction_applied"), null);
-                SanctionManager.registerMute(author, textChannel, 24, TimeUnit.HOURS);
+                SanctionManager.registerMute(author.getGuild().getSelfMember(), author, textChannel, reason, 24, TimeUnit.HOURS);
                 break;
             case 13:
                 applied = true;
                 embedBuilder.setFooter(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "sanction_applied"), null);
-                SanctionManager.registerMute(author, textChannel, 7, TimeUnit.DAYS);
+                SanctionManager.registerMute(author.getGuild().getSelfMember(), author, textChannel, reason, 7, TimeUnit.DAYS);
                 break;
             case 15:
                 applied = true;
                 embedBuilder.setFooter(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "sanction_applied"), null);
                 embedBuilder.setColor(ColorUtil.ORANGE);
-                SanctionManager.registerKick(author, textChannel, LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "reason_spam"));
+                SanctionManager.registerKick(author.getGuild().getSelfMember(), author, textChannel, LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "reason_spam"));
                 break;
             case 17:
                 applied = true;
                 embedBuilder.setFooter(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "sanction_applied"), null);
                 embedBuilder.setColor(ColorUtil.RED);
-                SanctionManager.registerBan(author, textChannel, LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "reason_spam"));
+                SanctionManager.registerBan(author.getGuild().getSelfMember(), author, textChannel, LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "reason_spam"));
                 break;
             default:
                 if (reports.getSpamReports().get(memberId) > 17) {
                     applied = true;
                     embedBuilder.setFooter(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "sanction_applied"), null);
                     embedBuilder.setColor(ColorUtil.RED);
-                    SanctionManager.registerBan(author, textChannel, LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "reason_advertising"));
+                    SanctionManager.registerBan(author.getGuild().getSelfMember(), author, textChannel, LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "reason_advertising"));
                     break;
                 }
                 String warning;
@@ -152,7 +154,7 @@ public class ReportsManager {
 
     public static void reportSwearing(Message message, TextChannel textChannel) {
 
-        Member author = textChannel.getGuild().getMember(message.getAuthor());
+        Member author = message.getMember();
         long memberId = author.getUser().getIdLong();
 
         Reports reports = RedisData.getReports(textChannel.getGuild());
@@ -176,46 +178,47 @@ public class ReportsManager {
                 .setTimestamp(Instant.now());
 
         boolean applied = false;
+        String reason = LanguageUtil.getString(author.getGuild(), Bundle.CAPTION, "reason_swearing");
 
         switch (reports.getSwearingReports().get(memberId)) {
             case 3:
                 applied = true;
                 embedBuilder.setFooter(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "sanction_applied"), null);
-                SanctionManager.registerMute(author, textChannel, 5, TimeUnit.MINUTES);
+                SanctionManager.registerMute(author.getGuild().getSelfMember(), author, textChannel, reason, 5, TimeUnit.MINUTES);
                 break;
             case 5:
                 applied = true;
                 embedBuilder.setFooter(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "sanction_applied"), null);
-                SanctionManager.registerMute(author, textChannel, 2, TimeUnit.HOURS);
+                SanctionManager.registerMute(author.getGuild().getSelfMember(), author, textChannel, reason, 2, TimeUnit.HOURS);
                 break;
             case 7:
                 applied = true;
                 embedBuilder.setFooter(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "sanction_applied"), null);
-                SanctionManager.registerMute(author, textChannel, 24, TimeUnit.HOURS);
+                SanctionManager.registerMute(author.getGuild().getSelfMember(), author, textChannel, reason, 24, TimeUnit.HOURS);
                 break;
             case 8:
                 applied = true;
                 embedBuilder.setFooter(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "sanction_applied"), null);
-                SanctionManager.registerMute(author, textChannel, 7, TimeUnit.DAYS);
+                SanctionManager.registerMute(author.getGuild().getSelfMember(), author, textChannel, reason, 7, TimeUnit.DAYS);
                 break;
             case 9:
                 applied = true;
                 embedBuilder.setFooter(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "sanction_applied"), null);
                 embedBuilder.setColor(ColorUtil.ORANGE);
-                SanctionManager.registerKick(author, textChannel, LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "reason_swearing"));
+                SanctionManager.registerKick(author.getGuild().getSelfMember(), author, textChannel, LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "reason_swearing"));
                 break;
             case 10:
                 applied = true;
                 embedBuilder.setFooter(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "sanction_applied"), null);
                 embedBuilder.setColor(ColorUtil.RED);
-                SanctionManager.registerBan(author, textChannel, LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "reason_swearing"));
+                SanctionManager.registerBan(author.getGuild().getSelfMember(), author, textChannel, LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "reason_swearing"));
                 break;
             default:
                 if (reports.getSwearingReports().get(memberId) > 10) {
                     applied = true;
                     embedBuilder.setFooter(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "sanction_applied"), null);
                     embedBuilder.setColor(ColorUtil.RED);
-                    SanctionManager.registerBan(author, textChannel, LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "reason_advertising"));
+                    SanctionManager.registerBan(author.getGuild().getSelfMember(), author, textChannel, LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "reason_advertising"));
                     break;
                 }
                 String warning = settings.swearingWarningSentence;
@@ -264,31 +267,32 @@ public class ReportsManager {
                 .setTimestamp(Instant.now());
 
         boolean applied = false;
+        String reason = LanguageUtil.getString(author.getGuild(), Bundle.CAPTION, "reason_spam");
 
         switch (reports.getAdvertisingReports().get(memberId)) {
             case 2:
                 applied = true;
                 embedBuilder.setFooter(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "sanction_applied"), null);
-                SanctionManager.registerMute(author, textChannel, 2, TimeUnit.HOURS);
+                SanctionManager.registerMute(textChannel.getGuild().getSelfMember(), author, textChannel, reason, 2, TimeUnit.HOURS);
                 break;
             case 4:
                 applied = true;
                 embedBuilder.setFooter(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "sanction_applied"), null);
                 embedBuilder.setColor(ColorUtil.ORANGE);
-                SanctionManager.registerKick(author, textChannel, LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "reason_advertising"));
+                SanctionManager.registerKick(author.getGuild().getSelfMember(), author, textChannel, LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "reason_advertising"));
                 break;
             case 5:
                 applied = true;
                 embedBuilder.setFooter(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "sanction_applied"), null);
                 embedBuilder.setColor(ColorUtil.RED);
-                SanctionManager.registerBan(author, textChannel, LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "reason_advertising"));
+                SanctionManager.registerBan(author.getGuild().getSelfMember(), author, textChannel, LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "reason_advertising"));
                 break;
             default:
                 if (reports.getAdvertisingReports().get(memberId) > 5) {
                     applied = true;
                     embedBuilder.setFooter(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "sanction_applied"), null);
                     embedBuilder.setColor(ColorUtil.RED);
-                    SanctionManager.registerBan(author, textChannel, LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "reason_advertising"));
+                    SanctionManager.registerBan(author.getGuild().getSelfMember(), author, textChannel, LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "reason_advertising"));
                     break;
                 }
                 String warning = settings.advertisingWarningSentence;
