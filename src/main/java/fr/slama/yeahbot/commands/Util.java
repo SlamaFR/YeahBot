@@ -96,7 +96,7 @@ public class Util {
         textChannel.sendMessage(waitingEmbed).queue(waiting -> textChannel.sendMessage(new EmbedBuilder()
                 .setDescription(EmbedBuilder.ZERO_WIDTH_SPACE)
                 .build()).queue(msg -> new EventWaiter.Builder(GuildMessageReceivedEvent.class,
-                e -> true,
+                e -> e.getAuthor().getIdLong() == member.getUser().getIdLong(),
                 (e, ew) -> {
                     String[] args = e.getMessage().getContentRaw().split(":", 2);
                     if (args.length >= 1) {
