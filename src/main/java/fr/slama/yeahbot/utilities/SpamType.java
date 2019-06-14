@@ -19,4 +19,8 @@ public enum SpamType {
         return "spam_" + this.toString();
     }
 
+    public String toWarningKey() {
+        return String.format("spam_%s_warning_sentence", this.toString());
+    }
+
 }

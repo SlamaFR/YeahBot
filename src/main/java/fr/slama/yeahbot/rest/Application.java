@@ -23,7 +23,7 @@ public class Application extends Jooby {
 
     private YeahBot yeahBot = YeahBot.getInstance();
 
-    {
+    public Application() {
 
         use(new Jackson());
 

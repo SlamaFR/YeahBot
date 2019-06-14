@@ -23,7 +23,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -457,7 +456,7 @@ public class Music {
         } else {
             int hours = 0;
             int minutes = 0;
-            int seconds = 0;
+            int seconds;
             try {
                 String[] time = args[0].split(":");
                 switch (time.length) {
@@ -473,6 +472,9 @@ public class Music {
                         minutes = Integer.parseInt(time[1]);
                         seconds = Integer.parseInt(time[2]);
                         break;
+                    default:
+                        cmd.sendUsageEmbed(textChannel);
+                        return;
                 }
             } catch (NumberFormatException e) {
                 textChannel.sendMessage(
@@ -514,16 +516,12 @@ public class Music {
         Playlists playlists = RedisData.getPlaylists(guild);
         String name = String.join(" ", args).toLowerCase();
 
-        Optional<BotCommand> addPlaylistCommand = YeahBot.getInstance().getCommandMap().getRegistry().stream().filter(c -> c.getName().equalsIgnoreCase("addplaylist")).findFirst();
-        if (!addPlaylistCommand.isPresent()) throw new NullPointerException("Missing 'addplaylist' command.");
-
         if (!playlists.getPlaylists().containsKey(name)) {
             textChannel.sendMessage(
                     new EmbedBuilder()
                             .setColor(ColorUtil.RED)
                             .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "unknown_playlist"))
-                            .setDescription(LanguageUtil.getArguedString(guild, Bundle.ERROR, "unknown_playlist",
-                                    addPlaylistCommand.get().getUsage(guild)))
+                            .setDescription(LanguageUtil.getString(guild, Bundle.ERROR, "unknown_playlist"))
                             .build()
             ).queue();
             return;
@@ -651,8 +649,9 @@ public class Music {
                 settings.playerSequence = settings.shuffle ? PlayerSequence.SHUFFLE_QUEUE_LOOP : PlayerSequence.QUEUE_LOOP;
                 RedisData.setSettings(guild, settings);
                 return settings.shuffle ? PlayerSequence.SHUFFLE_QUEUE_LOOP : PlayerSequence.QUEUE_LOOP;
+            default:
+                return PlayerSequence.NORMAL;
         }
-        return PlayerSequence.NORMAL;
     }
 
     private boolean isDisconnected(Guild guild, Member member, TextChannel textChannel) {

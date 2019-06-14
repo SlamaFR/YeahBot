@@ -111,6 +111,8 @@ public class SettingsManager {
                         newValue = getLongValue(e.getMessage().getMentionedRoles().get(0));
                         field.setLong(settings, e.getMessage().getMentionedRoles().get(0).getIdLong());
                         break;
+                    default:
+                        return;
                 }
             } catch (Exception e1) {
                 sendErrorEmbed(textChannel);

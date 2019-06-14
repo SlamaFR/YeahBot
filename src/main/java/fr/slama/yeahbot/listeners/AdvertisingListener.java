@@ -86,7 +86,7 @@ public class AdvertisingListener extends ListenerAdapter {
         for (String s : event.getMessage().getContentRaw().split("\\W")) {
             try {
                 URL url = new URL(s);
-                if (url.getHost().equals("discord.gg")) {
+                if ("discord.gg".equals(url.getHost())) {
                     rate += 50;
                     hasInvite = true;
                 } else rate += 10;

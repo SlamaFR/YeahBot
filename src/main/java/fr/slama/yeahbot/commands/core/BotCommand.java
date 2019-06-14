@@ -81,7 +81,7 @@ public final class BotCommand {
 
     public String getDescription(String locale) {
         String value = LanguageUtil.getString(locale, Bundle.DESCRIPTION, name);
-        if (value.equals("")) return LanguageUtil.getString(locale, Bundle.DESCRIPTION, "NONE");
+        if ("".equals(value)) return LanguageUtil.getString(locale, Bundle.DESCRIPTION, "NONE");
         else return value;
     }
 
@@ -131,7 +131,7 @@ public final class BotCommand {
             String[] arguments = getArguments(textChannel.getGuild());
             String[] argumentsDescription = LanguageUtil.getString(textChannel.getGuild(), Bundle.ARGUMENTS_DESCRIPTION, name).split("§");
 
-            if (arguments.length > 0 && !arguments[0].equals("")) for (int i = 0; i < arguments.length; i++)
+            if (arguments.length > 0 && !"".equals(arguments[0])) for (int i = 0; i < arguments.length; i++)
                 arguments[i] = String.format("● `%s` %s", arguments[i], argumentsDescription[i]);
 
             EmbedBuilder builder = new EmbedBuilder()
@@ -150,7 +150,7 @@ public final class BotCommand {
                 }
                 builder.addField(aliasesCaption, aliasesBuilder.toString(), true);
             }
-            if (arguments.length > 0 && !arguments[0].equals(""))
+            if (arguments.length > 0 && !"".equals(arguments[0]))
                 builder.addField(argumentsCaption, String.join("\n", arguments), false);
 
             textChannel.sendMessage(builder.build()).queue(m -> m.delete().queueAfter(30, TimeUnit.SECONDS));

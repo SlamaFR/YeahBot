@@ -194,6 +194,8 @@ public class Miscellaneous {
             case CONSOLE:
                 LOGGER.info(String.format("Ping : %sms", ping));
                 break;
+            default:
+                break;
         }
 
 
@@ -301,7 +303,7 @@ public class Miscellaneous {
 
                 for (BotCommand command : YeahBot.getInstance().getCommandMap().getRegistry()) {
 
-                    if (command.getName().equals("toggle")) continue;
+                    if ("toggle".equals(command.getName())) continue;
 
                     if (!YeahBot.getInstance().getCommandMap().getDisabledCommands().contains(command)) {
                         YeahBot.getInstance().getCommandMap().getDisabledCommands().add(command);
@@ -326,7 +328,7 @@ public class Miscellaneous {
                     continue;
                 }
 
-                if (command.getName().equals("toggle")) return;
+                if ("toggle".equals(command.getName())) return;
 
                 if (!YeahBot.getInstance().getCommandMap().getDisabledCommands().contains(command)) {
                     YeahBot.getInstance().getCommandMap().getDisabledCommands().add(command);

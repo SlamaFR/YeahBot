@@ -97,49 +97,14 @@ public class ReportsManager {
                     SanctionManager.registerBan(author.getGuild().getSelfMember(), author, textChannel, LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "reason_advertising"));
                     break;
                 }
-                String warning;
-                switch (type) {
-                    case CAPS:
-                        warning = settings.capsSpamWarningSentence;
-                        if (warning.isEmpty())
-                            warning = LanguageUtil.getString(textChannel.getGuild(), Bundle.STRINGS, "spam_caps_warning_sentence");
-                        textChannel.sendMessage(new EmbedBuilder()
-                                .setColor(ColorUtil.ORANGE)
-                                .setAuthor(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "warning"), null, author.getUser().getAvatarUrl())
-                                .setDescription(warning.replace("$user", author.getAsMention()))
-                                .build()).queue();
-                        break;
-                    case FLOOD:
-                        warning = settings.floodWarningSentence;
-                        if (warning.isEmpty())
-                            warning = LanguageUtil.getString(textChannel.getGuild(), Bundle.STRINGS, "flood_warning_sentence");
-                        textChannel.sendMessage(new EmbedBuilder()
-                                .setColor(ColorUtil.ORANGE)
-                                .setAuthor(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "warning"), null, author.getUser().getAvatarUrl())
-                                .setDescription(warning.replace("$user", author.getAsMention()))
-                                .build()).queue();
-                        break;
-                    case EMOJIS:
-                        warning = settings.emojisSpamWarningSentence;
-                        if (warning.isEmpty())
-                            warning = LanguageUtil.getString(textChannel.getGuild(), Bundle.STRINGS, "emojis_spam_warning_sentence");
-                        textChannel.sendMessage(new EmbedBuilder()
-                                .setColor(ColorUtil.ORANGE)
-                                .setAuthor(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "warning"), null, author.getUser().getAvatarUrl())
-                                .setDescription(warning.replace("$user", author.getAsMention()))
-                                .build()).queue();
-                        break;
-                    case REACTIONS:
-                        warning = settings.reactionsSpamWarningSentence;
-                        if (warning.isEmpty())
-                            warning = LanguageUtil.getString(textChannel.getGuild(), Bundle.STRINGS, "reactions_spam_warning_sentence");
-                        textChannel.sendMessage(new EmbedBuilder()
-                                .setColor(ColorUtil.ORANGE)
-                                .setAuthor(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "warning"), null, author.getUser().getAvatarUrl())
-                                .setDescription(warning.replace("$user", author.getAsMention()))
-                                .build()).queue();
-                        break;
-                }
+                String warning = settings.capsSpamWarningSentence;
+                if (warning.isEmpty())
+                    warning = LanguageUtil.getString(textChannel.getGuild(), Bundle.STRINGS, type.toWarningKey());
+                textChannel.sendMessage(new EmbedBuilder()
+                        .setColor(ColorUtil.ORANGE)
+                        .setAuthor(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "warning"), null, author.getUser().getAvatarUrl())
+                        .setDescription(warning.replace("$user", author.getAsMention()))
+                        .build()).queue();
                 break;
         }
 
