@@ -27,7 +27,6 @@ public class GuildUtil {
             role = guild.getController().createRole()
                     .setName(LanguageUtil.getString(guild, Bundle.CAPTION, "muted"))
                     .setMentionable(false)
-                    .setPermissions(Permission.MESSAGE_READ, Permission.MESSAGE_HISTORY)
                     .complete();
         } catch (InsufficientPermissionException e) {
             assert guild.getDefaultChannel() != null;
