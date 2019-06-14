@@ -2,12 +2,12 @@ package fr.slama.yeahbot.managers;
 
 import fr.slama.yeahbot.commands.core.Command;
 import fr.slama.yeahbot.language.Bundle;
-import fr.slama.yeahbot.language.LanguageUtil;
 import fr.slama.yeahbot.redis.RedisData;
 import fr.slama.yeahbot.redis.buckets.Reports;
 import fr.slama.yeahbot.redis.buckets.Settings;
 import fr.slama.yeahbot.utilities.ColorUtil;
 import fr.slama.yeahbot.utilities.GuildUtil;
+import fr.slama.yeahbot.utilities.LanguageUtil;
 import fr.slama.yeahbot.utilities.SpamType;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Member;

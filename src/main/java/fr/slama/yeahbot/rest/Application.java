@@ -5,7 +5,7 @@ import fr.slama.yeahbot.commands.core.BotCommand;
 import fr.slama.yeahbot.commands.core.Command;
 import fr.slama.yeahbot.language.Bundle;
 import fr.slama.yeahbot.language.Language;
-import fr.slama.yeahbot.language.LanguageUtil;
+import fr.slama.yeahbot.utilities.LanguageUtil;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;

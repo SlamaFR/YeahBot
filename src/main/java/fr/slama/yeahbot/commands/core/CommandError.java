@@ -1,8 +1,8 @@
 package fr.slama.yeahbot.commands.core;
 
 import fr.slama.yeahbot.language.Bundle;
-import fr.slama.yeahbot.language.LanguageUtil;
 import fr.slama.yeahbot.utilities.ColorUtil;
+import fr.slama.yeahbot.utilities.LanguageUtil;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.MessageEmbed;

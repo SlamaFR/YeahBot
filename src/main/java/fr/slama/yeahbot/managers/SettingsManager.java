@@ -2,7 +2,6 @@ package fr.slama.yeahbot.managers;
 
 import fr.slama.yeahbot.YeahBot;
 import fr.slama.yeahbot.language.Bundle;
-import fr.slama.yeahbot.language.LanguageUtil;
 import fr.slama.yeahbot.redis.RedisData;
 import fr.slama.yeahbot.redis.buckets.Settings;
 import fr.slama.yeahbot.settings.AvailableVariables;
@@ -11,6 +10,7 @@ import fr.slama.yeahbot.settings.LongType;
 import fr.slama.yeahbot.utilities.ColorUtil;
 import fr.slama.yeahbot.utilities.EmoteUtil;
 import fr.slama.yeahbot.utilities.EventWaiter;
+import fr.slama.yeahbot.utilities.LanguageUtil;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
