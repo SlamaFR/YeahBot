@@ -575,12 +575,15 @@ public class Miscellaneous {
     private void log(Guild guild, TextChannel textChannel) {
 
         if (guild == null) return;
-        if (GuildUtil.getLogChannel(guild) != null) {
+
+        TextChannel logChannel = GuildUtil.getLogChannel(guild);
+
+        if (logChannel != null) {
             textChannel.sendMessage(
                     new EmbedBuilder()
                             .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "warning"))
                             .setDescription(LanguageUtil.getArguedString(guild, Bundle.ERROR, "log_channel_exists",
-                                    GuildUtil.getLogChannel(guild).getAsMention()))
+                                    logChannel.getAsMention()))
                             .setColor(ColorUtil.ORANGE)
                             .build()
             ).queue();
