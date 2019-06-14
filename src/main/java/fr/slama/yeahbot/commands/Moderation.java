@@ -11,6 +11,7 @@ import fr.slama.yeahbot.redis.RedisData;
 import fr.slama.yeahbot.redis.buckets.Reports;
 import fr.slama.yeahbot.redis.buckets.Settings;
 import fr.slama.yeahbot.utilities.ColorUtil;
+import fr.slama.yeahbot.utilities.StringUtil;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
@@ -18,6 +19,7 @@ import net.dv8tion.jda.core.exceptions.ErrorResponseException;
 import net.dv8tion.jda.core.exceptions.HierarchyException;
 import net.dv8tion.jda.core.requests.RequestFuture;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -155,6 +157,8 @@ public class Moderation {
                 return;
         }
 
+        reason += String.format(" (%d %s)", duration, LanguageUtil.getTimeUnit(guild, unit, duration));
+
         for (Member m : message.getMentionedMembers()) {
             SanctionManager.registerMute(member, m, textChannel, reason, duration, unit);
         }
@@ -175,8 +179,30 @@ public class Moderation {
             return;
         }
 
+        List<Member> alreadyUnmuted = new ArrayList<>();
+
         for (Member member : message.getMentionedMembers()) {
-            SanctionManager.unmute(textChannel, member);
+            if (!SanctionManager.unregisterMute(textChannel, member))
+                alreadyUnmuted.add(member);
+        }
+
+        String members = StringUtil.replaceLast(",",
+                " " + LanguageUtil.getString(guild, Bundle.CAPTION, "and"),
+                String.join(", ", alreadyUnmuted
+                        .stream()
+                        .map(Member::getAsMention)
+                        .collect(Collectors.toSet())));
+
+        String key = "already_unmute" + (alreadyUnmuted.size() > 1 ? "s" : "");
+
+        if (!alreadyUnmuted.isEmpty()) {
+            textChannel.sendMessage(
+                    new EmbedBuilder()
+                            .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "warning"))
+                            .setDescription(LanguageUtil.getArguedString(guild, Bundle.STRINGS, key, members))
+                            .setColor(ColorUtil.ORANGE)
+                            .build()
+            ).queue();
         }
 
     }
