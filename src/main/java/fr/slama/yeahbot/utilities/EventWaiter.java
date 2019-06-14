@@ -14,8 +14,6 @@ import java.util.function.Predicate;
  */
 public class EventWaiter implements EventListener, Closeable {
 
-    private final EventWaiter INSTANCE;
-
     private final Class classType;
     private final Predicate condition;
     private final BiConsumer action;
@@ -26,13 +24,12 @@ public class EventWaiter implements EventListener, Closeable {
         this.condition = builder.condition;
         this.autoClose = builder.autoClose;
         this.action = builder.action;
-        this.INSTANCE = this;
 
-        YeahBot.getInstance().getShardManager().addEventListener(INSTANCE);
+        YeahBot.getInstance().getShardManager().addEventListener(this);
 
         Runnable runnable = () -> {
             if (builder.timeoutAction != null) builder.timeoutAction.run();
-            INSTANCE.close();
+            this.close();
         };
 
         if (builder.timeout > 0 && builder.unit != null) {
@@ -42,7 +39,7 @@ public class EventWaiter implements EventListener, Closeable {
 
     @Override
     public void close() {
-        YeahBot.getInstance().getShardManager().removeEventListener(INSTANCE);
+        YeahBot.getInstance().getShardManager().removeEventListener(this);
     }
 
     @Override
@@ -50,7 +47,7 @@ public class EventWaiter implements EventListener, Closeable {
     public void onEvent(Event event) {
         if (event.getClass().equals(classType) && (condition.test(event))) {
             action.accept(event, this);
-            if (this.autoClose) INSTANCE.close();
+            if (this.autoClose) this.close();
         }
     }
 
