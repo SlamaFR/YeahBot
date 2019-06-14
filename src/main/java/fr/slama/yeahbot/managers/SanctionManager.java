@@ -7,14 +7,17 @@ import fr.slama.yeahbot.redis.RedisData;
 import fr.slama.yeahbot.redis.buckets.Mutes;
 import fr.slama.yeahbot.utilities.ColorUtil;
 import fr.slama.yeahbot.utilities.GuildUtil;
+import fr.slama.yeahbot.utilities.MessageUtil;
 import fr.slama.yeahbot.utilities.TaskScheduler;
 import net.dv8tion.jda.core.EmbedBuilder;
+import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.awt.*;
 import java.time.Instant;
 import java.util.concurrent.TimeUnit;
 
@@ -46,37 +49,32 @@ public class SanctionManager {
 
             textChannel.getGuild().getController().addRolesToMember(target, GuildUtil.getMutedRole(textChannel.getGuild(), true)).queue();
 
-            textChannel.sendMessage(new EmbedBuilder()
-                    .setTitle(String.format("%s | %s",
-                            LanguageUtil.getString(target.getGuild(), Bundle.CAPTION, "sanction_application"),
-                            LanguageUtil.getString(target.getGuild(), Bundle.CAPTION, "mute")))
-                    .addField(LanguageUtil.getString(target.getGuild(), Bundle.CAPTION, target.getUser().isBot() ? "bot" : "user"),
-                            String.format("%s#%s", target.getEffectiveName(), target.getUser().getDiscriminator()), true)
-                    .addField(LanguageUtil.getString(target.getGuild(), Bundle.CAPTION, "author"),
-                            String.format("%s#%s", author.getEffectiveName(), target.getUser().getDiscriminator()), true)
-                    .addField(LanguageUtil.getString(target.getGuild(), Bundle.CAPTION, "reason"), reason, false)
-                    .setFooter(LanguageUtil.getString(target.getGuild(), Bundle.CAPTION, "until"), null)
-                    .setTimestamp(Instant.ofEpochMilli(System.currentTimeMillis() + unit.toMillis(i)))
-                    .setColor(ColorUtil.YELLOW)
-                    .build()).queue();
+            textChannel.sendMessage(
+                    getEmbed(author, target, "mute", reason, ColorUtil.YELLOW)
+                            .setFooter(LanguageUtil.getString(target.getGuild(), Bundle.CAPTION, "until"), null)
+                            .setTimestamp(Instant.ofEpochMilli(System.currentTimeMillis() + unit.toMillis(i)))
+                            .build()
+            ).queue();
 
-            TaskScheduler.scheduleDelayed(() -> unmute(textChannel, target), unit.toMillis(i));
+            TaskScheduler.scheduleDelayed(() -> unregisterMute(textChannel, target), unit.toMillis(i));
 
             LOGGER.info(String.format("%s Muted %s", target.getGuild(), target.getUser()));
         } catch (InsufficientPermissionException ignored) {
+            MessageUtil.sendPermissionEmbed(target.getGuild(), textChannel, Permission.MANAGE_ROLES);
         }
     }
 
-    public static void unmute(TextChannel textChannel, Member target) {
+    public static boolean unregisterMute(TextChannel textChannel, Member target) {
         Mutes mutes = RedisData.getMutes(target.getGuild());
 
-        if (!mutes.getMutesMap().containsKey(target.getUser().getIdLong())) return;
+        if (!mutes.getMutesMap().containsKey(target.getUser().getIdLong())) return false;
 
         textChannel.getGuild().getController()
                 .removeRolesFromMember(target, GuildUtil.getMutedRole(target.getGuild(), false))
                 .queue();
         mutes.getMutesMap().remove(target.getUser().getIdLong());
         RedisData.setMutes(target.getGuild(), mutes);
+        return true;
     }
 
     public static void registerKick(Member author, Member target, TextChannel textChannel, String reason) {
@@ -93,17 +91,9 @@ public class SanctionManager {
 
         target.getGuild().getController().kick(target, reason).queue();
 
-        textChannel.sendMessage(new EmbedBuilder()
-                .setTitle(String.format("%s | %s",
-                        LanguageUtil.getString(target.getGuild(), Bundle.CAPTION, "sanction_application"),
-                        LanguageUtil.getString(target.getGuild(), Bundle.CAPTION, "kick")))
-                .addField(LanguageUtil.getString(target.getGuild(), Bundle.CAPTION, target.getUser().isBot() ? "bot" : "user"),
-                        String.format("%s#%s", target.getEffectiveName(), target.getUser().getDiscriminator()), true)
-                .addField(LanguageUtil.getString(target.getGuild(), Bundle.CAPTION, "author"),
-                        String.format("%s#%s", author.getEffectiveName(), target.getUser().getDiscriminator()), true)
-                .addField(LanguageUtil.getString(target.getGuild(), Bundle.CAPTION, "reason"), reason, false)
-                .setColor(ColorUtil.ORANGE)
-                .build()).queue();
+        textChannel.sendMessage(
+                getEmbed(author, target, "kick", reason, ColorUtil.ORANGE).build()
+        ).queue();
 
         LOGGER.info(String.format("%s Kicked %s", target.getGuild(), target.getUser()));
     }
@@ -122,19 +112,22 @@ public class SanctionManager {
 
         target.getGuild().getController().ban(target, 7, reason).queue();
 
-        textChannel.sendMessage(new EmbedBuilder()
-                .setTitle(String.format("%s | %s",
-                        LanguageUtil.getString(target.getGuild(), Bundle.CAPTION, "sanction_application"),
-                        LanguageUtil.getString(target.getGuild(), Bundle.CAPTION, "ban")))
-                .addField(LanguageUtil.getString(target.getGuild(), Bundle.CAPTION, target.getUser().isBot() ? "bot" : "user"),
-                        String.format("%s#%s", target.getEffectiveName(), target.getUser().getDiscriminator()), true)
-                .addField(LanguageUtil.getString(target.getGuild(), Bundle.CAPTION, "author"),
-                        String.format("%s#%s", author.getEffectiveName(), target.getUser().getDiscriminator()), true)
-                .addField(LanguageUtil.getString(target.getGuild(), Bundle.CAPTION, "reason"), reason, false)
-                .setColor(ColorUtil.RED)
-                .build()).queue();
+        textChannel.sendMessage(
+                getEmbed(author, target, "ban", reason, ColorUtil.RED).build()
+        ).queue();
 
         LOGGER.info(String.format("%s Banned %s", target.getGuild(), target.getUser()));
+    }
+
+    private static EmbedBuilder getEmbed(Member author, Member target, String type, String reason, Color color) {
+        return new EmbedBuilder().setTitle(LanguageUtil.getString(target.getGuild(), Bundle.CAPTION, type))
+                .addField(LanguageUtil.getString(target.getGuild(), Bundle.CAPTION, target.getUser().isBot() ? "bot" : "user"),
+                        String.format("%s (%s#%s)", target.getAsMention(), target.getEffectiveName(),
+                                target.getUser().getDiscriminator()), true)
+                .addField(LanguageUtil.getString(target.getGuild(), Bundle.CAPTION, "author"),
+                        author.getAsMention(), true)
+                .addField(LanguageUtil.getString(target.getGuild(), Bundle.CAPTION, "reason"), reason, false)
+                .setColor(color);
     }
 
 }
