@@ -15,4 +15,8 @@ public enum SpamType {
         return super.toString().toLowerCase();
     }
 
+    public String toKey() {
+        return "spam_" + this.toString();
+    }
+
 }

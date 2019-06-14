@@ -213,7 +213,7 @@ public class Music {
                         )
                         .addField(
                                 LanguageUtil.getString(guild, Bundle.CAPTION, "music_player_sequence"),
-                                EmoteUtil.getSequenceEmote(settings.playerSequence) + " " + LanguageUtil.getString(guild, Bundle.CAPTION, "music_player_sequence_" + RedisData.getSettings(guild).playerSequence),
+                                EmoteUtil.getSequenceEmote(settings.playerSequence) + " " + LanguageUtil.getString(guild, Bundle.CAPTION, RedisData.getSettings(guild).playerSequence.toKey()),
                                 true
                         )
                         .addField(
@@ -319,7 +319,7 @@ public class Music {
             }
         }
 
-        String sequence = setNewSequence(guild, settings).toString().toLowerCase();
+        PlayerSequence sequence = setNewSequence(guild, settings);
 
         textChannel.sendMessage(
                 new EmbedBuilder()
@@ -329,7 +329,7 @@ public class Music {
                                 LanguageUtil.getString(guild, Bundle.CAPTION, "music_player_sequence"),
                                 String.format("%s %s",
                                         EmoteUtil.getSequenceEmote(settings.playerSequence),
-                                        LanguageUtil.getString(guild, Bundle.CAPTION, "music_player_sequence_" + sequence)),
+                                        LanguageUtil.getString(guild, Bundle.CAPTION, sequence.toKey())),
                                 false
                         )
                         .setColor(settings.shuffle ? ColorUtil.GREEN : ColorUtil.RED)
@@ -369,7 +369,7 @@ public class Music {
             }
         }
 
-        String sequence = setNewSequence(guild, settings).toString().toLowerCase();
+        PlayerSequence sequence = setNewSequence(guild, settings);
 
         String state;
         if (settings.loop == 0) {
@@ -388,7 +388,7 @@ public class Music {
                                 LanguageUtil.getString(guild, Bundle.CAPTION, "music_player_sequence"),
                                 String.format("%s %s",
                                         EmoteUtil.getSequenceEmote(settings.playerSequence),
-                                        LanguageUtil.getString(guild, Bundle.CAPTION, "music_player_sequence_" + sequence)),
+                                        LanguageUtil.getString(guild, Bundle.CAPTION, sequence.toKey())),
                                 false
                         )
                         .setColor(settings.loop > 0 ? ColorUtil.GREEN : ColorUtil.RED)

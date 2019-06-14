@@ -187,7 +187,7 @@ public class TrackScheduler extends AudioEventAdapter {
                                 LanguageUtil.getString(guild, Bundle.CAPTION, "music_player_sequence"),
                                 String.format("%s %s",
                                         EmoteUtil.getSequenceEmote(RedisData.getSettings(guild).playerSequence),
-                                        LanguageUtil.getString(guild, Bundle.CAPTION, "music_player_sequence_" + RedisData.getSettings(guild).playerSequence)
+                                        LanguageUtil.getString(guild, Bundle.CAPTION, RedisData.getSettings(guild).playerSequence.toKey())
                                 ),
                                 true)
                         .addField(
