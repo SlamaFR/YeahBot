@@ -39,7 +39,7 @@ public class Music {
     private void play(Guild guild, TextChannel textChannel, Member member, String[] args, BotCommand cmd) {
 
         if (guild == null) return;
-        if (!isDisconnected(guild, member, textChannel)) return;
+        if (isDisconnected(guild, member, textChannel)) return;
 
         if (args.length == 0) {
             textChannel.sendMessage(
