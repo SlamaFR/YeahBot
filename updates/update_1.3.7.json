@@ -1,0 +1,28 @@
+{
+  "version": "1.3.7",
+  "date": 1560549600000,
+  "fr": {
+    "title": "Bulletin de mise à jour",
+    "adds": [],
+    "removes": [],
+    "changes": [
+      "Résolution d'un bug avec la commande 'embed'.",
+      "Amélioration des commandes 'mute' et 'unmute'.",
+      "Résolution d'un bug avec le rôle 'Muet'. Il est fortement recommandé de supprimer l'ancien.",
+      "Améliorations graphiques."
+    ],
+    "coming": []
+  },
+  "en": {
+    "title": "Update report",
+    "adds": [],
+    "removes": [],
+    "changes": [
+      "Fixed a bug with the 'embed' command.",
+      "Enhancement of 'mute' and 'unmute' commands.",
+      "Fixed a bug with the 'Muted' role. It is strongly recommended to delete the old one.",
+      "Graphical enhancements."
+    ],
+    "coming": []
+  }
+}
