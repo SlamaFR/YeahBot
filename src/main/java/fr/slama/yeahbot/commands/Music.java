@@ -1,6 +1,7 @@
 package fr.slama.yeahbot.commands;
 
 import fr.slama.yeahbot.YeahBot;
+import fr.slama.yeahbot.blub.Paginator;
 import fr.slama.yeahbot.commands.core.BotCommand;
 import fr.slama.yeahbot.commands.core.Command;
 import fr.slama.yeahbot.commands.core.CommandError;

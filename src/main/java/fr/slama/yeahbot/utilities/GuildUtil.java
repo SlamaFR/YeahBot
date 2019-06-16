@@ -70,4 +70,23 @@ public class GuildUtil {
         return guild.getTextChannelsByName("yeahbot-logs", true).get(0);
     }
 
+    public static TextChannel getModChannel(Guild guild, boolean needed) {
+        if (guild.getTextChannelsByName("yeahbot-mod", true).isEmpty()) {
+            if (needed) {
+                guild.getController().createTextChannel("yeahbot-mod").queue(
+                        tc -> {
+                            tc.createPermissionOverride(guild.getSelfMember())
+                                    .setAllow(Permission.MESSAGE_WRITE)
+                                    .queue();
+                            tc.createPermissionOverride(guild.getPublicRole())
+                                    .setAllow(Permission.MESSAGE_READ)
+                                    .setDeny(Permission.MESSAGE_WRITE, Permission.MESSAGE_ADD_REACTION)
+                                    .queue();
+                        }
+                );
+            } else return null;
+        }
+        return guild.getTextChannelsByName("yeahbot-mod", true).get(0);
+    }
+
 }

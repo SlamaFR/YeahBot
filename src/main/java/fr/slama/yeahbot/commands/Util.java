@@ -5,7 +5,7 @@ import fr.slama.yeahbot.language.Bundle;
 import fr.slama.yeahbot.redis.RedisData;
 import fr.slama.yeahbot.redis.buckets.PrivateChannels;
 import fr.slama.yeahbot.utilities.ColorUtil;
-import fr.slama.yeahbot.utilities.EventWaiter;
+import fr.slama.yeahbot.blub.EventWaiter;
 import fr.slama.yeahbot.utilities.LanguageUtil;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;

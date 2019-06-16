@@ -5,7 +5,7 @@ import fr.slama.yeahbot.redis.RedisData;
 import fr.slama.yeahbot.redis.buckets.Settings;
 import fr.slama.yeahbot.tasks.SpamTask;
 import fr.slama.yeahbot.utilities.EmoteUtil;
-import fr.slama.yeahbot.utilities.SpamType;
+import fr.slama.yeahbot.blub.SpamType;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.events.message.guild.react.GuildMessageReactionAddEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;

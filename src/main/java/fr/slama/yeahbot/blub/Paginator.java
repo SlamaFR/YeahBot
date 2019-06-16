@@ -1,6 +1,8 @@
-package fr.slama.yeahbot.utilities;
+package fr.slama.yeahbot.blub;
 
 import fr.slama.yeahbot.language.Bundle;
+import fr.slama.yeahbot.utilities.EmoteUtil;
+import fr.slama.yeahbot.utilities.LanguageUtil;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Message;

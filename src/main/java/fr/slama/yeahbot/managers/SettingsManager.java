@@ -9,7 +9,7 @@ import fr.slama.yeahbot.settings.IgnoreSetting;
 import fr.slama.yeahbot.settings.LongType;
 import fr.slama.yeahbot.utilities.ColorUtil;
 import fr.slama.yeahbot.utilities.EmoteUtil;
-import fr.slama.yeahbot.utilities.EventWaiter;
+import fr.slama.yeahbot.blub.EventWaiter;
 import fr.slama.yeahbot.utilities.LanguageUtil;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.*;

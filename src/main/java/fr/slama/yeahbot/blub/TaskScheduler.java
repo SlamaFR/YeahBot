@@ -1,4 +1,4 @@
-package fr.slama.yeahbot.utilities;
+package fr.slama.yeahbot.blub;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 

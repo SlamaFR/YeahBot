@@ -1,6 +1,6 @@
 <configuration>
 
-    <conversionRule conversionWord="color" converterClass="fr.slama.yeahbot.utilities.LoggerColorizer"/>
+    <conversionRule conversionWord="color" converterClass="fr.slama.yeahbot.blub.LoggerColorizer"/>
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>

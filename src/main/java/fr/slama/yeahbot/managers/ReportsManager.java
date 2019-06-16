@@ -8,7 +8,7 @@ import fr.slama.yeahbot.redis.buckets.Settings;
 import fr.slama.yeahbot.utilities.ColorUtil;
 import fr.slama.yeahbot.utilities.GuildUtil;
 import fr.slama.yeahbot.utilities.LanguageUtil;
-import fr.slama.yeahbot.utilities.SpamType;
+import fr.slama.yeahbot.blub.SpamType;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
@@ -97,7 +97,7 @@ public class ReportsManager {
                     SanctionManager.registerBan(author.getGuild().getSelfMember(), author, textChannel, LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "reason_advertising"));
                     break;
                 }
-                String warning = settings.capsSpamWarningSentence;
+                String warning = type.getSentenceFromSettings(settings);
                 if (warning.isEmpty())
                     warning = LanguageUtil.getString(textChannel.getGuild(), Bundle.STRINGS, type.toWarningKey());
                 textChannel.sendMessage(new EmbedBuilder()

@@ -4,7 +4,7 @@ import fr.slama.yeahbot.YeahBot;
 import fr.slama.yeahbot.redis.RedisData;
 import fr.slama.yeahbot.redis.buckets.Mutes;
 import fr.slama.yeahbot.utilities.GuildUtil;
-import fr.slama.yeahbot.utilities.TaskScheduler;
+import fr.slama.yeahbot.blub.TaskScheduler;
 import net.dv8tion.jda.core.entities.Guild;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

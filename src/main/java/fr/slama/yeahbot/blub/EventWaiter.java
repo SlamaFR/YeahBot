@@ -1,4 +1,4 @@
-package fr.slama.yeahbot.utilities;
+package fr.slama.yeahbot.blub;
 
 import fr.slama.yeahbot.YeahBot;
 import net.dv8tion.jda.core.events.Event;

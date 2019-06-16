@@ -12,7 +12,7 @@ import fr.slama.yeahbot.tasks.PrivateChannelsTask;
 import fr.slama.yeahbot.tasks.SpamTask;
 import fr.slama.yeahbot.tasks.SwearingTask;
 import fr.slama.yeahbot.tasks.UnmuteTask;
-import fr.slama.yeahbot.utilities.TaskScheduler;
+import fr.slama.yeahbot.blub.TaskScheduler;
 import net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.bot.sharding.ShardManager;
 import net.dv8tion.jda.core.events.ReadyEvent;

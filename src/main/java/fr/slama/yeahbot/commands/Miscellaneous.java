@@ -15,7 +15,7 @@ import fr.slama.yeahbot.redis.buckets.Settings;
 import fr.slama.yeahbot.utilities.ColorUtil;
 import fr.slama.yeahbot.utilities.GuildUtil;
 import fr.slama.yeahbot.utilities.LanguageUtil;
-import fr.slama.yeahbot.utilities.Paginator;
+import fr.slama.yeahbot.blub.Paginator;
 import net.dv8tion.jda.bot.sharding.ShardManager;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
@@ -558,9 +558,8 @@ public class Miscellaneous {
             }
 
             int total = YeahBot.getInstance().getShardManager().getGuilds().size();
-            float rate = (float) count / total;
 
-            LOGGER.info("[Broadcast] Sent on " + rate * 100 + "% guild (" + count + "/" + total + ")");
+            LOGGER.info("[Broadcast] Sent on {}% guild ({}/{})", (float) count / total * 100, count, total);
 
         } catch (IOException e) {
             LOGGER.error("Error while fetching data!");
