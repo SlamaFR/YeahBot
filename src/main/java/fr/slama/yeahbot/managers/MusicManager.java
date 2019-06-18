@@ -23,6 +23,7 @@ import net.dv8tion.jda.core.entities.TextChannel;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created on 12/11/2018.
@@ -209,7 +210,9 @@ public class MusicManager {
                         .setColor(ColorUtil.RED)
                         .setTitle(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "error"))
                         .setDescription(String.format("```\n%s\n```", exception.getMessage()))
-                        .build()).queue();
+                        .setFooter(LanguageUtil.getTimeExpiration(textChannel.getGuild(), 20, TimeUnit.SECONDS), null)
+                        .build()
+                ).queue(message -> message.delete().queueAfter(20, TimeUnit.SECONDS));
             }
         });
     }
