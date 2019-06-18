@@ -1,6 +1,7 @@
 package fr.slama.yeahbot.listeners;
 
 import fr.slama.yeahbot.managers.SanctionManager;
+import fr.slama.yeahbot.utilities.GuildUtil;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberRoleRemoveEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
@@ -12,6 +13,8 @@ public class RoleListener extends ListenerAdapter {
     @Override
     public void onGuildMemberRoleRemove(GuildMemberRoleRemoveEvent event) {
         super.onGuildMemberRoleRemove(event);
-        SanctionManager.unregisterMute(null, event.getMember());
+
+        if (event.getRoles().contains(GuildUtil.getMutedRole(event.getGuild(), false)))
+            SanctionManager.unregisterMute(null, event.getMember());
     }
 }
