@@ -1,6 +1,7 @@
 package fr.slama.yeahbot.redis.buckets;
 
 import com.google.gson.Gson;
+import fr.slama.yeahbot.blub.Sanction;
 import fr.slama.yeahbot.language.Language;
 import fr.slama.yeahbot.music.PlayerSequence;
 import fr.slama.yeahbot.settings.AvailableVariables;
@@ -8,7 +9,10 @@ import fr.slama.yeahbot.settings.IgnoreSetting;
 import fr.slama.yeahbot.settings.LongType;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import static fr.slama.yeahbot.settings.AvailableVariables.Variables.*;
 
@@ -42,6 +46,10 @@ public class Settings {
     public boolean detectingReactionsSpam = true;
     public boolean detectingSwearing = true;
     public boolean detectingAdvertising = true;
+
+    public Map<Integer, Sanction> spamPolicy = new HashMap<>();
+    public Map<Integer, Sanction> swearingPolicy = new HashMap<>();
+    public Map<Integer, Sanction> advertisingPolicy = new HashMap<>();
 
     @IgnoreSetting
     public int timeScaleSpamTrigger = 5;
@@ -81,11 +89,34 @@ public class Settings {
     @AvailableVariables(variables = {USER, GUILD, COUNT})
     public String goodbyeMessage = "";
 
-    public Settings() {
-    }
-
     @Override
     public String toString() {
+
+        if (spamPolicy.isEmpty()) {
+            spamPolicy.put(3, new Sanction(Sanction.Type.MUTE, 5, TimeUnit.MINUTES));
+            spamPolicy.put(5, new Sanction(Sanction.Type.MUTE, 30, TimeUnit.MINUTES));
+            spamPolicy.put(7, new Sanction(Sanction.Type.MUTE, 2, TimeUnit.HOURS));
+            spamPolicy.put(10, new Sanction(Sanction.Type.MUTE, 24, TimeUnit.HOURS));
+            spamPolicy.put(13, new Sanction(Sanction.Type.MUTE, 7, TimeUnit.DAYS));
+            spamPolicy.put(15, new Sanction(Sanction.Type.KICK));
+            spamPolicy.put(17, new Sanction(Sanction.Type.BAN));
+        }
+
+        if (swearingPolicy.isEmpty()) {
+            swearingPolicy.put(3, new Sanction(Sanction.Type.MUTE, 5, TimeUnit.MINUTES));
+            swearingPolicy.put(5, new Sanction(Sanction.Type.MUTE, 2, TimeUnit.HOURS));
+            swearingPolicy.put(7, new Sanction(Sanction.Type.MUTE, 24, TimeUnit.HOURS));
+            swearingPolicy.put(8, new Sanction(Sanction.Type.MUTE, 7, TimeUnit.DAYS));
+            swearingPolicy.put(9, new Sanction(Sanction.Type.KICK));
+            swearingPolicy.put(10, new Sanction(Sanction.Type.BAN));
+        }
+
+        if (advertisingPolicy.isEmpty()) {
+            advertisingPolicy.put(2, new Sanction(Sanction.Type.MUTE, 2, TimeUnit.HOURS));
+            advertisingPolicy.put(4, new Sanction(Sanction.Type.KICK));
+            advertisingPolicy.put(5, new Sanction(Sanction.Type.BAN));
+        }
+
         return new Gson().toJson(this);
     }
 
