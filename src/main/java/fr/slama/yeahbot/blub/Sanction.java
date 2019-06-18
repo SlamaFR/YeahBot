@@ -40,8 +40,9 @@ public class Sanction {
         return unit != null ? unit.toMillis(duration) : -1;
     }
 
-    public void apply(Guild guild, TextChannel textChannel, Member member, String reason) {
+    public void apply(TextChannel textChannel, Member member, String reason) {
         assert type != null;
+        Guild guild = textChannel.getGuild();
         switch (type) {
             case MUTE:
                 SanctionManager.registerMute(guild.getSelfMember(), member, textChannel, reason, duration, unit);
