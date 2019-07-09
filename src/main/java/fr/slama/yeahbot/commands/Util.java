@@ -1,11 +1,11 @@
 package fr.slama.yeahbot.commands;
 
+import fr.slama.yeahbot.blub.EventWaiter;
 import fr.slama.yeahbot.commands.core.Command;
 import fr.slama.yeahbot.language.Bundle;
 import fr.slama.yeahbot.redis.RedisData;
 import fr.slama.yeahbot.redis.buckets.PrivateChannels;
 import fr.slama.yeahbot.utilities.ColorUtil;
-import fr.slama.yeahbot.blub.EventWaiter;
 import fr.slama.yeahbot.utilities.LanguageUtil;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
@@ -96,7 +96,8 @@ public class Util {
         textChannel.sendMessage(waitingEmbed).queue(waiting -> textChannel.sendMessage(new EmbedBuilder()
                 .setDescription(EmbedBuilder.ZERO_WIDTH_SPACE)
                 .build()).queue(msg -> new EventWaiter.Builder(GuildMessageReceivedEvent.class,
-                e -> e.getAuthor().getIdLong() == member.getUser().getIdLong(),
+                e -> e.getAuthor().getIdLong() == member.getUser().getIdLong() &&
+                        e.getChannel().getIdLong() == textChannel.getIdLong(),
                 (e, ew) -> {
                     String[] args = e.getMessage().getContentRaw().split(":", 2);
                     if (args.length >= 1) {
