@@ -52,24 +52,28 @@ public final class TaskScheduler implements Runnable {
         this.predicate = null;
     }
 
-    public static void scheduleDelayed(final Runnable runnable, final long initialDelay) {
-        EXECUTOR_SERVICE.submit(new TaskScheduler(runnable, initialDelay));
+    public static TaskScheduler scheduleDelayed(final Runnable runnable, final long initialDelay) {
+        TaskScheduler task = new TaskScheduler(runnable, initialDelay);
+        EXECUTOR_SERVICE.submit(task);
+        return task;
     }
 
-    public static void scheduleRepeating(final Runnable runnable, final long period) {
-        EXECUTOR_SERVICE.submit(new TaskScheduler(runnable, 0, period));
+    public static TaskScheduler scheduleRepeating(final Runnable runnable, final long period) {
+        TaskScheduler task = new TaskScheduler(runnable, 0, period);
+        EXECUTOR_SERVICE.submit(task);
+        return task;
     }
 
-    public static void scheduleRepeating(final Runnable runnable, final long initialDelay, final long period) {
-        EXECUTOR_SERVICE.submit(new TaskScheduler(runnable, initialDelay, period));
+    public static TaskScheduler scheduleRepeating(final Runnable runnable, final long initialDelay, final long period) {
+        TaskScheduler task = new TaskScheduler(runnable, initialDelay, period);
+        EXECUTOR_SERVICE.submit(task);
+        return task;
     }
 
-    public static void async(final Runnable runnable) {
-        EXECUTOR_SERVICE.submit(new TaskScheduler(runnable));
-    }
-
-    public static void async(final Runnable runnable, final long after) {
-        EXECUTOR_SERVICE.submit(new TaskScheduler(runnable, after));
+    public static TaskScheduler async(final Runnable runnable) {
+        TaskScheduler task = new TaskScheduler(runnable);
+        EXECUTOR_SERVICE.submit(task);
+        return task;
     }
 
     public void stop() {
@@ -79,7 +83,7 @@ public final class TaskScheduler implements Runnable {
     @Override
     public void run() {
         initWait();
-        if (!this.repeating)
+        if (!this.repeating && !stop)
             runnable.run();
 
         while (repeating && !stop) {

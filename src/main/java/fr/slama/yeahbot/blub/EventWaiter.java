@@ -33,7 +33,7 @@ public class EventWaiter implements EventListener, Closeable {
         };
 
         if (builder.timeout > 0 && builder.unit != null) {
-            TaskScheduler.async(runnable, builder.unit.toMillis(builder.timeout));
+            TaskScheduler.scheduleDelayed(runnable, builder.unit.toMillis(builder.timeout));
         }
     }
 

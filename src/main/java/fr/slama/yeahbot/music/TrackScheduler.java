@@ -15,6 +15,7 @@ import fr.slama.yeahbot.utilities.TimeUtil;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.MessageEmbed;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -164,34 +165,41 @@ public class TrackScheduler extends AudioEventAdapter {
         if (RedisData.getSettings(guild).playerSequence.equals(PlayerSequence.LOOP) && nowPlayingMessageId > 0L)
             return;
 
-        if (nowPlayingMessageId > 0L && guild.getSelfMember().hasPermission(Permission.MESSAGE_HISTORY, Permission.MESSAGE_MANAGE))
-            musicPlayer.getTextChannel().getMessageById(nowPlayingMessageId).queue(message -> message.delete().queue());
-
         String requesterName = musicPlayer.getGuild().getMemberById(currentRequesterId).getEffectiveName();
         String requesterAvatarUrl = musicPlayer.getGuild().getMemberById(currentRequesterId).getUser().getAvatarUrl();
 
-        musicPlayer.getTextChannel().sendMessage(
-                new EmbedBuilder()
-                        .setColor(ColorUtil.BLUE)
-                        .addField(
-                                LanguageUtil.getString(guild, Bundle.CAPTION, "now_playing"),
-                                LanguageUtil.getArguedString(guild, Bundle.STRINGS, "music_track", track.getInfo().title, track.getInfo().uri),
-                                false)
-                        .addField(LanguageUtil.getString(guild, Bundle.CAPTION, "music_player_volume"),
-                                String.format("%s %d%%",
-                                        EmoteUtil.getVolumeEmote(musicPlayer.getAudioPlayer().getVolume()),
-                                        musicPlayer.getAudioPlayer().getVolume()
-                                ), true)
-                        .addField(LanguageUtil.getString(guild, Bundle.CAPTION, "music_player_sequence"),
-                                String.format("%s %s",
-                                        EmoteUtil.getSequenceEmote(RedisData.getSettings(guild).playerSequence),
-                                        LanguageUtil.getString(guild, Bundle.CAPTION, RedisData.getSettings(guild).playerSequence.toKey())
-                                ), true)
-                        .addField(LanguageUtil.getString(guild, Bundle.CAPTION, "music_track_duration"),
-                                "⏱ " + TimeUtil.toTime(track.getDuration()), true)
-                        .setFooter(LanguageUtil.getArguedString(guild, Bundle.STRINGS, "music_submitted_by", requesterName) + (!queue.isEmpty() && !isLoopingQueue() ? " • " + LanguageUtil.getArguedString(guild, Bundle.CAPTION, "remaining_tracks", queue.size()) : ""), requesterAvatarUrl)
-                        .build()
-        ).queue(message -> nowPlayingMessageId = message.getIdLong());
+        MessageEmbed embed = new EmbedBuilder()
+                .setColor(ColorUtil.BLUE)
+                .addField(
+                        LanguageUtil.getString(guild, Bundle.CAPTION, "now_playing"),
+                        LanguageUtil.getArguedString(guild, Bundle.STRINGS, "music_track", track.getInfo().title, track.getInfo().uri),
+                        false)
+                .addField(LanguageUtil.getString(guild, Bundle.CAPTION, "music_player_volume"),
+                        String.format("%s %d%%",
+                                EmoteUtil.getVolumeEmote(musicPlayer.getAudioPlayer().getVolume()),
+                                musicPlayer.getAudioPlayer().getVolume()
+                        ), true)
+                .addField(LanguageUtil.getString(guild, Bundle.CAPTION, "music_player_sequence"),
+                        String.format("%s %s",
+                                EmoteUtil.getSequenceEmote(RedisData.getSettings(guild).playerSequence),
+                                LanguageUtil.getString(guild, Bundle.CAPTION, RedisData.getSettings(guild).playerSequence.toKey())
+                        ), true)
+                .addField(LanguageUtil.getString(guild, Bundle.CAPTION, "music_track_duration"),
+                        "⏱ " + TimeUtil.toTime(track.getDuration()), true)
+                .setFooter(LanguageUtil.getArguedString(guild, Bundle.STRINGS, "music_submitted_by", requesterName) + (!queue.isEmpty() && !isLoopingQueue() ? " • " + LanguageUtil.getArguedString(guild, Bundle.CAPTION, "remaining_tracks", queue.size()) : ""), requesterAvatarUrl)
+                .build();
+
+        if (nowPlayingMessageId > 0 && musicPlayer.getTextChannel().getLatestMessageIdLong() == nowPlayingMessageId) {
+            musicPlayer.getTextChannel().getMessageById(nowPlayingMessageId).queue(
+                    msg -> msg.editMessage(embed).queue(),
+                    t -> musicPlayer.getTextChannel().sendMessage(embed).queue(message -> nowPlayingMessageId = message.getIdLong())
+            );
+        } else {
+            if (guild.getSelfMember().hasPermission(Permission.MESSAGE_HISTORY, Permission.MESSAGE_MANAGE))
+                musicPlayer.getTextChannel().getMessageById(nowPlayingMessageId).queue(message -> message.delete().queue(), t -> {
+                });
+            musicPlayer.getTextChannel().sendMessage(embed).queue(message -> nowPlayingMessageId = message.getIdLong());
+        }
     }
 
     @Override

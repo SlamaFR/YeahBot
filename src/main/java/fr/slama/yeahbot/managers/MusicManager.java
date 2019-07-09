@@ -163,7 +163,7 @@ public class MusicManager {
                                 for (String c : r) {
                                     AudioTrack track = playlist.getTracks().get(c.charAt(0) - '\u0030' - 1);
                                     if (trackList.length() > 1) trackList.append("\n");
-                                    trackList.append(String.format("● `%s`", track.getInfo().title));
+                                    trackList.append(String.format("● %s", track.getInfo().title));
                                 }
                                 textChannel.sendMessage(
                                         new EmbedBuilder()
