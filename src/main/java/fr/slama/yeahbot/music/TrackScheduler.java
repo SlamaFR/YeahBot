@@ -132,16 +132,18 @@ public class TrackScheduler extends AudioEventAdapter {
         }
     }
 
-    @Override
-    public void onPlayerPause(AudioPlayer player) {
-        musicPlayer.getTextChannel().sendMessage(
+    void pause(boolean tell) {
+        musicPlayer.getAudioPlayer().setPaused(true);
+        assert musicPlayer.getTextChannel() != null;
+        if (tell) musicPlayer.getTextChannel().sendMessage(
                 LanguageUtil.getString(musicPlayer.getGuild(), Bundle.STRINGS, "music_paused")
         ).queue();
     }
 
-    @Override
-    public void onPlayerResume(AudioPlayer player) {
-        musicPlayer.getTextChannel().sendMessage(
+    void resume(boolean tell) {
+        musicPlayer.getAudioPlayer().setPaused(false);
+        assert musicPlayer.getTextChannel() != null;
+        if (tell) musicPlayer.getTextChannel().sendMessage(
                 LanguageUtil.getString(musicPlayer.getGuild(), Bundle.STRINGS, "music_resumed")
         ).queue();
     }
