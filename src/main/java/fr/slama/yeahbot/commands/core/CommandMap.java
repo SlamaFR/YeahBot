@@ -28,8 +28,8 @@ import java.util.*;
 public class CommandMap {
 
     private static final String DEFAULT_PREFIX = "!";
+    private static final Logger LOGGER = LoggerFactory.getLogger(CommandMap.class);
 
-    private final Logger LOGGER = LoggerFactory.getLogger(getClass());
     private final Map<String, BotCommand> commands = new HashMap<>();
     private final List<BotCommand> disabledCommand = new ArrayList<>();
     private final List<BotCommand> registry = new ArrayList<>();

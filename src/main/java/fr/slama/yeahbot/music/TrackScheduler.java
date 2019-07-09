@@ -13,6 +13,7 @@ import fr.slama.yeahbot.utilities.EmoteUtil;
 import fr.slama.yeahbot.utilities.LanguageUtil;
 import fr.slama.yeahbot.utilities.TimeUtil;
 import net.dv8tion.jda.core.EmbedBuilder;
+import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -163,7 +164,7 @@ public class TrackScheduler extends AudioEventAdapter {
         if (RedisData.getSettings(guild).playerSequence.equals(PlayerSequence.LOOP) && nowPlayingMessageId > 0L)
             return;
 
-        if (nowPlayingMessageId > 0L)
+        if (nowPlayingMessageId > 0L && guild.getSelfMember().hasPermission(Permission.MESSAGE_HISTORY, Permission.MESSAGE_MANAGE))
             musicPlayer.getTextChannel().getMessageById(nowPlayingMessageId).queue(message -> message.delete().queue());
 
         String requesterName = musicPlayer.getGuild().getMemberById(currentRequesterId).getEffectiveName();
@@ -176,24 +177,18 @@ public class TrackScheduler extends AudioEventAdapter {
                                 LanguageUtil.getString(guild, Bundle.CAPTION, "now_playing"),
                                 LanguageUtil.getArguedString(guild, Bundle.STRINGS, "music_track", track.getInfo().title, track.getInfo().uri),
                                 false)
-                        .addField(
-                                LanguageUtil.getString(guild, Bundle.CAPTION, "music_player_volume"),
+                        .addField(LanguageUtil.getString(guild, Bundle.CAPTION, "music_player_volume"),
                                 String.format("%s %d%%",
                                         EmoteUtil.getVolumeEmote(musicPlayer.getAudioPlayer().getVolume()),
                                         musicPlayer.getAudioPlayer().getVolume()
-                                ),
-                                true)
-                        .addField(
-                                LanguageUtil.getString(guild, Bundle.CAPTION, "music_player_sequence"),
+                                ), true)
+                        .addField(LanguageUtil.getString(guild, Bundle.CAPTION, "music_player_sequence"),
                                 String.format("%s %s",
                                         EmoteUtil.getSequenceEmote(RedisData.getSettings(guild).playerSequence),
                                         LanguageUtil.getString(guild, Bundle.CAPTION, RedisData.getSettings(guild).playerSequence.toKey())
-                                ),
-                                true)
-                        .addField(
-                                LanguageUtil.getString(guild, Bundle.CAPTION, "music_track_duration"),
-                                "⏱ " + TimeUtil.toTime(track.getDuration()),
-                                true)
+                                ), true)
+                        .addField(LanguageUtil.getString(guild, Bundle.CAPTION, "music_track_duration"),
+                                "⏱ " + TimeUtil.toTime(track.getDuration()), true)
                         .setFooter(LanguageUtil.getArguedString(guild, Bundle.STRINGS, "music_submitted_by", requesterName) + (!queue.isEmpty() && !isLoopingQueue() ? " • " + LanguageUtil.getArguedString(guild, Bundle.CAPTION, "remaining_tracks", queue.size()) : ""), requesterAvatarUrl)
                         .build()
         ).queue(message -> nowPlayingMessageId = message.getIdLong());
@@ -213,8 +208,7 @@ public class TrackScheduler extends AudioEventAdapter {
                 new EmbedBuilder()
                         .setColor(ColorUtil.RED)
                         .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "error"))
-                        .setDescription(LanguageUtil.getString(guild, Bundle.ERROR, "something_went_wrong") +
-                                "\n" + String.format("```\n%s\n```", exception.getMessage()))
+                        .setDescription(String.format("%s\n```\n%s\n```", LanguageUtil.getString(guild, Bundle.ERROR, "something_went_wrong"), exception.getMessage()))
                         .build()
         ).queue();
         super.onTrackException(player, track, exception);
