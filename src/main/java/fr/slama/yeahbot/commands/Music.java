@@ -14,7 +14,10 @@ import fr.slama.yeahbot.music.Track;
 import fr.slama.yeahbot.redis.RedisData;
 import fr.slama.yeahbot.redis.buckets.Playlists;
 import fr.slama.yeahbot.redis.buckets.Settings;
-import fr.slama.yeahbot.utilities.*;
+import fr.slama.yeahbot.utilities.ColorUtil;
+import fr.slama.yeahbot.utilities.EmoteUtil;
+import fr.slama.yeahbot.utilities.LanguageUtil;
+import fr.slama.yeahbot.utilities.TimeUtil;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
@@ -506,6 +509,7 @@ public class Music {
 
     @Command(name = "playlist",
             aliases = "pl",
+            discordPermission = {Permission.VOICE_SPEAK, Permission.VOICE_CONNECT},
             category = Command.CommandCategory.MUSIC,
             executor = Command.CommandExecutor.USER)
     private void playlist(Guild guild, TextChannel textChannel, Member member, String[] args, BotCommand cmd) {
@@ -546,18 +550,9 @@ public class Music {
         URL url = null;
         Playlists playlists = RedisData.getPlaylists(guild);
 
-        for (int i = 0; i < args.length; i++) {
-            String s = args[i];
+        for (String s : args) {
             try {
                 url = new URL(s);
-
-                if (i == args.length - 1) {
-                    textChannel.sendMessage(
-                            new CommandError(cmd, cmd.getArguments(guild)[0], guild, CommandError.ErrorType.MISSING_VALUE).toEmbed()
-                    ).queue();
-                    return;
-                }
-
                 break;
             } catch (MalformedURLException e) {
                 if (builder.length() > 1) builder.append(" ");
@@ -565,7 +560,7 @@ public class Music {
             }
         }
 
-        if (args.length == 0) {
+        if (builder.length() < 1) {
             textChannel.sendMessage(
                     new CommandError(cmd, cmd.getArguments(guild)[0], guild, CommandError.ErrorType.MISSING_VALUE).toEmbed()
             ).queue();
