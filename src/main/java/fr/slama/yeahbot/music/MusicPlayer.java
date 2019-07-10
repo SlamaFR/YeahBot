@@ -65,6 +65,10 @@ public class MusicPlayer {
             trackScheduler.getQueue().offerLast(track);
     }
 
+    public synchronized void stop() {
+        trackScheduler.stop();
+    }
+
     public synchronized void pause(boolean tell) {
         trackScheduler.pause(tell);
     }
