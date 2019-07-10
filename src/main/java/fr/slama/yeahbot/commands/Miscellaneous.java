@@ -163,6 +163,7 @@ public class Miscellaneous {
                                 },
                                 false
                         ));
+            default:
         }
 
     }
@@ -195,9 +196,7 @@ public class Miscellaneous {
                 LOGGER.info(String.format("Ping : %sms", ping));
                 break;
             default:
-                break;
         }
-
 
     }
 
