@@ -1,0 +1,38 @@
+{
+  "version": "1.4.0",
+  "date": 1562709600000,
+  "fr": {
+    "title": "Bulletin de mise à jour",
+    "adds": [
+      "Les logs de modération sont désormais envoyés dans '#yeahbot-mod' si le salon existe.",
+      "Le lecteur audio se met désormais en pause quand tout le monde a le son coupé."
+    ],
+    "removes": [],
+    "changes": [
+      "Les erreurs liées au chargement des musiques expirent désormais.",
+      "Le lecteur audio attend maintenant 1 minute avant de quitter le salon lorsqu'il n'y a plus personne.",
+      "Le message de lecture en cours édite désormais le précédent si aucun message n'a été envoyé depuis.",
+      "Le constructeur d'embed ne réagit plus qu'aux messages envoyés dans le salon.",
+      "Résolution d'un bug avec la commande 'addplaylist'.",
+      "Résolution d'un bug avec la commande 'prune'."
+    ],
+    "coming": []
+  },
+  "en": {
+    "title": "Update report",
+    "adds": [
+      "Moderation logs are now sent in '#yeahbot-mod' if channel exists.",
+      "Audio player now pauses when everyone in the channel is deaf."
+    ],
+    "removes": [],
+    "changes": [
+      "Errors related to musics loading now expire.",
+      "Audio player now waits 1 minute before leaving when there is not anybody.",
+      "The now playing message now edits the precedent if no message has been sent since.",
+      "The embed builder now only reacts to messages sent in the channel.",
+      "Fixed a bug with the 'addplaylist' command.",
+      "Fixed a bug with the 'prune' command."
+    ],
+    "coming": []
+  }
+}
