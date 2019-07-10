@@ -69,6 +69,8 @@ public class Moderation {
                 .filter(msg -> message.getMentionedMembers().size() == 0 || message.getMentionedMembers().contains(msg.getMember()))
                 .collect(Collectors.toList());
 
+        if (!messages.contains(message)) messages.add(message);
+
         EmbedBuilder builder = new EmbedBuilder()
                 .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "please_wait"))
                 .setDescription(LanguageUtil.getString(guild, Bundle.CAPTION, "deleting"))
