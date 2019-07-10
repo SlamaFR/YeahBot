@@ -1,6 +1,7 @@
 package fr.slama.yeahbot.commands;
 
 import fr.slama.yeahbot.YeahBot;
+import fr.slama.yeahbot.blub.Paginator;
 import fr.slama.yeahbot.commands.core.BotCommand;
 import fr.slama.yeahbot.commands.core.Command;
 import fr.slama.yeahbot.commands.core.CommandError;
@@ -15,7 +16,6 @@ import fr.slama.yeahbot.redis.buckets.Settings;
 import fr.slama.yeahbot.utilities.ColorUtil;
 import fr.slama.yeahbot.utilities.GuildUtil;
 import fr.slama.yeahbot.utilities.LanguageUtil;
-import fr.slama.yeahbot.blub.Paginator;
 import net.dv8tion.jda.bot.sharding.ShardManager;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
@@ -69,7 +69,7 @@ public class Miscellaneous {
                     .setDescription(
                             LanguageUtil.getArguedString(guild, Bundle.STRINGS, "help", CommandMap.getPrefix(guild))
                     )
-                    .setFooter(LanguageUtil.getString(guild, Bundle.CAPTION, "one_minute_expiration"), null);
+                    .setFooter(LanguageUtil.getTimeExpiration(guild, 1, TimeUnit.MINUTES), null);
 
             for (Command.CommandCategory category : Command.CommandCategory.values()) {
 
@@ -143,7 +143,7 @@ public class Miscellaneous {
                 textChannel.sendMessage(new EmbedBuilder()
                         .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "question"))
                         .setDescription(LanguageUtil.getString(guild, Bundle.STRINGS, "are_you_sure"))
-                        .setFooter(LanguageUtil.getString(guild, Bundle.CAPTION, "one_minute_expiration"), null)
+                        .setFooter(LanguageUtil.getTimeExpiration(guild, 1, TimeUnit.MINUTES), null)
                         .build()).queue(message ->
                         //TODO: rework using EventWaiter
                         new SelectionListener(

@@ -1,6 +1,7 @@
 package fr.slama.yeahbot.managers;
 
 import fr.slama.yeahbot.YeahBot;
+import fr.slama.yeahbot.blub.EventWaiter;
 import fr.slama.yeahbot.language.Bundle;
 import fr.slama.yeahbot.redis.RedisData;
 import fr.slama.yeahbot.redis.buckets.Settings;
@@ -9,7 +10,6 @@ import fr.slama.yeahbot.settings.IgnoreSetting;
 import fr.slama.yeahbot.settings.LongType;
 import fr.slama.yeahbot.utilities.ColorUtil;
 import fr.slama.yeahbot.utilities.EmoteUtil;
-import fr.slama.yeahbot.blub.EventWaiter;
 import fr.slama.yeahbot.utilities.LanguageUtil;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.*;
@@ -135,7 +135,7 @@ public class SettingsManager {
                         .setTitle(LanguageUtil.getString(guild, Bundle.SETTINGS, getSettingKey(field)))
                         .setDescription(LanguageUtil.getArguedString(guild, Bundle.STRINGS, "current_value",
                                 LanguageUtil.getState(guild, field.getBoolean(settings))))
-                        .setFooter(LanguageUtil.getString(guild, Bundle.CAPTION, "thirty_seconds_expiration"), null)
+                        .setFooter(LanguageUtil.getTimeExpiration(guild, 30, TimeUnit.SECONDS), null)
                         .build()
         ).queue(message -> {
             List<String> choices = EmoteUtil.getQuestionEmotes();

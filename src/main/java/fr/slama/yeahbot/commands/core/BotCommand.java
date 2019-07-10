@@ -126,7 +126,7 @@ public final class BotCommand {
             String permissionCaption = LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "permission");
             String aliasesCaption = LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "aliases");
             String argumentsCaption = LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "arguments");
-            String expirationCaption = LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "thirty_seconds_expiration");
+            String expirationCaption = LanguageUtil.getTimeExpiration(textChannel.getGuild(), 30, TimeUnit.SECONDS);
 
             String[] arguments = getArguments(textChannel.getGuild());
             String[] argumentsDescription = LanguageUtil.getString(textChannel.getGuild(), Bundle.ARGUMENTS_DESCRIPTION, name).split("§");

@@ -275,7 +275,7 @@ public class Moderation {
                 new EmbedBuilder()
                         .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "question"))
                         .setDescription(LanguageUtil.getString(guild, Bundle.STRINGS, "are_you_sure"))
-                        .setFooter(LanguageUtil.getString(guild, Bundle.CAPTION, "one_minute_expiration"), null)
+                        .setFooter(LanguageUtil.getTimeExpiration(guild, 1, TimeUnit.MINUTES), null)
                         .build()
         ).queue(msg -> new SelectionListener(
                 msg,

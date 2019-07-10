@@ -137,7 +137,7 @@ public class MusicManager {
                         textChannel.sendMessage(new EmbedBuilder()
                                 .addField(LanguageUtil.getString(guild, Bundle.CAPTION, "search_results"), results.toString(), false)
                                 .addField(LanguageUtil.getString(guild, Bundle.CAPTION, "more_results"), LanguageUtil.getArguedString(guild, Bundle.STRINGS, "results_page", url), false)
-                                .setFooter(LanguageUtil.getString(guild, Bundle.CAPTION, "thirty_seconds_expiration"), null)
+                                .setFooter(LanguageUtil.getTimeExpiration(guild, 30, TimeUnit.SECONDS), null)
                                 .build()).queue(message -> new SelectionListener(message, member.getUser(), 30 * 1000, SelectionListener.get(playlist.getTracks().size() > maxResults ? maxResults : playlist.getTracks().size()), r -> {
 
                             if (member.getVoiceState().getChannel() == null) {
