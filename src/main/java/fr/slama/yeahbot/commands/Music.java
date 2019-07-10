@@ -176,8 +176,7 @@ public class Music {
 
         if (player.getAudioPlayer().getPlayingTrack() == null) return;
 
-        if (manager.getPlayer(guild).getAudioPlayer().isPaused())
-            player.resume(true);
+        if (player.getAudioPlayer().isPaused()) player.resume(true);
         else player.pause(true);
 
     }
