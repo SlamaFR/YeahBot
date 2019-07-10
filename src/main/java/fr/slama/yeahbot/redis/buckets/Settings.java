@@ -15,6 +15,8 @@ import java.util.Map;
 
 import static fr.slama.yeahbot.blub.Sanction.Type.*;
 import static fr.slama.yeahbot.settings.AvailableVariables.Variables.*;
+import static fr.slama.yeahbot.settings.LongType.Type.CHANNEL;
+import static fr.slama.yeahbot.settings.LongType.Type.ROLE;
 import static java.util.concurrent.TimeUnit.*;
 
 /**
@@ -26,7 +28,7 @@ public class Settings {
     public String prefix = "!";
     @IgnoreSetting
     public String locale = Language.ENGLISH;
-    @LongType(type = LongType.Type.ROLE)
+    @LongType(type = ROLE)
     public long muteRole = 0L;
 
     @IgnoreSetting
@@ -83,9 +85,9 @@ public class Settings {
     public boolean sayWelcome = false;
     public boolean sayGoodbye = false;
 
-    @LongType(type = LongType.Type.CHANNEL)
+    @LongType(type = CHANNEL)
     public long joinLeaveChannel = 0L;
-    @LongType(type = LongType.Type.CHANNEL)
+    @LongType(type = CHANNEL)
     public long updateChannel = 0L;
 
     @AvailableVariables(variables = {USER, GUILD, COUNT})
