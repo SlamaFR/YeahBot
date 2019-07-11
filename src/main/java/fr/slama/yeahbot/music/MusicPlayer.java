@@ -64,16 +64,4 @@ public class MusicPlayer {
         if (trackScheduler.isLoopingQueue())
             trackScheduler.getQueue().offerLast(track);
     }
-
-    public synchronized void stop() {
-        trackScheduler.stop();
-    }
-
-    public synchronized void pause(boolean tell) {
-        trackScheduler.pause(tell);
-    }
-
-    public synchronized void resume(boolean tell) {
-        trackScheduler.resume(tell);
-    }
 }
