@@ -176,9 +176,7 @@ public class Music {
 
         if (player.getAudioPlayer().getPlayingTrack() == null) return;
 
-        if (player.getAudioPlayer().isPaused()) player.resume(true);
-        else player.pause(true);
-
+        player.getTrackScheduler().togglePause();
     }
 
     @Command(name = "nowplaying",

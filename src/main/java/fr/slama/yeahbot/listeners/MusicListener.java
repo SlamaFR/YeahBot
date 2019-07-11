@@ -4,6 +4,7 @@ import fr.slama.yeahbot.YeahBot;
 import fr.slama.yeahbot.blub.TaskScheduler;
 import fr.slama.yeahbot.language.Bundle;
 import fr.slama.yeahbot.managers.MusicManager;
+import fr.slama.yeahbot.music.MusicPlayer;
 import fr.slama.yeahbot.utilities.ColorUtil;
 import fr.slama.yeahbot.utilities.LanguageUtil;
 import net.dv8tion.jda.core.EmbedBuilder;
@@ -61,16 +62,18 @@ public class MusicListener extends ListenerAdapter {
 
         Guild guild = event.getGuild();
         VoiceChannel channel = event.getVoiceState().getChannel();
+        MusicPlayer player = manager.getPlayer(guild);
 
         if (channel != event.getGuild().getSelfMember().getVoiceState().getChannel()) return;
+        if (player.getTrackScheduler().isUserPaused()) return;
 
         List<Member> members = channel.getMembers().stream().filter(m -> !m.getUser().isBot()).collect(Collectors.toList());
         List<Member> deafMembers = members.stream().filter(m -> m.getVoiceState().isDeafened()).collect(Collectors.toList());
 
         if (deafMembers.size() < members.size()) {
-            manager.getPlayer(guild).resume(false);
+            player.getTrackScheduler().resume(false);
         } else {
-            manager.getPlayer(guild).pause(false);
+            player.getTrackScheduler().pause(false);
         }
     }
 
@@ -114,11 +117,11 @@ public class MusicListener extends ListenerAdapter {
 
         textChannel.sendMessage(embed).queue(message -> leavingMessages.put(guild, message.getIdLong()));
 
-        manager.getPlayer(guild).pause(false);
+        manager.getPlayer(guild).getTrackScheduler().pause(false);
         leavingTasks.put(guild, TaskScheduler.scheduleDelayed(() -> {
             if (leavingMessages.containsKey(guild)) tell(textChannel, leavingMessages.get(guild));
-            manager.getPlayer(guild).stop();
-            manager.getPlayer(guild).resume(false);
+            manager.getPlayer(guild).getTrackScheduler().stop();
+            manager.getPlayer(guild).getTrackScheduler().resume(false);
         }, 60 * 1000));
     }
 
@@ -128,7 +131,7 @@ public class MusicListener extends ListenerAdapter {
         if (leavingTasks.containsKey(guild)) leavingTasks.remove(guild).stop();
         if (leavingMessages.containsKey(guild))
             textChannel.getMessageById(leavingMessages.remove(guild)).queue(message -> message.delete().queue());
-        manager.getPlayer(guild).resume(false);
+        manager.getPlayer(guild).getTrackScheduler().resume(false);
     }
 
     private void tell(TextChannel textChannel, long messageId) {

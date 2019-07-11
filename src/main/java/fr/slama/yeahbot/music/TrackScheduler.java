@@ -34,6 +34,7 @@ public class TrackScheduler extends AudioEventAdapter {
 
     private long nowPlayingMessageId = 0L;
     private long currentRequesterId = 0L;
+    private boolean userPaused = false;
     private Track currentTrack;
     private List<Long> votingUsers;
 
@@ -43,10 +44,6 @@ public class TrackScheduler extends AudioEventAdapter {
         this.musicPlayer = musicPlayer;
         this.players = players;
         this.guild = musicPlayer.getGuild();
-    }
-
-    public LinkedList<Track> getQueue() {
-        return queue;
     }
 
     void addToQueue(Track track, boolean firstPosition, boolean canShuffle) {
@@ -64,6 +61,26 @@ public class TrackScheduler extends AudioEventAdapter {
 
     void skip() {
         startNextTrack(false);
+    }
+
+    public void togglePause() {
+        if (userPaused) resume(true);
+        else pause(true);
+        userPaused = !userPaused;
+    }
+
+    public void stop() {
+        musicPlayer.getAudioPlayer().stopTrack();
+        musicPlayer.getAudioPlayer().destroy();
+        musicPlayer.getAudioPlayer().removeListener(this);
+        musicPlayer.setTextChannel(null);
+        players.remove(guild.getIdLong());
+        guild.getAudioManager().closeAudioConnection();
+        currentTrack = null;
+        currentRequesterId = 0L;
+        nowPlayingMessageId = 0L;
+        playedTrack = 0;
+        userPaused = false;
     }
 
     private void startNextTrack(boolean noInterrupt) {
@@ -98,17 +115,25 @@ public class TrackScheduler extends AudioEventAdapter {
         stop();
     }
 
-    public void stop() {
-        musicPlayer.getAudioPlayer().stopTrack();
-        musicPlayer.getAudioPlayer().destroy();
-        musicPlayer.getAudioPlayer().removeListener(this);
-        musicPlayer.setTextChannel(null);
-        players.remove(guild.getIdLong());
-        guild.getAudioManager().closeAudioConnection();
-        currentTrack = null;
-        currentRequesterId = 0L;
-        nowPlayingMessageId = 0L;
-        playedTrack = 0;
+    public void pause(boolean tell) {
+        musicPlayer.getAudioPlayer().setPaused(true);
+        assert musicPlayer.getTextChannel() != null;
+        if (tell) musicPlayer.getTextChannel().sendMessage(
+                LanguageUtil.getString(musicPlayer.getGuild(), Bundle.STRINGS, "music_paused")
+        ).queue();
+    }
+
+    public void resume(boolean tell) {
+        musicPlayer.getAudioPlayer().setPaused(false);
+        assert musicPlayer.getTextChannel() != null;
+        if (tell) musicPlayer.getTextChannel().sendMessage(
+                LanguageUtil.getString(musicPlayer.getGuild(), Bundle.STRINGS, "music_resumed")
+        ).queue();
+    }
+
+    boolean isLoopingQueue() {
+        return RedisData.getSettings(guild).playerSequence.equals(PlayerSequence.QUEUE_LOOP) ||
+                RedisData.getSettings(guild).playerSequence.equals(PlayerSequence.SHUFFLE_QUEUE_LOOP);
     }
 
     @Override
@@ -130,22 +155,6 @@ public class TrackScheduler extends AudioEventAdapter {
             }
             startNextTrack(true);
         }
-    }
-
-    void pause(boolean tell) {
-        musicPlayer.getAudioPlayer().setPaused(true);
-        assert musicPlayer.getTextChannel() != null;
-        if (tell) musicPlayer.getTextChannel().sendMessage(
-                LanguageUtil.getString(musicPlayer.getGuild(), Bundle.STRINGS, "music_paused")
-        ).queue();
-    }
-
-    void resume(boolean tell) {
-        musicPlayer.getAudioPlayer().setPaused(false);
-        assert musicPlayer.getTextChannel() != null;
-        if (tell) musicPlayer.getTextChannel().sendMessage(
-                LanguageUtil.getString(musicPlayer.getGuild(), Bundle.STRINGS, "music_resumed")
-        ).queue();
     }
 
     @Override
@@ -224,9 +233,16 @@ public class TrackScheduler extends AudioEventAdapter {
         super.onTrackException(player, track, exception);
     }
 
-    public boolean isLoopingQueue() {
-        return RedisData.getSettings(guild).playerSequence.equals(PlayerSequence.QUEUE_LOOP) ||
-                RedisData.getSettings(guild).playerSequence.equals(PlayerSequence.SHUFFLE_QUEUE_LOOP);
+    public boolean isUserPaused() {
+        return userPaused;
+    }
+
+    public LinkedList<Track> getQueue() {
+        return queue;
+    }
+
+    public List<Long> getVotingUsers() {
+        return votingUsers;
     }
 
     public Track getCurrentTrack() {
@@ -235,9 +251,5 @@ public class TrackScheduler extends AudioEventAdapter {
 
     public long getCurrentRequesterId() {
         return currentRequesterId;
-    }
-
-    public List<Long> getVotingUsers() {
-        return votingUsers;
     }
 }
