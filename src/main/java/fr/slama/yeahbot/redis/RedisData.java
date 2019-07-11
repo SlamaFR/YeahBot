@@ -15,142 +15,74 @@ import java.sql.SQLException;
  */
 public class RedisData {
 
-    private static String getSettingsKey(Guild guild) {
-        return String.format("%s:settings", guild.getId());
+    private static <T> String getKey(T t, Guild guild) {
+        return String.format("%s:%s", guild.getId(), t.getClass().getSimpleName().toLowerCase());
     }
 
-    private static String getReportsKey(Guild guild) {
-        return String.format("%s:reports", guild.getId());
-    }
-
-    private static String getMutesKey(Guild guild) {
-        return String.format("%s:mutes", guild.getId());
-    }
-
-    private static String getChannelsKey(Guild guild) {
-        return String.format("%s:channels", guild.getId());
-    }
-
-    private static String getPlaylistsKey(Guild guild) {
-        return String.format("%s:playlists", guild.getId());
-    }
-
-
-    public static Settings getSettings(Guild guild) {
-        RBucket<Settings> bucket = RedisAccess.getInstance().getRedissonClient().getBucket(getSettingsKey(guild));
-        Settings settings = bucket.get();
+    private static <T> T getObject(Class<T> tClass, Guild guild) {
+        RBucket<T> bucket = RedisAccess.getInstance().getRedissonClient().getBucket(getKey(tClass, guild));
+        T settings = bucket.get();
         if (settings == null) {
             try {
-                PreparedStatement statement = YeahBot.getInstance().getDatabaseManager().getConnection().prepareStatement("SELECT `SETTINGS` FROM `guild_settings` WHERE `GUILD_ID` = (?)");
-                statement.setLong(1, guild.getIdLong());
-                ResultSet resultSet = statement.executeQuery();
-                if (resultSet.next()) settings = new Gson().fromJson(resultSet.getString("SETTINGS"), Settings.class);
-                else settings = new Settings();
-            } catch (SQLException | NullPointerException e) {
-                settings = new Settings();
+                try {
+                    PreparedStatement statement = YeahBot.getInstance().getDatabaseManager().getConnection().prepareStatement("SELECT `SETTINGS` FROM `guild_settings` WHERE `GUILD_ID` = (?)");
+                    statement.setLong(1, guild.getIdLong());
+                    ResultSet resultSet = statement.executeQuery();
+                    if (resultSet.next()) settings = new Gson().fromJson(resultSet.getString("SETTINGS"), tClass);
+                    else settings = tClass.newInstance();
+                } catch (SQLException | NullPointerException e) {
+                    settings = tClass.newInstance();
+                }
+            } catch (IllegalAccessException | InstantiationException ignored) {
             }
             bucket.set(settings);
         }
         return settings;
     }
 
-    public static void setSettings(Guild guild, Settings settings) {
-        RBucket<Settings> bucket = RedisAccess.getInstance().getRedissonClient().getBucket(getSettingsKey(guild));
-        bucket.set(settings);
+    private static <T> void setObject(Guild guild, T t) {
+        RBucket<T> bucket = RedisAccess.getInstance().getRedissonClient().getBucket(getKey(t, guild));
+        bucket.set(t);
+    }
+
+    public static Settings getSettings(Guild guild) {
+        return getObject(Settings.class, guild);
     }
 
     public static Reports getReports(Guild guild) {
-        RBucket<Reports> bucket = RedisAccess.getInstance().getRedissonClient().getBucket(getReportsKey(guild));
-        Reports reports = bucket.get();
-        if (reports == null) {
-            try {
-                PreparedStatement statement = YeahBot.getInstance().getDatabaseManager().getConnection().prepareStatement("SELECT `REPORTS` FROM `guild_reports` WHERE `GUILD_ID` = (?)");
-                statement.setLong(1, guild.getIdLong());
-                ResultSet resultSet = statement.executeQuery();
-                if (resultSet.next()) reports = new Gson().fromJson(resultSet.getString("REPORTS"), Reports.class);
-                else reports = new Reports();
-            } catch (SQLException | NullPointerException e) {
-                reports = new Reports();
-            }
-            bucket.set(reports);
-        }
-        return reports;
-    }
-
-    public static void setReports(Guild guild, Reports reports) {
-        RBucket<Reports> bucket = RedisAccess.getInstance().getRedissonClient().getBucket(getReportsKey(guild));
-        bucket.set(reports);
+        return getObject(Reports.class, guild);
     }
 
     public static Mutes getMutes(Guild guild) {
-        RBucket<Mutes> bucket = RedisAccess.getInstance().getRedissonClient().getBucket(getMutesKey(guild));
-        Mutes mutes = bucket.get();
-        if (mutes == null) {
-            try {
-                PreparedStatement statement = YeahBot.getInstance().getDatabaseManager().getConnection().prepareStatement("SELECT `MUTES` FROM `guild_mutes` WHERE `GUILD_ID` = (?)");
-                statement.setLong(1, guild.getIdLong());
-                ResultSet resultSet = statement.executeQuery();
-                if (resultSet.next()) mutes = new Gson().fromJson(resultSet.getString("SETTINGS"), Mutes.class);
-                else mutes = new Mutes();
-            } catch (SQLException | NullPointerException e) {
-                mutes = new Mutes();
-            }
-            bucket.set(mutes);
-        }
-        return mutes;
-    }
-
-    public static void setMutes(Guild guild, Mutes mutes) {
-        RBucket<Mutes> bucket = RedisAccess.getInstance().getRedissonClient().getBucket(getMutesKey(guild));
-        bucket.set(mutes);
+        return getObject(Mutes.class, guild);
     }
 
     public static PrivateChannels getPrivateChannels(Guild guild) {
-        RBucket<PrivateChannels> bucket = RedisAccess.getInstance().getRedissonClient().getBucket(getChannelsKey(guild));
-        PrivateChannels channels = bucket.get();
-        if (channels == null) {
-            try {
-                PreparedStatement statement = YeahBot.getInstance().getDatabaseManager().getConnection().prepareStatement("SELECT `CHANNELS` FROM `guild_channels` WHERE `GUILD_ID` = (?)");
-                statement.setLong(1, guild.getIdLong());
-                ResultSet resultSet = statement.executeQuery();
-                if (resultSet.next())
-                    channels = new Gson().fromJson(resultSet.getString("CHANNELS"), PrivateChannels.class);
-                else channels = new PrivateChannels();
-            } catch (SQLException | NullPointerException e) {
-                channels = new PrivateChannels();
-            }
-            bucket.set(channels);
-        }
-        return channels;
-    }
-
-    public static void setPrivateChannels(Guild guild, PrivateChannels channels) {
-        RBucket<PrivateChannels> bucket = RedisAccess.getInstance().getRedissonClient().getBucket(getChannelsKey(guild));
-        bucket.set(channels);
+        return getObject(PrivateChannels.class, guild);
     }
 
     public static Playlists getPlaylists(Guild guild) {
-        RBucket<Playlists> bucket = RedisAccess.getInstance().getRedissonClient().getBucket(getPlaylistsKey(guild));
-        Playlists playlists = bucket.get();
-        if (playlists == null) {
-            try {
-                PreparedStatement statement = YeahBot.getInstance().getDatabaseManager().getConnection().prepareStatement("SELECT `PLAYLISTS` FROM `guild_playlists` WHERE `GUILD_ID` = (?)");
-                statement.setLong(1, guild.getIdLong());
-                ResultSet resultSet = statement.executeQuery();
-                if (resultSet.next())
-                    playlists = new Gson().fromJson(resultSet.getString("PLAYLISTS"), Playlists.class);
-                else playlists = new Playlists();
-            } catch (SQLException | NullPointerException e) {
-                playlists = new Playlists();
-            }
-            bucket.set(playlists);
-        }
-        return playlists;
+        return getObject(Playlists.class, guild);
+    }
+
+    public static void setSettings(Guild guild, Settings settings) {
+        setObject(guild, settings);
+    }
+
+    public static void setReports(Guild guild, Reports reports) {
+        setObject(guild, reports);
+    }
+
+    public static void setMutes(Guild guild, Mutes mutes) {
+        setObject(guild, mutes);
+    }
+
+    public static void setPrivateChannels(Guild guild, PrivateChannels channels) {
+        setObject(guild, channels);
     }
 
     public static void setPlaylists(Guild guild, Playlists playlists) {
-        RBucket<Playlists> bucket = RedisAccess.getInstance().getRedissonClient().getBucket(getPlaylistsKey(guild));
-        bucket.set(playlists);
+        setObject(guild, playlists);
     }
 
 }
