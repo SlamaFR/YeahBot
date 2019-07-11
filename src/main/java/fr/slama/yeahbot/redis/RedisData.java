@@ -21,23 +21,23 @@ public class RedisData {
 
     private static <T> T getObject(Class<T> tClass, Guild guild) {
         RBucket<T> bucket = RedisAccess.getInstance().getRedissonClient().getBucket(getKey(tClass, guild));
-        T settings = bucket.get();
-        if (settings == null) {
+        T t = bucket.get();
+        if (t == null) {
             try {
                 try {
                     PreparedStatement statement = YeahBot.getInstance().getDatabaseManager().getConnection().prepareStatement("SELECT `SETTINGS` FROM `guild_settings` WHERE `GUILD_ID` = (?)");
                     statement.setLong(1, guild.getIdLong());
                     ResultSet resultSet = statement.executeQuery();
-                    if (resultSet.next()) settings = new Gson().fromJson(resultSet.getString("SETTINGS"), tClass);
-                    else settings = tClass.newInstance();
+                    if (resultSet.next()) t = new Gson().fromJson(resultSet.getString("SETTINGS"), tClass);
+                    else t = tClass.newInstance();
                 } catch (SQLException | NullPointerException e) {
-                    settings = tClass.newInstance();
+                    t = tClass.newInstance();
                 }
             } catch (IllegalAccessException | InstantiationException ignored) {
             }
-            bucket.set(settings);
+            bucket.set(t);
         }
-        return settings;
+        return t;
     }
 
     private static <T> void setObject(Guild guild, T t) {
