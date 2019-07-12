@@ -1,4 +1,4 @@
-package fr.slama.yeahbot.music;
+package fr.slama.yeahbot.blub;
 
 /**
  * Created on 24/01/2019.

@@ -1,4 +1,4 @@
-package fr.slama.yeahbot.music;
+package fr.slama.yeahbot.blub;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 

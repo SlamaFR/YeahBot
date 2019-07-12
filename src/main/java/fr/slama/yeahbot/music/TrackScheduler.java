@@ -6,6 +6,7 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import fr.slama.yeahbot.YeahBot;
+import fr.slama.yeahbot.blub.Track;
 import fr.slama.yeahbot.language.Bundle;
 import fr.slama.yeahbot.redis.RedisData;
 import fr.slama.yeahbot.utilities.ColorUtil;

@@ -2,6 +2,8 @@ package fr.slama.yeahbot.commands;
 
 import fr.slama.yeahbot.YeahBot;
 import fr.slama.yeahbot.blub.Paginator;
+import fr.slama.yeahbot.blub.Playlist;
+import fr.slama.yeahbot.blub.Track;
 import fr.slama.yeahbot.commands.core.BotCommand;
 import fr.slama.yeahbot.commands.core.Command;
 import fr.slama.yeahbot.commands.core.CommandError;
@@ -9,8 +11,6 @@ import fr.slama.yeahbot.language.Bundle;
 import fr.slama.yeahbot.managers.MusicManager;
 import fr.slama.yeahbot.music.MusicPlayer;
 import fr.slama.yeahbot.music.PlayerSequence;
-import fr.slama.yeahbot.music.Playlist;
-import fr.slama.yeahbot.music.Track;
 import fr.slama.yeahbot.redis.RedisData;
 import fr.slama.yeahbot.redis.buckets.Playlists;
 import fr.slama.yeahbot.redis.buckets.Settings;

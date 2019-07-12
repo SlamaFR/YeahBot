@@ -1,7 +1,7 @@
 package fr.slama.yeahbot.redis.buckets;
 
 import com.google.gson.Gson;
-import fr.slama.yeahbot.music.Playlist;
+import fr.slama.yeahbot.blub.Playlist;
 
 import java.util.HashMap;
 import java.util.Map;

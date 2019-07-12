@@ -4,7 +4,7 @@ import fr.slama.yeahbot.blub.EventWaiter;
 import fr.slama.yeahbot.commands.core.Command;
 import fr.slama.yeahbot.language.Bundle;
 import fr.slama.yeahbot.redis.RedisData;
-import fr.slama.yeahbot.redis.buckets.PrivateChannels;
+import fr.slama.yeahbot.redis.buckets.Channels;
 import fr.slama.yeahbot.utilities.ColorUtil;
 import fr.slama.yeahbot.utilities.LanguageUtil;
 import net.dv8tion.jda.core.EmbedBuilder;
@@ -34,7 +34,7 @@ public class Util {
 
         if (guild == null) return;
 
-        PrivateChannels channels = RedisData.getPrivateChannels(guild);
+        Channels channels = RedisData.getPrivateChannels(guild);
 
         if (channels.getChannels().size() < 10) {
 

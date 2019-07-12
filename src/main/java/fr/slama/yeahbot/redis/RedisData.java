@@ -15,20 +15,25 @@ import java.sql.SQLException;
  */
 public class RedisData {
 
-    private static <T> String getKey(T t, Guild guild) {
-        return String.format("%s:%s", guild.getId(), t.getClass().getSimpleName().toLowerCase());
+    private static <T> String getSQLQuery(T t) {
+        return String.format("SELECT `%1$S` FROM `guild_%1$s` WHERE `GUILD_ID` = (?)", t.getClass().getSimpleName().toLowerCase());
     }
 
-    private static <T> T getObject(Class<T> tClass, Guild guild) {
+    private static <T> String getKey(Class<T> tClass, Guild guild) {
+        return String.format("%s:%s", guild.getId(), tClass.getSimpleName().toLowerCase());
+    }
+
+    public static <T> T getObject(Class<T> tClass, Guild guild) {
         RBucket<T> bucket = RedisAccess.getInstance().getRedissonClient().getBucket(getKey(tClass, guild));
         T t = bucket.get();
         if (t == null) {
             try {
                 try {
-                    PreparedStatement statement = YeahBot.getInstance().getDatabaseManager().getConnection().prepareStatement("SELECT `SETTINGS` FROM `guild_settings` WHERE `GUILD_ID` = (?)");
+                    PreparedStatement statement = YeahBot.getInstance().getDatabaseManager().getConnection().prepareStatement(getSQLQuery(tClass));
                     statement.setLong(1, guild.getIdLong());
                     ResultSet resultSet = statement.executeQuery();
-                    if (resultSet.next()) t = new Gson().fromJson(resultSet.getString("SETTINGS"), tClass);
+                    if (resultSet.next())
+                        t = new Gson().fromJson(resultSet.getString(tClass.getSimpleName().toUpperCase()), tClass);
                     else t = tClass.newInstance();
                 } catch (SQLException | NullPointerException e) {
                     t = tClass.newInstance();
@@ -41,7 +46,7 @@ public class RedisData {
     }
 
     private static <T> void setObject(Guild guild, T t) {
-        RBucket<T> bucket = RedisAccess.getInstance().getRedissonClient().getBucket(getKey(t, guild));
+        RBucket<T> bucket = RedisAccess.getInstance().getRedissonClient().getBucket(getKey(t.getClass(), guild));
         bucket.set(t);
     }
 
@@ -57,8 +62,8 @@ public class RedisData {
         return getObject(Mutes.class, guild);
     }
 
-    public static PrivateChannels getPrivateChannels(Guild guild) {
-        return getObject(PrivateChannels.class, guild);
+    public static Channels getPrivateChannels(Guild guild) {
+        return getObject(Channels.class, guild);
     }
 
     public static Playlists getPlaylists(Guild guild) {
@@ -77,7 +82,7 @@ public class RedisData {
         setObject(guild, mutes);
     }
 
-    public static void setPrivateChannels(Guild guild, PrivateChannels channels) {
+    public static void setPrivateChannels(Guild guild, Channels channels) {
         setObject(guild, channels);
     }
 
