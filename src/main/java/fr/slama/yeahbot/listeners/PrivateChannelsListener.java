@@ -1,7 +1,7 @@
 package fr.slama.yeahbot.listeners;
 
 import fr.slama.yeahbot.redis.RedisData;
-import fr.slama.yeahbot.redis.buckets.PrivateChannels;
+import fr.slama.yeahbot.redis.buckets.Channels;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.events.guild.voice.GuildVoiceLeaveEvent;
@@ -27,7 +27,7 @@ public class PrivateChannelsListener extends ListenerAdapter {
 
     private void deleteChannel(Guild guild, VoiceChannel voiceChannel) {
 
-        PrivateChannels channels = RedisData.getPrivateChannels(guild);
+        Channels channels = RedisData.getPrivateChannels(guild);
 
         if (channels.getChannels().contains(voiceChannel.getIdLong())) {
             voiceChannel.delete().queue(channel -> {

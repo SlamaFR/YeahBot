@@ -2,7 +2,7 @@ package fr.slama.yeahbot.tasks;
 
 import fr.slama.yeahbot.YeahBot;
 import fr.slama.yeahbot.redis.RedisData;
-import fr.slama.yeahbot.redis.buckets.PrivateChannels;
+import fr.slama.yeahbot.redis.buckets.Channels;
 import net.dv8tion.jda.core.entities.Guild;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +23,7 @@ public class PrivateChannelsTask extends TimerTask {
 
         for (Guild guild : YeahBot.getInstance().getShardManager().getGuilds()) {
 
-            PrivateChannels channels = RedisData.getPrivateChannels(guild);
+            Channels channels = RedisData.getPrivateChannels(guild);
 
             List<Long> toDelete = new ArrayList<>();
 

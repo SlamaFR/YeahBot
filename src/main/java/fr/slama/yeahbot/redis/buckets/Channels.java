@@ -8,11 +8,11 @@ import java.util.List;
 /**
  * Created on 20/11/2018.
  */
-public class PrivateChannels {
+public class Channels {
 
     private List<Long> channels = new ArrayList<>();
 
-    public PrivateChannels() {
+    public Channels() {
     }
 
     @Override
