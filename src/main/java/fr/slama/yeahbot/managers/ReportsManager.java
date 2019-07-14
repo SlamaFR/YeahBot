@@ -48,18 +48,13 @@ public class ReportsManager {
         String reason = LanguageUtil.getString(author.getGuild(), Bundle.CAPTION, "reason_spam");
         boolean applied = false;
 
-        if (settings.spamPolicy.containsKey(reports.getSpamReports().get(memberId))) {
-            applied = true;
-            settings.spamPolicy.get(reports.getSpamReports().get(memberId)).apply(textChannel, author, reason);
-        }
-
         String warning = type.getSentenceFromSettings(settings);
         if (warning.isEmpty())
             warning = LanguageUtil.getString(textChannel.getGuild(), Bundle.STRINGS, type.toWarningKey());
 
-        if (reports.getSpamReports().get(memberId) > Collections.max(settings.spamPolicy.keySet())) {
+        if (settings.spamPolicy.containsKey(reports.getSpamReports().get(memberId))) {
             applied = true;
-            settings.spamPolicy.get(Collections.max(settings.spamPolicy.keySet())).apply(textChannel, author, reason);
+            settings.spamPolicy.get(reports.getSpamReports().get(memberId)).apply(textChannel, author, reason);
         } else if (reports.getSpamReports().get(memberId) > Collections.max(settings.spamPolicy.keySet())) {
             applied = true;
             settings.spamPolicy.get(Collections.max(settings.spamPolicy.keySet())).apply(textChannel, author, reason);

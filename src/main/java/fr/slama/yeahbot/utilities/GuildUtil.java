@@ -15,7 +15,7 @@ import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
  */
 public class GuildUtil {
 
-    public static Role getMutedRole(Guild guild, boolean needed) {
+    public static Role getMutedRole(Guild guild, boolean needed) throws InsufficientPermissionException {
 
         Settings settings = RedisData.getSettings(guild);
         long id = settings.muteRole;
@@ -28,14 +28,6 @@ public class GuildUtil {
                     .setName(LanguageUtil.getString(guild, Bundle.CAPTION, "muted"))
                     .setMentionable(false)
                     .complete();
-        } catch (InsufficientPermissionException e) {
-            assert guild.getDefaultChannel() != null;
-            try {
-                if (needed)
-                    guild.getDefaultChannel().sendMessage(LanguageUtil.getString(guild, Bundle.ERROR, "cannot_create_mute_role")).queue();
-            } catch (InsufficientPermissionException ignored) {
-            }
-            return null;
         } catch (ErrorResponseException e) {
             assert guild.getDefaultChannel() != null;
             if (e.getErrorCode() == 30005 && needed) {
