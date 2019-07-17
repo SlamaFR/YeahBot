@@ -7,12 +7,15 @@ import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created on 22/09/2018.
  */
 public class CommandListener extends ListenerAdapter {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(CommandListener.class);
     private final CommandMap commandMap;
 
     public CommandListener(CommandMap commandMap) {
@@ -38,7 +41,8 @@ public class CommandListener extends ListenerAdapter {
                                 .setDescription(LanguageUtil.getArguedString(event.getGuild(), Bundle.STRINGS, "current_prefix", CommandMap.getPrefix(event.getGuild())))
                                 .build()
                 ).queue();
-            } catch (InsufficientPermissionException ignored) {
+            } catch (InsufficientPermissionException e) {
+                LOGGER.warn("Fail to send current prefix in {}.", event.getChannel());
             }
     }
 }

@@ -327,7 +327,8 @@ public class Moderation {
             if (guild.getSelfMember().getUser().getIdLong() == member.getUser().getIdLong()) continue;
             try {
                 guild.getController().removeRolesFromMember(member, member.getRoles()).queue();
-            } catch (HierarchyException ignored) {
+            } catch (HierarchyException e) {
+                continue;
             }
         }
 

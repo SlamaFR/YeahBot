@@ -156,7 +156,7 @@ public class SettingsManager {
                             } else {
                                 return;
                             }
-                        } catch (IllegalAccessException ignored) {
+                        } catch (IllegalAccessException e1) {
                             sendErrorEmbed(textChannel);
                             return;
                         }

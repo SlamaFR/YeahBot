@@ -140,8 +140,8 @@ public class CommandMap {
         try {
             execute((BotCommand) object[0], command, (String[]) object[1], null, Command.CommandExecutor.CONSOLE);
         } catch (Exception e) {
-            LOGGER.error("The {} command failed", ((BotCommand) object[0]).getName());
-            LOGGER.error("Stack Trace:", e);
+            LOGGER.error("An error occurred while executing {} command!", ((BotCommand) object[0]).getName());
+            e.printStackTrace();
         }
     }
 
@@ -178,7 +178,9 @@ public class CommandMap {
         }
         try {
             botCommand.getMethod().invoke(botCommand.getObject(), objects);
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            LOGGER.error("An error occurred while executing {} command!", botCommand.getName());
+            e.getCause().printStackTrace();
         }
 
     }

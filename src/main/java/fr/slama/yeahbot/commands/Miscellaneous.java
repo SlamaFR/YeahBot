@@ -550,7 +550,7 @@ public class Miscellaneous {
 
                     guild.getTextChannelById(settings.updateChannel).sendMessage(builder.build()).queue();
                     if (settings.updateChannel > 0) count++;
-                } catch (PermissionException ignored) {
+                } catch (PermissionException e) {
                     LOGGER.warn("[Broadcast] Failed to broadcast on {}", guild);
                 }
 

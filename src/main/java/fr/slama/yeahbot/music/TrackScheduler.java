@@ -73,7 +73,6 @@ public class TrackScheduler extends AudioEventAdapter {
     public void stop() {
         musicPlayer.getAudioPlayer().stopTrack();
         musicPlayer.getAudioPlayer().destroy();
-        musicPlayer.getAudioPlayer().removeListener(this);
         musicPlayer.setTextChannel(null);
         players.remove(guild.getIdLong());
         guild.getAudioManager().closeAudioConnection();

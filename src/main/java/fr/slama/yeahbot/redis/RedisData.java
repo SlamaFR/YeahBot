@@ -5,6 +5,8 @@ import fr.slama.yeahbot.YeahBot;
 import fr.slama.yeahbot.redis.buckets.*;
 import net.dv8tion.jda.core.entities.Guild;
 import org.redisson.api.RBucket;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -15,8 +17,10 @@ import java.sql.SQLException;
  */
 public class RedisData {
 
-    private static <T> String getSQLQuery(T t) {
-        return String.format("SELECT `%1$S` FROM `guild_%1$s` WHERE `GUILD_ID` = (?)", t.getClass().getSimpleName().toLowerCase());
+    private static final Logger LOGGER = LoggerFactory.getLogger(RedisData.class);
+
+    private static <T> String getSQLQuery(Class<T> t) {
+        return String.format("SELECT `%1$S` FROM `guild_%1$s` WHERE `GUILD_ID` = (?)", t.getSimpleName().toLowerCase());
     }
 
     private static <T> String getKey(Class<T> tClass, Guild guild) {
@@ -32,13 +36,15 @@ public class RedisData {
                     PreparedStatement statement = YeahBot.getInstance().getDatabaseManager().getConnection().prepareStatement(getSQLQuery(tClass));
                     statement.setLong(1, guild.getIdLong());
                     ResultSet resultSet = statement.executeQuery();
-                    if (resultSet.next())
+                    if (resultSet.next()) {
                         t = new Gson().fromJson(resultSet.getString(tClass.getSimpleName().toUpperCase()), tClass);
+                    }
                     else t = tClass.newInstance();
                 } catch (SQLException | NullPointerException e) {
                     t = tClass.newInstance();
                 }
-            } catch (IllegalAccessException | InstantiationException ignored) {
+            } catch (IllegalAccessException | InstantiationException e) {
+                LOGGER.error("[FATAL] Failed to initialize {} bucket!", tClass.getSimpleName());
             }
             bucket.set(t);
         }

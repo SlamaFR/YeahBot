@@ -9,11 +9,15 @@ import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.exceptions.ErrorResponseException;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created on 30/09/2018.
  */
 public class GuildUtil {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(GuildUtil.class);
 
     public static Role getMutedRole(Guild guild, boolean needed) throws InsufficientPermissionException {
 
@@ -45,7 +49,8 @@ public class GuildUtil {
                 assert guild.getDefaultChannel() != null;
                 try {
                     guild.getDefaultChannel().sendMessage(LanguageUtil.getString(guild, Bundle.ERROR, "cannot_create_mute_role")).queue();
-                } catch (InsufficientPermissionException ignored) {
+                } catch (InsufficientPermissionException e1) {
+                    LOGGER.warn("Unable to create mute role in {} and tell error.", guild);
                 }
             }
         }

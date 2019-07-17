@@ -56,7 +56,7 @@ public class SwearingListener extends ListenerAdapter {
             JSONArray array;
             try {
                 array = object.getJSONArray(settings.locale);
-            } catch (JSONException ignored) {
+            } catch (JSONException e) {
                 return;
             }
 

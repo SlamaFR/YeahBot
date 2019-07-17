@@ -50,8 +50,8 @@ public class UnmuteTask extends TimerTask {
                         }, timeout - now);
                         LOGGER.info("Scheduled unmute of " + userId);
                     }
-                } catch (Exception ignored) {
-                    break;
+                } catch (Exception e) {
+                    continue;
                 }
 
             }

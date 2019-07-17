@@ -7,7 +7,6 @@ import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.exceptions.ErrorResponseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -154,7 +153,6 @@ public final class BotCommand {
                 builder.addField(argumentsCaption, String.join("\n", arguments), false);
 
             textChannel.sendMessage(builder.build()).queue(m -> m.delete().queueAfter(30, TimeUnit.SECONDS));
-        } catch (ErrorResponseException ignored) {
         } catch (Exception e) {
             LOGGER.error("Error while generating help for " + name + " command!", e);
             textChannel.sendMessage(new EmbedBuilder()

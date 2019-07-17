@@ -62,7 +62,7 @@ public class AdvertisingListener extends ListenerAdapter {
             JSONArray array;
             try {
                 array = object.getJSONArray(settings.locale);
-            } catch (JSONException ignored) {
+            } catch (JSONException e) {
                 return;
             }
 
@@ -90,8 +90,8 @@ public class AdvertisingListener extends ListenerAdapter {
                     rate += 50;
                     hasInvite = true;
                 } else rate += 10;
-            } catch (MalformedURLException ignored) {
-
+            } catch (MalformedURLException e) {
+                continue;
             }
         }
 

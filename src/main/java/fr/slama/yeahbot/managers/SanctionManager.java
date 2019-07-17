@@ -59,7 +59,7 @@ public class SanctionManager {
 
             RedisData.setMutes(target.getGuild(), mutes);
             LOGGER.info("{} Muted {}", author, target.getUser());
-        } catch (InsufficientPermissionException ignored) {
+        } catch (InsufficientPermissionException e) {
             MessageUtil.sendPermissionEmbed(target.getGuild(), textChannel, Permission.MANAGE_ROLES);
         }
     }
