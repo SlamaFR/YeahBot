@@ -170,7 +170,7 @@ public class TrackScheduler extends AudioEventAdapter {
         }
 
         playedTrack++;
-        LOGGER.info(String.format("%s Now playing %s", guild, track.getInfo().title));
+        LOGGER.info("{} Now playing {}", guild, track.getInfo().title);
 
         votingUsers = new ArrayList<>();
 

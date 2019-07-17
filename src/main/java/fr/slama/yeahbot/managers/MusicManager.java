@@ -55,8 +55,6 @@ public class MusicManager {
         MusicPlayer player = getPlayer(textChannel.getGuild());
         textChannel.getGuild().getAudioManager().setSendingHandler(player.getAudioHandler());
 
-        final Settings settings = RedisData.getSettings(textChannel.getGuild());
-
         manager.loadItemOrdered(player, source, new AudioLoadResultHandler() {
             @Override
             public void trackLoaded(AudioTrack track) {
