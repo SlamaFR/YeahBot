@@ -5,7 +5,10 @@ import fr.slama.yeahbot.commands.core.Command;
 import fr.slama.yeahbot.language.Bundle;
 import fr.slama.yeahbot.redis.RedisData;
 import fr.slama.yeahbot.redis.buckets.Mutes;
-import fr.slama.yeahbot.utilities.*;
+import fr.slama.yeahbot.utilities.ColorUtil;
+import fr.slama.yeahbot.utilities.GuildUtil;
+import fr.slama.yeahbot.utilities.LanguageUtil;
+import fr.slama.yeahbot.utilities.MessageUtil;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Member;
@@ -33,8 +36,6 @@ public class SanctionManager {
 
         try {
             Mutes mutes = RedisData.getMutes(target.getGuild());
-            mutes.getMutesMap().put(target.getUser().getIdLong(), timeout);
-            RedisData.setMutes(target.getGuild(), mutes);
 
             textChannel.getGuild().getController().addRolesToMember(target, GuildUtil.getMutedRole(textChannel.getGuild(), true)).queue();
 
@@ -49,8 +50,14 @@ public class SanctionManager {
                             .build()
             ).queue();
 
-            TaskScheduler.scheduleDelayed(() -> unregisterMute(textChannel, target), unit.toMillis(i));
+            TaskScheduler.scheduleDelayed(() -> {
+                Mutes m = RedisData.getMutes(target.getGuild());
+                if (m.getMutesMap().containsKey(target.getUser().getIdLong()) && m.getMutesMap().get(target.getUser().getIdLong()) <= System.currentTimeMillis())
+                    unregisterMute(textChannel, target);
+            }, unit.toMillis(i));
+            mutes.getMutesMap().put(target.getUser().getIdLong(), timeout);
 
+            RedisData.setMutes(target.getGuild(), mutes);
             LOGGER.info("{} Muted {}", author, target.getUser());
         } catch (InsufficientPermissionException ignored) {
             MessageUtil.sendPermissionEmbed(target.getGuild(), textChannel, Permission.MANAGE_ROLES);
