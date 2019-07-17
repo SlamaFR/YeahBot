@@ -33,6 +33,7 @@ dependencies {
     compile 'org.jooby:jooby-netty:1.5.1'
     compile 'org.jooby:jooby-jackson:1.5.1'
     compile 'com.google.guava:guava:28.0-jre'
+    compile 'xyz.downgoon:snowflake:1.0.0'
 
 }
 

@@ -31,6 +31,10 @@ public class Config {
     @JsonProperty
     public int apiPort = 8081;
     @JsonProperty
+    public int datacenterId = 1;
+    @JsonProperty
+    public int workerId = 1;
+    @JsonProperty
     public Database database = new Database();
     @JsonProperty
     public Redis redis = new Redis();

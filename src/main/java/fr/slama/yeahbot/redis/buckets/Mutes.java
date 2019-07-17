@@ -1,6 +1,7 @@
 package fr.slama.yeahbot.redis.buckets;
 
 import com.google.gson.Gson;
+import fr.slama.yeahbot.blub.Mute;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,7 +11,7 @@ import java.util.Map;
  */
 public class Mutes {
 
-    private Map<Long, Long> mutesMap = new HashMap<>();
+    private Map<Long, Mute> mutesMap = new HashMap<>();
 
     public Mutes() {
     }
@@ -20,7 +21,7 @@ public class Mutes {
         return new Gson().toJson(this);
     }
 
-    public Map<Long, Long> getMutesMap() {
+    public Map<Long, Mute> getMutesMap() {
         return mutesMap;
     }
 

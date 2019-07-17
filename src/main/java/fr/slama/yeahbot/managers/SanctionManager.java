@@ -1,5 +1,6 @@
 package fr.slama.yeahbot.managers;
 
+import fr.slama.yeahbot.blub.Mute;
 import fr.slama.yeahbot.blub.TaskScheduler;
 import fr.slama.yeahbot.commands.core.Command;
 import fr.slama.yeahbot.language.Bundle;
@@ -38,9 +39,7 @@ public class SanctionManager {
             Mutes mutes = RedisData.getMutes(target.getGuild());
 
             textChannel.getGuild().getController().addRolesToMember(target, GuildUtil.getMutedRole(textChannel.getGuild(), true)).queue();
-
             TextChannel modChannel = GuildUtil.getModChannel(target.getGuild(), true);
-
             if (modChannel == null) modChannel = textChannel;
 
             modChannel.sendMessage(
@@ -50,12 +49,13 @@ public class SanctionManager {
                             .build()
             ).queue();
 
+            Mute mute = new Mute(timeout);
+
             TaskScheduler.scheduleDelayed(() -> {
-                Mutes m = RedisData.getMutes(target.getGuild());
-                if (m.getMutesMap().containsKey(target.getUser().getIdLong()) && m.getMutesMap().get(target.getUser().getIdLong()) <= System.currentTimeMillis())
-                    unregisterMute(textChannel, target);
+                Mute m = RedisData.getMutes(target.getGuild()).getMutesMap().get(target.getUser().getIdLong());
+                if (m.getId() == mute.getId()) unregisterMute(textChannel, target);
             }, unit.toMillis(i));
-            mutes.getMutesMap().put(target.getUser().getIdLong(), timeout);
+            mutes.getMutesMap().put(target.getUser().getIdLong(), mute);
 
             RedisData.setMutes(target.getGuild(), mutes);
             LOGGER.info("{} Muted {}", author, target.getUser());
@@ -67,7 +67,8 @@ public class SanctionManager {
     public static boolean unregisterMute(@Nullable TextChannel textChannel, Member target) {
         Mutes mutes = RedisData.getMutes(target.getGuild());
 
-        if (!mutes.getMutesMap().containsKey(target.getUser().getIdLong())) return false;
+        if (!mutes.getMutesMap().containsKey(target.getUser().getIdLong()) &&
+                !target.getRoles().contains(GuildUtil.getMutedRole(target.getGuild(), false))) return false;
 
         target.getGuild().getController()
                 .removeRolesFromMember(target, GuildUtil.getMutedRole(target.getGuild(), false))

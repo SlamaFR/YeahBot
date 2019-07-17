@@ -30,7 +30,7 @@ public class UnmuteTask extends TimerTask {
 
             for (Long userId : mutes.getMutesMap().keySet()) {
 
-                long timeout = mutes.getMutesMap().get(userId);
+                long timeout = mutes.getMutesMap().get(userId).getTimeout();
 
                 try {
                     long now = System.currentTimeMillis();

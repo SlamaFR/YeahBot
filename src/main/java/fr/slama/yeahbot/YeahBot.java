@@ -1,5 +1,6 @@
 package fr.slama.yeahbot;
 
+import fr.slama.yeahbot.blub.TaskScheduler;
 import fr.slama.yeahbot.commands.core.CommandMap;
 import fr.slama.yeahbot.config.Config;
 import fr.slama.yeahbot.listeners.*;
@@ -12,7 +13,6 @@ import fr.slama.yeahbot.tasks.PrivateChannelsTask;
 import fr.slama.yeahbot.tasks.SpamTask;
 import fr.slama.yeahbot.tasks.SwearingTask;
 import fr.slama.yeahbot.tasks.UnmuteTask;
-import fr.slama.yeahbot.blub.TaskScheduler;
 import net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.bot.sharding.ShardManager;
 import net.dv8tion.jda.core.events.ReadyEvent;
@@ -21,6 +21,7 @@ import org.discordbots.api.client.DiscordBotListAPI;
 import org.jooby.Jooby;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import xyz.downgoon.snowflake.Snowflake;
 
 import javax.security.auth.login.LoginException;
 import java.util.Arrays;
@@ -39,6 +40,7 @@ public class YeahBot extends ListenerAdapter implements Runnable {
     private final MusicManager musicManager;
     private final DatabaseManager databaseManager;
     private final CommandMap commandMap;
+    private final Snowflake snowflake;
     private final ShardManager shardManager;
     private final DiscordBotListAPI api;
 
@@ -52,6 +54,7 @@ public class YeahBot extends ListenerAdapter implements Runnable {
         musicManager = new MusicManager();
         databaseManager = new DatabaseManager();
         commandMap = new CommandMap();
+        snowflake = new Snowflake(CONFIG.datacenterId, CONFIG.workerId);
 
         LOGGER.info("Logging in Discord API...");
         shardManager = new DefaultShardManagerBuilder(CONFIG.token)
@@ -84,8 +87,7 @@ public class YeahBot extends ListenerAdapter implements Runnable {
         LOGGER.debug("Found token.");
 
         dev = Arrays.asList(args).contains("--dev");
-
-        if (dev) LOGGER.warn("Starting in DEV MODE!");
+        if (dev) LOGGER.warn("Starting in DEVELOPMENT MODE!");
 
         new Thread(new YeahBot()).start();
     }
@@ -153,6 +155,10 @@ public class YeahBot extends ListenerAdapter implements Runnable {
 
     public CommandMap getCommandMap() {
         return commandMap;
+    }
+
+    public Snowflake getSnowflake() {
+        return snowflake;
     }
 
     public ShardManager getShardManager() {
