@@ -39,7 +39,7 @@ dependencies {
 shadowJar {
     baseName = 'yeahbot'
     classifier = null
-    version = '1.4.0'
+    version = '1.4.1'
     configurations = [project.configurations.compile]
 }
 

@@ -1,0 +1,24 @@
+{
+  "version": "1.4.1",
+  "date": 1563314400000,
+  "fr": {
+    "title": "Bulletin de mise à jour",
+    "adds": [],
+    "removes": [],
+    "changes": [
+      "La pause automatique n'agit plus si le lecteur a été mis en pause manuellement.",
+      "Résolution d'un bug avec les réductions au silence."
+    ],
+    "coming": []
+  },
+  "en": {
+    "title": "Update report",
+    "adds": [],
+    "removes": [],
+    "changes": [
+      "Auto-pause no longer acts if the audio player has been manually paused.",
+      "Fixed a bug with mutes."
+    ],
+    "coming": []
+  }
+}
