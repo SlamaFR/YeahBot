@@ -28,21 +28,22 @@ public class MusicListener extends ListenerAdapter {
 
     @Override
     public void onGuildVoiceLeave(GuildVoiceLeaveEvent event) {
-        check(event);
+        check(event.getChannelLeft(), event);
         if (!isBot(event)) checkDeafen(event);
         super.onGuildVoiceLeave(event);
     }
 
     @Override
     public void onGuildVoiceJoin(GuildVoiceJoinEvent event) {
-        check(event);
+        check(event.getChannelJoined(), event);
         checkDeafen(event);
         super.onGuildVoiceJoin(event);
     }
 
     @Override
     public void onGuildVoiceMove(GuildVoiceMoveEvent event) {
-        check(event);
+        check(event.getChannelJoined(), event);
+        check(event.getChannelLeft(), event);
         checkDeafen(event);
         super.onGuildVoiceMove(event);
     }
@@ -77,17 +78,17 @@ public class MusicListener extends ListenerAdapter {
         }
     }
 
-    private void check(GenericGuildVoiceEvent event) {
+    private void check(VoiceChannel channel, GenericGuildVoiceEvent event) {
         assert event.getGuild().getAudioManager() != null;
         if (!event.getGuild().getAudioManager().isConnected()) return;
 
-        VoiceChannel channel = event.getGuild().getSelfMember().getVoiceState().getChannel();
+        VoiceChannel botChannel = event.getGuild().getSelfMember().getVoiceState().getChannel();
         TextChannel textChannel = manager.getPlayer(channel.getGuild()).getTextChannel();
 
         List<Member> members = channel.getMembers().stream().filter(m -> !m.getUser().isBot()).collect(Collectors.toList());
 
         boolean botLeft = event.getMember().getUser().getIdLong() == event.getJDA().getSelfUser().getIdLong();
-        boolean inCurrentChannel = channel.equals(event.getGuild().getSelfMember().getVoiceState().getChannel());
+        boolean inCurrentChannel = channel.getIdLong() == botChannel.getIdLong();
         boolean botAlone = members.isEmpty();
 
         if (botLeft) {
