@@ -12,6 +12,8 @@ import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Optional;
+
 /**
  * Created on 30/09/2018.
  */
@@ -84,6 +86,50 @@ public class GuildUtil {
             } else return null;
         }
         return guild.getTextChannelsByName("yeahbot-mod", true).get(0);
+    }
+
+    public static TextChannel getUpdatesChannel(Guild guild) {
+
+        Settings settings = RedisData.getSettings(guild);
+
+        if (settings.updateChannel > 0) {
+            return guild.getTextChannelById(settings.updateChannel);
+        }
+
+        String[] keyWords = {"update", "mise-a-jour", "mise-à-jour"};
+
+        for (String word : keyWords) {
+            Optional<TextChannel> textChannel = guild.getTextChannels().stream().filter(tc -> tc.getName().contains(word)).findFirst();
+            if (textChannel.isPresent()) {
+                settings.updateChannel = textChannel.get().getIdLong();
+                RedisData.setSettings(guild, settings);
+                return textChannel.get();
+            }
+        }
+
+        return null;
+    }
+
+    public static TextChannel getWelcomeChannel(Guild guild) {
+
+        Settings settings = RedisData.getSettings(guild);
+
+        if (settings.joinLeaveChannel > 0) {
+            return guild.getTextChannelById(settings.joinLeaveChannel);
+        }
+
+        String[] keyWords = {"welcome", "bienvenue", "nouveaux"};
+
+        for (String word : keyWords) {
+            Optional<TextChannel> textChannel = guild.getTextChannels().stream().filter(tc -> tc.getName().contains(word)).findFirst();
+            if (textChannel.isPresent()) {
+                settings.joinLeaveChannel = textChannel.get().getIdLong();
+                RedisData.setSettings(guild, settings);
+                return textChannel.get();
+            }
+        }
+
+        return null;
     }
 
 }

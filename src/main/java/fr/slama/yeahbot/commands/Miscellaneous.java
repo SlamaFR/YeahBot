@@ -34,6 +34,7 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created on 09/09/2018.
@@ -489,15 +490,11 @@ public class Miscellaneous {
 
             JSONReader reader = new JSONReader(file);
             JSONObject object = reader.toJSONObject();
-            int count = 0;
+            AtomicInteger count = new AtomicInteger();
 
             for (Guild guild : YeahBot.getInstance().getShardManager().getGuilds()) {
 
                 Settings settings = RedisData.getSettings(guild);
-
-                if (!Arrays.asList(args).contains("force") &&
-                        (settings.updateChannel == 0 || guild.getTextChannelById(settings.updateChannel) == null))
-                    continue;
 
                 JSONObject lang = object.getJSONObject(settings.locale);
 
@@ -545,11 +542,15 @@ public class Miscellaneous {
                 try {
                     if (Arrays.asList(args).contains("force") && guild.getDefaultChannel() != null) {
                         guild.getDefaultChannel().sendMessage(builder.build()).queue();
+                        count.getAndIncrement();
                         continue;
                     }
 
-                    guild.getTextChannelById(settings.updateChannel).sendMessage(builder.build()).queue();
-                    if (settings.updateChannel > 0) count++;
+                    TextChannel textChannel = GuildUtil.getUpdatesChannel(guild);
+                    if (textChannel != null) {
+                        textChannel.sendMessage(builder.build()).queue();
+                        count.getAndIncrement();
+                    }
                 } catch (PermissionException e) {
                     LOGGER.warn("[Broadcast] Failed to broadcast on {}", guild);
                 }
@@ -558,7 +559,7 @@ public class Miscellaneous {
 
             int total = YeahBot.getInstance().getShardManager().getGuilds().size();
 
-            LOGGER.info("[Broadcast] Sent on {}% guild ({}/{})", (float) count / total * 100, count, total);
+            LOGGER.info("[Broadcast] Sent on {}% guild ({}/{})", (float) count.get() / total * 100, count, total);
 
         } catch (IOException e) {
             LOGGER.error("Error while fetching data!");
