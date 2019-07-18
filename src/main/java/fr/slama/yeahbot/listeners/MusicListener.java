@@ -29,14 +29,20 @@ public class MusicListener extends ListenerAdapter {
     @Override
     public void onGuildVoiceLeave(GuildVoiceLeaveEvent event) {
         check(event.getChannelLeft(), event);
-        if (!isBot(event)) checkDeafen(event);
+        if (!isBot(event)) {
+            checkDeafen(event.getChannelLeft(), event);
+        } else {
+            Guild guild = event.getGuild();
+            if (leavingTasks.containsKey(guild)) leavingTasks.remove(guild).stop();
+            leavingMessages.remove(guild);
+        }
         super.onGuildVoiceLeave(event);
     }
 
     @Override
     public void onGuildVoiceJoin(GuildVoiceJoinEvent event) {
         check(event.getChannelJoined(), event);
-        checkDeafen(event);
+        checkDeafen(event.getChannelJoined(), event);
         super.onGuildVoiceJoin(event);
     }
 
@@ -44,13 +50,14 @@ public class MusicListener extends ListenerAdapter {
     public void onGuildVoiceMove(GuildVoiceMoveEvent event) {
         check(event.getChannelJoined(), event);
         check(event.getChannelLeft(), event);
-        checkDeafen(event);
+        checkDeafen(event.getChannelJoined(), event);
+        checkDeafen(event.getChannelLeft(), event);
         super.onGuildVoiceMove(event);
     }
 
     @Override
     public void onGuildVoiceDeafen(GuildVoiceDeafenEvent event) {
-        checkDeafen(event);
+        checkDeafen(event.getVoiceState().getChannel(), event);
         super.onGuildVoiceDeafen(event);
     }
 
@@ -58,14 +65,13 @@ public class MusicListener extends ListenerAdapter {
         return event.getMember().getUser().getIdLong() == event.getJDA().getSelfUser().getIdLong();
     }
 
-    private void checkDeafen(GenericGuildVoiceEvent event) {
+    private void checkDeafen(VoiceChannel channel, GenericGuildVoiceEvent event) {
         if (!event.getGuild().getAudioManager().isConnected()) return;
 
         Guild guild = event.getGuild();
-        VoiceChannel channel = event.getVoiceState().getChannel();
         MusicPlayer player = manager.getPlayer(guild);
 
-        if (channel != event.getGuild().getSelfMember().getVoiceState().getChannel()) return;
+        if (channel.getIdLong() != event.getGuild().getSelfMember().getVoiceState().getChannel().getIdLong()) return;
         if (player.getTrackScheduler().isUserPaused()) return;
 
         List<Member> members = channel.getMembers().stream().filter(m -> !m.getUser().isBot()).collect(Collectors.toList());
