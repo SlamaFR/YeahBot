@@ -14,10 +14,7 @@ import fr.slama.yeahbot.music.PlayerSequence;
 import fr.slama.yeahbot.redis.RedisData;
 import fr.slama.yeahbot.redis.buckets.Playlists;
 import fr.slama.yeahbot.redis.buckets.Settings;
-import fr.slama.yeahbot.utilities.ColorUtil;
-import fr.slama.yeahbot.utilities.EmoteUtil;
-import fr.slama.yeahbot.utilities.LanguageUtil;
-import fr.slama.yeahbot.utilities.TimeUtil;
+import fr.slama.yeahbot.utilities.*;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
@@ -257,10 +254,7 @@ public class Music {
         for (Track track : tracks) duration += track.getAudioTrack().getDuration();
         long finalDuration = duration;
 
-        new Paginator.Builder<Track>()
-                .textChannel(textChannel)
-                .user(user)
-                .objectList(tracks)
+        new Paginator.Builder<>(textChannel, user, tracks)
                 .objectName(t -> "`" + t.getAudioTrack().getInfo().title + "`")
                 .listTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "music_tracks"))
                 .embedCustomizer(b -> b.setColor(ColorUtil.BLUE)
@@ -511,29 +505,44 @@ public class Music {
             discordPermission = {Permission.VOICE_SPEAK, Permission.VOICE_CONNECT},
             category = Command.CommandCategory.MUSIC,
             executor = Command.CommandExecutor.USER)
-    private void playlist(Guild guild, TextChannel textChannel, Member member, String[] args, BotCommand cmd) {
+    private void playlist(Guild guild, TextChannel textChannel, Member member, User user, String[] args, BotCommand cmd) {
 
         if (guild == null) return;
-        if (isDisconnected(guild, member, textChannel)) return;
-        if (hasNotValue(guild, textChannel, cmd, args)) return;
-
         Playlists playlists = RedisData.getPlaylists(guild);
-        String name = String.join(" ", args).toLowerCase();
 
-        if (!playlists.getPlaylists().containsKey(name)) {
-            textChannel.sendMessage(
-                    new EmbedBuilder()
-                            .setColor(ColorUtil.RED)
-                            .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "unknown_playlist"))
-                            .setDescription(LanguageUtil.getString(guild, Bundle.ERROR, "unknown_playlist"))
-                            .build()
-            ).queue();
-            return;
+        if (args.length == 0) {
+            if (playlists.getPlaylists().isEmpty()) {
+                textChannel.sendMessage(
+                        MessageUtil.getErrorEmbed(guild, LanguageUtil.getString(guild, Bundle.ERROR, "no_playlist"))
+                ).queue();
+                return;
+            }
+            new Paginator.Builder<>(textChannel, user, new ArrayList<>(playlists.getPlaylists().values()))
+                    .listTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "playlists_list"))
+                    .objectName(pl -> String.format("[%s](%s)", pl.getName(), pl.getUrl()))
+                    .pageSize(5)
+                    .closeable(true)
+                    .selectable(false)
+                    .timeout(1, TimeUnit.MINUTES)
+                    .build();
+        } else {
+            if (isDisconnected(guild, member, textChannel)) return;
+            String name = String.join(" ", args).toLowerCase();
+
+            if (!playlists.getPlaylists().containsKey(name)) {
+                textChannel.sendMessage(
+                        new EmbedBuilder()
+                                .setColor(ColorUtil.RED)
+                                .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "unknown_playlist"))
+                                .setDescription(LanguageUtil.getString(guild, Bundle.ERROR, "unknown_playlist"))
+                                .build()
+                ).queue();
+                return;
+            }
+
+            Playlist playlist = playlists.getPlaylists().get(name);
+            manager.loadTrack(textChannel, playlist.getUrl(), member, false, false);
         }
-
-        Playlist playlist = playlists.getPlaylists().get(name);
-
-        manager.loadTrack(textChannel, playlist.getUrl(), member, false, false);
 
     }
 
