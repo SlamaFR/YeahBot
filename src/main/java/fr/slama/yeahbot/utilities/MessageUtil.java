@@ -4,6 +4,7 @@ import fr.slama.yeahbot.language.Bundle;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.entities.TextChannel;
 
 /**
@@ -34,6 +35,14 @@ public class MessageUtil {
                         .setDescription(LanguageUtil.getArguedString(guild, Bundle.ERROR, key, perm))
                         .build()
         ).queue();
+    }
+
+    public static MessageEmbed getErrorEmbed(Guild guild, String message) {
+        return new EmbedBuilder()
+                .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "error"))
+                .setDescription(message)
+                .setColor(ColorUtil.RED)
+                .build();
     }
 
 }

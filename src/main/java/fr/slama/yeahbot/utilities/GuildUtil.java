@@ -82,7 +82,7 @@ public class GuildUtil {
                                     .setDeny(Permission.MESSAGE_WRITE, Permission.MESSAGE_ADD_REACTION)
                                     .queue();
                         }
-                );
+                        , f -> LOGGER.warn("Unable to create mod channel on {}", guild));
             } else return null;
         }
         return guild.getTextChannelsByName("yeahbot-mod", true).get(0);
