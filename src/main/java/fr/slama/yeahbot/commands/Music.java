@@ -505,7 +505,7 @@ public class Music {
             discordPermission = {Permission.VOICE_SPEAK, Permission.VOICE_CONNECT},
             category = Command.CommandCategory.MUSIC,
             executor = Command.CommandExecutor.USER)
-    private void playlist(Guild guild, TextChannel textChannel, Member member, User user, String[] args, BotCommand cmd) {
+    private void playlist(Guild guild, TextChannel textChannel, Member member, User user, String[] args) {
 
         if (guild == null) return;
         Playlists playlists = RedisData.getPlaylists(guild);
