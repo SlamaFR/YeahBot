@@ -455,10 +455,7 @@ public class Miscellaneous {
 
         List<Field> fields = SettingsManager.getFields(guild);
 
-        new Paginator.Builder<Field>()
-                .textChannel(textChannel)
-                .user(user)
-                .objectList(fields)
+        new Paginator.Builder<>(textChannel, user, fields)
                 .objectName(f -> LanguageUtil.getString(guild, Bundle.SETTINGS, SettingsManager.getSettingKey(f)))
                 .listTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "config"))
                 .timeout(1, TimeUnit.MINUTES)

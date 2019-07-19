@@ -67,6 +67,7 @@ public class Paginator<T> {
         Checks.check(textChannel != null, "TextChannel must not be null.");
         Checks.check(user != null, "User must not be null.");
         Checks.check(objectList != null, "List must not be null.");
+        Checks.check(objectList.size() > 0, "List must not be empty.");
         Checks.check(pageSize > 0, "Page size must be positive.");
         if (textChannel.getGuild() != null) {
             Checks.check(textChannel.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_ADD_REACTION), "Must have MESSAGE_ADD_REACTION");
@@ -94,15 +95,7 @@ public class Paginator<T> {
         }
 
         String pageFooter = LanguageUtil.getArguedString(textChannel.getGuild(), Bundle.CAPTION, "page", page + 1, maxPage + 1);
-        String expirationFooter = timeout > -1 ?
-                String.format(" • %s",
-                        LanguageUtil.getArguedString(
-                                textChannel.getGuild(),
-                                Bundle.CAPTION,
-                                "custom_time_expiration",
-                                timeout,
-                                LanguageUtil.getTimeUnit(textChannel.getGuild(), unit, timeout)
-                        )) : "";
+        String expirationFooter = timeout > -1 ? String.format(" • %s", LanguageUtil.getTimeExpiration(textChannel.getGuild(), timeout, unit)) : "";
 
         EmbedBuilder embed = new EmbedBuilder();
 
@@ -194,19 +187,10 @@ public class Paginator<T> {
         private Consumer<T> selectionResult;
         private Runnable timeoutAction;
 
-        public Builder<T> textChannel(TextChannel textChannel) {
+        public Builder(TextChannel textChannel, User user, List<T> objectList) {
             this.textChannel = textChannel;
-            return this;
-        }
-
-        public Builder<T> user(User user) {
             this.user = user;
-            return this;
-        }
-
-        public Builder<T> objectList(List<T> objectList) {
             this.objectList = objectList;
-            return this;
         }
 
         public Builder<T> objectName(Function<T, String> objectName) {
