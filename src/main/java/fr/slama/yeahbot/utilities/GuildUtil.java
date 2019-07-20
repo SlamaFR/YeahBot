@@ -70,19 +70,17 @@ public class GuildUtil {
     }
 
     public static TextChannel getModChannel(Guild guild, boolean needed) {
+        TextChannel channel;
         if (guild.getTextChannelsByName("yeahbot-mod", true).isEmpty()) {
             if (needed) {
-                guild.getController().createTextChannel("yeahbot-mod").queue(
-                        tc -> {
-                            tc.createPermissionOverride(guild.getSelfMember())
-                                    .setAllow(Permission.MESSAGE_WRITE)
-                                    .queue();
-                            tc.createPermissionOverride(guild.getPublicRole())
-                                    .setAllow(Permission.MESSAGE_READ)
-                                    .setDeny(Permission.MESSAGE_WRITE, Permission.MESSAGE_ADD_REACTION)
-                                    .queue();
-                        }
-                        , f -> LOGGER.warn("Unable to create mod channel on {}", guild));
+                channel = (TextChannel) guild.getController().createTextChannel("yeahbot-mod").complete();
+                channel.createPermissionOverride(guild.getSelfMember())
+                        .setAllow(Permission.MESSAGE_WRITE)
+                        .queue();
+                channel.createPermissionOverride(guild.getPublicRole())
+                        .setAllow(Permission.MESSAGE_READ)
+                        .setDeny(Permission.MESSAGE_WRITE, Permission.MESSAGE_ADD_REACTION)
+                        .queue();
             } else return null;
         }
         return guild.getTextChannelsByName("yeahbot-mod", true).get(0);
