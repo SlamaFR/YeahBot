@@ -1,0 +1,28 @@
+{
+  "version": "1.4.2",
+  "date": 1563660000000,
+  "fr": {
+    "title": "Bulletin de mise à jour",
+    "adds": [],
+    "removes": [],
+    "changes": [
+      "La commande 'playlist' permet maintenant le lister les playlists enregistrées.",
+      "Résolution d'un bug avec la déconnexion automatique.",
+      "Résolution d'un bug avec les réductions au silence.",
+      "Résolution de quelques bugs mineurs internes."
+    ],
+    "coming": []
+  },
+  "en": {
+    "title": "Update report",
+    "adds": [],
+    "removes": [],
+    "changes": [
+      "The 'playlist' command can now display saved playlists.",
+      "Fixed a bug with auto-disconnect.",
+      "Fixed a bug with mutes.",
+      "Fixed some internal bugs."
+    ],
+    "coming": []
+  }
+}
