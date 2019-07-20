@@ -125,11 +125,7 @@ public class SanctionManager {
     private static boolean isStaff(TextChannel textChannel, Member target) {
         if (Command.CommandPermission.STAFF.test(target)) {
             textChannel.sendMessage(
-                    new EmbedBuilder()
-                            .setTitle(LanguageUtil.getString(target.getGuild(), Bundle.CAPTION, "error"))
-                            .setDescription(LanguageUtil.getString(target.getGuild(), Bundle.ERROR, "higher_member"))
-                            .setColor(ColorUtil.RED)
-                            .build()
+                    MessageUtil.getErrorEmbed(target.getGuild(), LanguageUtil.getString(target.getGuild(), Bundle.ERROR, "higher_member"))
             ).queue();
             return true;
         }

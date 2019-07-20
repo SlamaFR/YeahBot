@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created on 12/11/2018.
@@ -228,8 +229,9 @@ public class TrackScheduler extends AudioEventAdapter {
                         .setColor(ColorUtil.RED)
                         .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "error"))
                         .setDescription(String.format("%s\n```\n%s\n```", LanguageUtil.getString(guild, Bundle.ERROR, "something_went_wrong"), exception.getMessage()))
+                        .setFooter(LanguageUtil.getTimeExpiration(guild, 20, TimeUnit.SECONDS), null)
                         .build()
-        ).queue();
+        ).queue(message -> message.delete().queueAfter(20, TimeUnit.SECONDS));
         super.onTrackException(player, track, exception);
     }
 

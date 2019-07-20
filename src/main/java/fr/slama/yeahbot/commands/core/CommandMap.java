@@ -110,11 +110,9 @@ public class CommandMap {
                 } catch (Exception e) {
                     LOGGER.error("The {} command failed", cmd.getName());
                     LOGGER.error("Stack Trace:", e);
-                    message.getChannel().sendMessage(new EmbedBuilder()
-                            .setTitle(LanguageUtil.getString(message.getGuild(), Bundle.CAPTION, "error"))
-                            .setDescription(LanguageUtil.getString(message.getGuild(), Bundle.ERROR, "command"))
-                            .setColor(ColorUtil.RED)
-                            .build()).queue();
+                    message.getChannel().sendMessage(
+                            MessageUtil.getErrorEmbed(message.getGuild(), LanguageUtil.getString(message.getGuild(), Bundle.ERROR, "command"))
+                    ).queue();
                 }
             } else {
                 message.getTextChannel().sendMessage(LanguageUtil.getString(message.getGuild(), Bundle.CAPTION, "no_permission")).queue();

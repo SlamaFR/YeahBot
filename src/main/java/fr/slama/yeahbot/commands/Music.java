@@ -146,11 +146,9 @@ public class Music {
 
         if (!Command.CommandPermission.STAFF.test(member)) for (Track track : player.getTrackScheduler().getQueue()) {
             if (track.getRequesterId() != member.getUser().getIdLong()) {
-                textChannel.sendMessage(new EmbedBuilder()
-                        .setColor(ColorUtil.RED)
-                        .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "error"))
-                        .setDescription(LanguageUtil.getString(guild, Bundle.CAPTION, "no_permission"))
-                        .build()).queue();
+                textChannel.sendMessage(
+                        MessageUtil.getErrorEmbed(guild, LanguageUtil.getString(guild, Bundle.CAPTION, "no_permission"))
+                ).queue();
                 return;
             }
         }
@@ -489,12 +487,10 @@ public class Music {
                                 TimeUtil.toTime(seek))
                 ).queue();
             } else {
-                textChannel.sendMessage(new EmbedBuilder()
-                        .setColor(ColorUtil.RED)
-                        .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "error"))
-                        .setDescription(LanguageUtil.getArguedString(guild, Bundle.ERROR, "not_dj",
+                textChannel.sendMessage(
+                        MessageUtil.getErrorEmbed(guild, LanguageUtil.getArguedString(guild, Bundle.ERROR, "not_dj",
                                 guild.getMemberById(player.getTrackScheduler().getCurrentRequesterId()).getAsMention()))
-                        .build()).queue();
+                ).queue();
             }
         }
 
@@ -623,11 +619,9 @@ public class Music {
 
         if (!Command.CommandPermission.STAFF.test(member) &&
                 playlists.getPlaylists().get(name).getOwnerLong() != member.getUser().getIdLong()) {
-            textChannel.sendMessage(new EmbedBuilder()
-                    .setColor(ColorUtil.RED)
-                    .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "error"))
-                    .setDescription(LanguageUtil.getString(guild, Bundle.CAPTION, "no_permission"))
-                    .build()).queue();
+            textChannel.sendMessage(
+                    MessageUtil.getErrorEmbed(guild, LanguageUtil.getString(guild, Bundle.CAPTION, "no_permission"))
+            ).queue();
             return;
         }
 
@@ -672,11 +666,9 @@ public class Music {
     private boolean hasNotPermission(Guild guild, Member member, TextChannel textChannel, MusicPlayer player) {
         if (!Command.CommandPermission.STAFF.test(member)) for (Track track : player.getTrackScheduler().getQueue()) {
             if (track.getRequesterId() != member.getUser().getIdLong()) {
-                textChannel.sendMessage(new EmbedBuilder()
-                        .setColor(ColorUtil.RED)
-                        .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "error"))
-                        .setDescription(LanguageUtil.getString(guild, Bundle.CAPTION, "no_permission"))
-                        .build()).queue();
+                textChannel.sendMessage(
+                        MessageUtil.getErrorEmbed(guild, LanguageUtil.getString(guild, Bundle.CAPTION, "no_permission"))
+                ).queue();
                 return true;
             }
         }

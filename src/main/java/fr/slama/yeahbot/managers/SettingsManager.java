@@ -11,6 +11,7 @@ import fr.slama.yeahbot.settings.LongType;
 import fr.slama.yeahbot.utilities.ColorUtil;
 import fr.slama.yeahbot.utilities.EmoteUtil;
 import fr.slama.yeahbot.utilities.LanguageUtil;
+import fr.slama.yeahbot.utilities.MessageUtil;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
@@ -257,11 +258,7 @@ public class SettingsManager {
 
     public static void sendErrorEmbed(TextChannel textChannel) {
         textChannel.sendMessage(
-                new EmbedBuilder()
-                        .setColor(ColorUtil.RED)
-                        .setTitle(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "error"))
-                        .setDescription(LanguageUtil.getString(textChannel.getGuild(), Bundle.ERROR, "something_went_wrong"))
-                        .build()
+                MessageUtil.getErrorEmbed(textChannel.getGuild(), LanguageUtil.getString(textChannel.getGuild(), Bundle.ERROR, "something_went_wrong"))
         ).queue(SUCCESS, FAILURE);
     }
 

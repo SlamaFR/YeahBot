@@ -3,6 +3,7 @@ package fr.slama.yeahbot.commands.core;
 import fr.slama.yeahbot.language.Bundle;
 import fr.slama.yeahbot.utilities.ColorUtil;
 import fr.slama.yeahbot.utilities.LanguageUtil;
+import fr.slama.yeahbot.utilities.MessageUtil;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
@@ -155,11 +156,9 @@ public final class BotCommand {
             textChannel.sendMessage(builder.build()).queue(m -> m.delete().queueAfter(30, TimeUnit.SECONDS));
         } catch (Exception e) {
             LOGGER.error("Error while generating help for " + name + " command!", e);
-            textChannel.sendMessage(new EmbedBuilder()
-                    .setColor(ColorUtil.RED)
-                    .setTitle(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "error"))
-                    .setDescription(LanguageUtil.getString(textChannel.getGuild(), Bundle.ERROR, "help_embed"))
-                    .build()).queue();
+            textChannel.sendMessage(
+                    MessageUtil.getErrorEmbed(textChannel.getGuild(), LanguageUtil.getString(textChannel.getGuild(), Bundle.ERROR, "help_embed"))
+            ).queue();
         }
 
     }
