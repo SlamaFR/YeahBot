@@ -41,6 +41,7 @@ public class Fun {
                 .setColor(ColorUtil.PURPLE)
                 .setTitle(LanguageUtil.getString(guild, Bundle.STRINGS, "search_ready"))
                 .setDescription(LanguageUtil.getLink(guild, url))
+                .addField(LanguageUtil.getString(guild, Bundle.CAPTION, "original_link"), String.format("||%s||", url), false)
                 .build()).queue();
 
     }
