@@ -1,5 +1,7 @@
 package fr.slama.yeahbot.tasks;
 
+import com.google.common.util.concurrent.AtomicLongMap;
+
 import java.util.HashMap;
 import java.util.TimerTask;
 
@@ -8,10 +10,10 @@ import java.util.TimerTask;
  */
 public class SpamTask extends TimerTask {
 
-    public static HashMap<Long, HashMap<Long, Integer>> idSpamMap = new HashMap<>();
-    public static HashMap<Long, HashMap<Long, Integer>> idSpamCapsMap = new HashMap<>();
-    public static HashMap<Long, HashMap<Long, Integer>> idSpamEmotesMap = new HashMap<>();
-    public static HashMap<Long, HashMap<Long, Integer>> idSpamReactionMap = new HashMap<>();
+    public static HashMap<Long, AtomicLongMap<Long>> idSpamMap = new HashMap<>();
+    public static HashMap<Long, AtomicLongMap<Long>> idSpamCapsMap = new HashMap<>();
+    public static HashMap<Long, AtomicLongMap<Long>> idSpamEmotesMap = new HashMap<>();
+    public static HashMap<Long, AtomicLongMap<Long>> idSpamReactionMap = new HashMap<>();
 
     private int timer = 0;
 

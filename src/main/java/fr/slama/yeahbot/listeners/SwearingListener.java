@@ -72,7 +72,7 @@ public class SwearingListener extends ListenerAdapter {
                     SwearingTask.idSwearingMap.get(event.getGuild().getIdLong()).merge(event.getMember().getUser().getIdLong(), occurence, Integer::sum);
                 } else continue;
                 if (SwearingTask.idSwearingMap.get(event.getGuild().getIdLong()).get(event.getMember().getUser().getIdLong()) >= settings.timeScaleSwearingTrigger) {
-                    ReportsManager.reportSwearing(event.getMessage(), event.getChannel());
+                    ReportsManager.reportSwearing(event.getMessage());
                     SwearingTask.idSwearingMap.get(event.getGuild().getIdLong()).remove(event.getMember().getUser().getIdLong());
                     return;
                 }

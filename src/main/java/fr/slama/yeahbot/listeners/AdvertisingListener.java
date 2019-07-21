@@ -101,7 +101,7 @@ public class AdvertisingListener extends ListenerAdapter {
         }
 
         if ((hasInvite || hasKeyword) && rate >= 100 && keywords_amount >= 3) {
-            ReportsManager.reportAdvertising(event.getMessage(), event.getChannel());
+            ReportsManager.reportAdvertising(event.getMessage());
         }
 
     }
