@@ -20,7 +20,10 @@ import net.dv8tion.jda.core.entities.MessageEmbed;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -172,7 +175,7 @@ public class TrackScheduler extends AudioEventAdapter {
         playedTrack++;
         LOGGER.info("{} Now playing {}", guild, track.getInfo().title);
 
-        votingUsers = new ArrayList<>();
+        votingUsers.clear();
 
         if (RedisData.getSettings(guild).playerSequence.equals(PlayerSequence.LOOP) && nowPlayingMessageId > 0L)
             return;

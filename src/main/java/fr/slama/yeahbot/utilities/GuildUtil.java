@@ -27,6 +27,7 @@ public class GuildUtil {
         long id = settings.muteRole;
 
         if (guild.getRoleById(id) != null) return guild.getRoleById(id);
+        if (!needed) return null;
 
         Role role;
         try {
@@ -36,7 +37,7 @@ public class GuildUtil {
                     .complete();
         } catch (ErrorResponseException e) {
             assert guild.getDefaultChannel() != null;
-            if (e.getErrorCode() == 30005 && needed) {
+            if (e.getErrorCode() == 30005) {
                 guild.getDefaultChannel().sendMessage(LanguageUtil.getString(guild, Bundle.ERROR, "cannot_create_mute_role_max_reached")).queue();
             }
             return null;
