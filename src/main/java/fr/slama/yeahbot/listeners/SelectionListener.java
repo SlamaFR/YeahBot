@@ -6,6 +6,7 @@ import fr.slama.yeahbot.utilities.MessageUtil;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent;
 import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.core.events.message.react.MessageReactionRemoveEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
@@ -104,60 +105,46 @@ public class SelectionListener extends ListenerAdapter {
     @Override
     public void onMessageReactionAdd(MessageReactionAddEvent event) {
         super.onMessageReactionAdd(event);
+        handleEvent(event, () -> {
+            String s = event.getReaction().getReactionEmote().getName();
+            String id = event.getReaction().getReactionEmote().getId();
 
-        if (event.getMessageId().equals(message.getId())) {
+            if (choices.contains(s) && !selection.contains(s)) selection.add(s);
+            if (choices.contains(id) && !selection.contains(id)) selection.add(id);
 
-            event.getChannel().getMessageById(event.getMessageIdLong()).queue((Message m) -> event.getReaction().getUsers().queue(users -> {
-
-                if (users.contains(event.getJDA().getSelfUser()) && event.getUser().equals(user)) {
-
-                    String s = event.getReaction().getReactionEmote().getName();
-                    String id = event.getReaction().getReactionEmote().getId();
-
-                    if (choices.contains(s) && !selection.contains(s)) selection.add(s);
-                    if (choices.contains(id) && !selection.contains(id)) selection.add(id);
-
-                    if (multiple) {
-                        if ("✅".equals(s)) {
-                            result.accept(selection);
-                            YeahBot.getInstance().getShardManager().removeEventListener(this);
-                            message.delete().queue();
-                            timer.cancel();
-                        }
-                    } else {
-                        result.accept(selection);
-                        YeahBot.getInstance().getShardManager().removeEventListener(this);
-                        message.delete().queue();
-                        timer.cancel();
-                    }
-
+            if (multiple) {
+                if ("✅".equals(s)) {
+                    result.accept(selection);
+                    YeahBot.getInstance().getShardManager().removeEventListener(this);
+                    message.delete().queue();
+                    timer.cancel();
                 }
-
-            }));
-
-        }
+            } else {
+                result.accept(selection);
+                YeahBot.getInstance().getShardManager().removeEventListener(this);
+                message.delete().queue();
+                timer.cancel();
+            }
+        });
     }
 
     @Override
     public void onMessageReactionRemove(MessageReactionRemoveEvent event) {
         super.onMessageReactionRemove(event);
+        handleEvent(event, () -> {
+            String s = event.getReaction().getReactionEmote().getName();
+            String id = event.getReaction().getReactionEmote().getId();
 
+            selection.remove(s);
+            selection.remove(id);
+        });
+    }
+
+    private void handleEvent(GenericMessageReactionEvent event, Runnable runnable) {
         if (event.getMessageId().equals(message.getId())) {
-
             event.getChannel().getMessageById(event.getMessageIdLong()).queue((Message m) -> event.getReaction().getUsers().queue(users -> {
-
-                if (users.contains(event.getJDA().getSelfUser()) && event.getUser().equals(user)) {
-
-                    String s = event.getReaction().getReactionEmote().getName();
-                    String id = event.getReaction().getReactionEmote().getId();
-
-                    selection.remove(s);
-                    selection.remove(id);
-
-                }
-
+                if (users.contains(event.getJDA().getSelfUser()) && event.getUser().equals(user)) runnable.run();
             }));
-
         }
     }
 }
