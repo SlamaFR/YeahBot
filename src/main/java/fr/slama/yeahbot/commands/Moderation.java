@@ -11,12 +11,12 @@ import fr.slama.yeahbot.redis.buckets.Reports;
 import fr.slama.yeahbot.redis.buckets.Settings;
 import fr.slama.yeahbot.utilities.ColorUtil;
 import fr.slama.yeahbot.utilities.LanguageUtil;
+import fr.slama.yeahbot.utilities.MessageUtil;
 import fr.slama.yeahbot.utilities.StringUtil;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.exceptions.ErrorResponseException;
-import net.dv8tion.jda.core.exceptions.HierarchyException;
 import net.dv8tion.jda.core.requests.RequestFuture;
 
 import java.util.ArrayList;
@@ -161,10 +161,13 @@ public class Moderation {
 
         reason += String.format(" (%d %s)", duration, LanguageUtil.getTimeUnit(guild, unit, duration));
 
+        boolean success = true;
         for (Member m : message.getMentionedMembers()) {
-            SanctionManager.registerMute(member, m, textChannel, reason, duration, unit);
+            if (!SanctionManager.registerMute(member, m, textChannel, reason, duration, unit)) success = false;
         }
 
+        if (success)
+            textChannel.sendMessage(MessageUtil.getSuccessEmbed(guild, LanguageUtil.getString(guild, Bundle.STRINGS, "sanction_applied"))).queue();
     }
 
     @Command(name = "unmute",
@@ -227,10 +230,13 @@ public class Moderation {
 
         if (reason.isEmpty()) reason = LanguageUtil.getString(guild, Bundle.STRINGS, "no_reason");
 
+        boolean success = true;
         for (Member m : message.getMentionedMembers()) {
-            SanctionManager.registerKick(member, m, textChannel, reason);
+            if (!SanctionManager.registerKick(member, m, textChannel, reason)) success = false;
         }
 
+        if (success)
+            textChannel.sendMessage(MessageUtil.getSuccessEmbed(guild, LanguageUtil.getString(guild, Bundle.STRINGS, "sanction_applied"))).queue();
     }
 
     @Command(name = "ban",
@@ -251,10 +257,13 @@ public class Moderation {
 
         if (reason.isEmpty()) reason = LanguageUtil.getString(guild, Bundle.STRINGS, "no_reason");
 
+        boolean success = true;
         for (Member m : message.getMentionedMembers()) {
-            SanctionManager.registerBan(member, m, textChannel, reason);
+            if (!SanctionManager.registerBan(member, m, textChannel, reason)) success = false;
         }
 
+        if (success)
+            textChannel.sendMessage(MessageUtil.getSuccessEmbed(guild, LanguageUtil.getString(guild, Bundle.STRINGS, "sanction_applied"))).queue();
     }
 
     @Command(name = "clearsins",
@@ -325,11 +334,9 @@ public class Moderation {
 
         for (Member member : guild.getMembers()) {
             if (guild.getSelfMember().getUser().getIdLong() == member.getUser().getIdLong()) continue;
-            try {
-                guild.getController().removeRolesFromMember(member, member.getRoles()).queue();
-            } catch (HierarchyException e) {
-                continue;
-            }
+            guild.getController().removeRolesFromMember(member, member.getRoles()).queue(s -> {
+            }, f -> {
+            });
         }
 
         textChannel.sendMessage(

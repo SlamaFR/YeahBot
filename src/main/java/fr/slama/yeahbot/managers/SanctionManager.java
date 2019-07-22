@@ -30,8 +30,8 @@ public class SanctionManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SanctionManager.class);
 
-    public static void registerMute(Member author, Member target, TextChannel textChannel, String reason, int i, TimeUnit unit) {
-        if (isStaff(textChannel, target)) return;
+    public static boolean registerMute(Member author, Member target, TextChannel textChannel, String reason, int i, TimeUnit unit) {
+        if (isStaff(textChannel, target)) return false;
 
         long timeout = System.currentTimeMillis() + unit.toMillis(i);
 
@@ -59,8 +59,10 @@ public class SanctionManager {
 
             RedisData.setMutes(target.getGuild(), mutes);
             LOGGER.info("{} Muted {}", author, target.getUser());
+            return true;
         } catch (InsufficientPermissionException e) {
             MessageUtil.sendPermissionEmbed(target.getGuild(), textChannel, Permission.MANAGE_ROLES);
+            return false;
         }
     }
 
@@ -90,36 +92,46 @@ public class SanctionManager {
         return true;
     }
 
-    public static void registerKick(Member author, Member target, TextChannel textChannel, String reason) {
-        if (isStaff(textChannel, target)) return;
+    public static boolean registerKick(Member author, Member target, TextChannel textChannel, String reason) {
+        if (isStaff(textChannel, target)) return false;
 
-        target.getGuild().getController().kick(target, reason).queue();
+        try {
+            target.getGuild().getController().kick(target, reason).queue();
 
-        TextChannel modChannel = GuildUtil.getModChannel(target.getGuild(), true);
+            TextChannel modChannel = GuildUtil.getModChannel(target.getGuild(), true);
 
-        if (modChannel == null) modChannel = textChannel;
+            if (modChannel == null) modChannel = textChannel;
 
-        modChannel.sendMessage(
-                getEmbed(author, target, "kick", reason, ColorUtil.ORANGE).build()
-        ).queue();
+            modChannel.sendMessage(
+                    getEmbed(author, target, "kick", reason, ColorUtil.ORANGE).build()
+            ).queue();
 
-        LOGGER.info("{} Kicked {}", author, target.getUser());
+            LOGGER.info("{} Kicked {}", author, target.getUser());
+            return true;
+        } catch (InsufficientPermissionException e) {
+            return false;
+        }
     }
 
-    public static void registerBan(Member author, Member target, TextChannel textChannel, String reason) {
-        if (isStaff(textChannel, target)) return;
+    public static boolean registerBan(Member author, Member target, TextChannel textChannel, String reason) {
+        if (isStaff(textChannel, target)) return false;
 
-        target.getGuild().getController().ban(target, 7, reason).queue();
+        try {
+            target.getGuild().getController().ban(target, 7, reason).queue();
 
-        TextChannel modChannel = GuildUtil.getModChannel(target.getGuild(), true);
+            TextChannel modChannel = GuildUtil.getModChannel(target.getGuild(), true);
 
-        if (modChannel == null) modChannel = textChannel;
+            if (modChannel == null) modChannel = textChannel;
 
-        modChannel.sendMessage(
-                getEmbed(author, target, "ban", reason, ColorUtil.RED).build()
-        ).queue();
+            modChannel.sendMessage(
+                    getEmbed(author, target, "ban", reason, ColorUtil.RED).build()
+            ).queue();
 
-        LOGGER.info("{} Banned {}", author, target.getUser());
+            LOGGER.info("{} Banned {}", author, target.getUser());
+            return true;
+        } catch (InsufficientPermissionException e) {
+            return false;
+        }
     }
 
     private static boolean isStaff(TextChannel textChannel, Member target) {
