@@ -49,9 +49,10 @@ public class GuildUtil {
                         .setDeny(Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_WRITE)
                         .queue();
             } catch (InsufficientPermissionException e) {
-                assert guild.getDefaultChannel() != null;
+                TextChannel logChannel = getLogChannel(guild);
+                assert logChannel != null;
                 try {
-                    guild.getDefaultChannel().sendMessage(LanguageUtil.getString(guild, Bundle.ERROR, "cannot_create_mute_role")).queue();
+                    logChannel.sendMessage(LanguageUtil.getArguedString(guild, Bundle.ERROR, "cannot_create_mute_role", channel.getAsMention())).queue();
                 } catch (InsufficientPermissionException e1) {
                     LOGGER.warn("Unable to create mute role in {} and tell error.", guild);
                 }
