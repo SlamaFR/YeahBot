@@ -1,5 +1,7 @@
 package fr.slama.yeahbot.tasks;
 
+import com.google.common.util.concurrent.AtomicLongMap;
+
 import java.util.HashMap;
 import java.util.TimerTask;
 
@@ -8,7 +10,7 @@ import java.util.TimerTask;
  */
 public class SwearingTask extends TimerTask {
 
-    public static HashMap<Long, HashMap<Long, Integer>> idSwearingMap = new HashMap<>();
+    public static HashMap<Long, AtomicLongMap<Long>> idSwearingMap = new HashMap<>();
 
     @Override
     public void run() {

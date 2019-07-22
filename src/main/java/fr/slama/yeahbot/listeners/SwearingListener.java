@@ -1,5 +1,6 @@
 package fr.slama.yeahbot.listeners;
 
+import com.google.common.util.concurrent.AtomicLongMap;
 import fr.slama.yeahbot.json.JSONReader;
 import fr.slama.yeahbot.managers.ReportsManager;
 import fr.slama.yeahbot.redis.RedisData;
@@ -15,7 +16,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -35,7 +35,7 @@ public class SwearingListener extends ListenerAdapter {
         if (!settings.detectingSwearing) return;
 
         if (!SwearingTask.idSwearingMap.containsKey(event.getGuild().getIdLong()))
-            SwearingTask.idSwearingMap.put(event.getGuild().getIdLong(), new HashMap<>());
+            SwearingTask.idSwearingMap.put(event.getGuild().getIdLong(), AtomicLongMap.create());
 
         if (settings.swearingIgnoredChannels.contains(event.getChannel().getIdLong())) return;
 
@@ -69,7 +69,7 @@ public class SwearingListener extends ListenerAdapter {
                 if (matcher.find()) {
                     int occurence = 1;
                     while (matcher.find()) occurence++;
-                    SwearingTask.idSwearingMap.get(event.getGuild().getIdLong()).merge(event.getMember().getUser().getIdLong(), occurence, Integer::sum);
+                    SwearingTask.idSwearingMap.get(event.getGuild().getIdLong()).getAndAdd(event.getMember().getUser().getIdLong(), occurence);
                 } else continue;
                 if (SwearingTask.idSwearingMap.get(event.getGuild().getIdLong()).get(event.getMember().getUser().getIdLong()) >= settings.timeScaleSwearingTrigger) {
                     ReportsManager.reportSwearing(event.getMessage());
