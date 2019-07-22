@@ -11,6 +11,7 @@ import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.core.events.message.react.MessageReactionRemoveEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
+import java.io.Closeable;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -18,9 +19,9 @@ import java.util.function.Consumer;
  * Created on 24/09/2018.
  */
 
-public class SelectionListener extends ListenerAdapter {
+public class SelectionListener extends ListenerAdapter implements Closeable {
 
-    private static String[] emotes = new String[]{
+    private static final String[] EMOTES = new String[]{
             "\u0031\u20E3",
             "\u0032\u20E3",
             "\u0033\u20E3",
@@ -32,14 +33,19 @@ public class SelectionListener extends ListenerAdapter {
             "\u0039\u20E3",
             "\uD83D\uDD1F"
     };
+    private static final String OK_EMOTE = "✅";
+    private static final Consumer<? super Void> SUCCESS = s -> {
+    };
+    private static final Consumer<Throwable> FAILURE = s -> {
+    };
+
     private final User user;
     private final Message message;
     private final ArrayList<String> choices;
+    private final Consumer<List<String>> result;
     private final boolean multiple;
-
-    private Consumer<List<String>> result;
-    private Timer timer = new Timer();
-    private List<String> selection = new ArrayList<>();
+    private final Timer timer = new Timer();
+    private final List<String> selection = new ArrayList<>();
 
     public SelectionListener(Message message, User user, int delay, ArrayList<String> choices, Consumer<List<String>> result, boolean multiple) {
         this.user = user;
@@ -61,7 +67,7 @@ public class SelectionListener extends ListenerAdapter {
 
         YeahBot.getInstance().getShardManager().addEventListener(this);
 
-        if (delay >= 0) {
+        if (delay > -1) {
             timer.schedule(new TimerTask() {
                 @Override
                 public void run() {
@@ -80,26 +86,29 @@ public class SelectionListener extends ListenerAdapter {
         for (String emote : choices) {
             try {
                 long l = Long.parseLong(emote);
-                message.addReaction(YeahBot.getInstance().getShardManager().getEmoteById(l)).queue(s -> {
-                }, f -> {
-                });
+                message.addReaction(YeahBot.getInstance().getShardManager().getEmoteById(l)).queue(SUCCESS, FAILURE);
             } catch (NumberFormatException e) {
-                message.addReaction(emote).queue(s -> {
-                }, f -> {
-                });
+                message.addReaction(emote).queue(SUCCESS, FAILURE);
             }
         }
 
-        if (multiple) message.addReaction("✅").queue();
-
+        if (multiple) message.addReaction(OK_EMOTE).queue();
     }
 
     public static ArrayList<String> get(int count) {
-        return new ArrayList<>(Arrays.asList(emotes).subList(0, count));
+        return new ArrayList<>(Arrays.asList(EMOTES).subList(0, count));
     }
 
     public static ArrayList<String> getQuestion() {
         return new ArrayList<>(Arrays.asList(EmoteUtil.NO_EMOTE, EmoteUtil.YES_EMOTE));
+    }
+
+    @Override
+    public void close() {
+        YeahBot.getInstance().getShardManager().removeEventListener(this);
+        result.accept(selection);
+        message.delete().queue();
+        timer.cancel();
     }
 
     @Override
@@ -113,17 +122,9 @@ public class SelectionListener extends ListenerAdapter {
             if (choices.contains(id) && !selection.contains(id)) selection.add(id);
 
             if (multiple) {
-                if ("✅".equals(s)) {
-                    result.accept(selection);
-                    YeahBot.getInstance().getShardManager().removeEventListener(this);
-                    message.delete().queue();
-                    timer.cancel();
-                }
+                if (OK_EMOTE.equals(s)) close();
             } else {
-                result.accept(selection);
-                YeahBot.getInstance().getShardManager().removeEventListener(this);
-                message.delete().queue();
-                timer.cancel();
+                close();
             }
         });
     }
