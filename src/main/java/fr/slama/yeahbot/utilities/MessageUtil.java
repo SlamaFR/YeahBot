@@ -45,4 +45,11 @@ public class MessageUtil {
                 .build();
     }
 
+    public static MessageEmbed getSuccessEmbed(Guild guild, String message) {
+        return new EmbedBuilder()
+                .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "success"))
+                .setDescription(message)
+                .setColor(ColorUtil.GREEN)
+                .build();
+    }
 }
