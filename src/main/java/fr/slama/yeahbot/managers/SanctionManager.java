@@ -135,7 +135,7 @@ public class SanctionManager {
     private static EmbedBuilder getEmbed(Member author, Member target, String type, String reason, Color color) {
         return new EmbedBuilder().setTitle(LanguageUtil.getString(target.getGuild(), Bundle.CAPTION, type))
                 .addField(LanguageUtil.getString(target.getGuild(), Bundle.CAPTION, target.getUser().isBot() ? "bot" : "user"),
-                        String.format("%s (%s#%s)", target.getAsMention(), target.getEffectiveName(),
+                        String.format("%s (%s#%s)", target.getAsMention(), target.getUser().getName(),
                                 target.getUser().getDiscriminator()), true)
                 .addField(LanguageUtil.getString(target.getGuild(), Bundle.CAPTION, "author"),
                         author.getAsMention(), true)

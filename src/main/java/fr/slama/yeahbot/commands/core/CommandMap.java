@@ -115,7 +115,7 @@ public class CommandMap {
                     ).queue();
                 }
             } else {
-                message.getTextChannel().sendMessage(LanguageUtil.getString(message.getGuild(), Bundle.CAPTION, "no_permission")).queue();
+                message.getTextChannel().sendMessage(MessageUtil.getErrorEmbed(message.getGuild(), "no_permission")).queue();
             }
         } else {
             message.getChannel().sendMessage(new EmbedBuilder()
