@@ -19,15 +19,15 @@ public class DbCredentials {
         this.port = port;
     }
 
-    public String toURI() {
-        return "jdbc:mysql://" + host + ":" + port + "/" + databaseName + "?useUnicode=true&characterEncoding=utf-8";
+    String toURI() {
+        return "jdbc:mysql://" + host + ":" + port + "/" + databaseName + "?useUnicode=true&useSSL=false&characterEncoding=utf-8";
     }
 
-    public String getUsername() {
+    String getUsername() {
         return username;
     }
 
-    public String getPassword() {
+    String getPassword() {
         return password;
     }
 }
