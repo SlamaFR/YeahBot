@@ -34,10 +34,6 @@ public class SelectionListener extends ListenerAdapter implements Closeable {
             "\uD83D\uDD1F"
     };
     private static final String OK_EMOTE = "✅";
-    private static final Consumer<? super Void> SUCCESS = s -> {
-    };
-    private static final Consumer<Throwable> FAILURE = s -> {
-    };
 
     private final User user;
     private final Message message;
@@ -86,9 +82,13 @@ public class SelectionListener extends ListenerAdapter implements Closeable {
         for (String emote : choices) {
             try {
                 long l = Long.parseLong(emote);
-                message.addReaction(YeahBot.getInstance().getShardManager().getEmoteById(l)).queue(SUCCESS, FAILURE);
+                message.addReaction(YeahBot.getInstance().getShardManager().getEmoteById(l)).queue(s -> {
+                }, f -> {
+                });
             } catch (NumberFormatException e) {
-                message.addReaction(emote).queue(SUCCESS, FAILURE);
+                message.addReaction(emote).queue(s -> {
+                }, f -> {
+                });
             }
         }
 
@@ -115,14 +115,14 @@ public class SelectionListener extends ListenerAdapter implements Closeable {
     public void onMessageReactionAdd(MessageReactionAddEvent event) {
         super.onMessageReactionAdd(event);
         handleEvent(event, () -> {
-            String s = event.getReaction().getReactionEmote().getName();
+            String string = event.getReaction().getReactionEmote().getName();
             String id = event.getReaction().getReactionEmote().getId();
 
-            if (choices.contains(s) && !selection.contains(s)) selection.add(s);
+            if (choices.contains(string) && !selection.contains(string)) selection.add(string);
             if (choices.contains(id) && !selection.contains(id)) selection.add(id);
 
             if (multiple) {
-                if (OK_EMOTE.equals(s)) close();
+                if (OK_EMOTE.equals(string)) close();
             } else {
                 close();
             }
@@ -133,10 +133,10 @@ public class SelectionListener extends ListenerAdapter implements Closeable {
     public void onMessageReactionRemove(MessageReactionRemoveEvent event) {
         super.onMessageReactionRemove(event);
         handleEvent(event, () -> {
-            String s = event.getReaction().getReactionEmote().getName();
+            String string = event.getReaction().getReactionEmote().getName();
             String id = event.getReaction().getReactionEmote().getId();
 
-            selection.remove(s);
+            selection.remove(string);
             selection.remove(id);
         });
     }
