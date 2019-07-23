@@ -3,6 +3,7 @@ package fr.slama.yeahbot.commands;
 import fr.slama.yeahbot.blub.EventWaiter;
 import fr.slama.yeahbot.commands.core.Command;
 import fr.slama.yeahbot.language.Bundle;
+import fr.slama.yeahbot.managers.PrivateChannelsManager;
 import fr.slama.yeahbot.redis.RedisData;
 import fr.slama.yeahbot.redis.buckets.Channels;
 import fr.slama.yeahbot.utilities.ColorUtil;
@@ -37,27 +38,7 @@ public class Util {
         Channels channels = RedisData.getPrivateChannels(guild);
 
         if (channels.getChannels().size() < 10) {
-
-            long permissionOverride = Permission.getRaw(Permission.VOICE_CONNECT, Permission.VIEW_CHANNEL);
-
-            guild.getController().createVoiceChannel(LanguageUtil.getArguedString(guild, Bundle.CAPTION, "private_channel_name", channels.getChannels().size() + 1))
-                    .addPermissionOverride(guild.getPublicRole(), 0L, permissionOverride)
-                    .addPermissionOverride(guild.getSelfMember(), permissionOverride, 0L)
-                    .addPermissionOverride(member, permissionOverride, 0L).queue(channel -> {
-
-                message.getMentionedMembers().forEach(m -> channel.createPermissionOverride(m).setAllow(permissionOverride).queue());
-                channels.getChannels().add(channel.getIdLong());
-                RedisData.setPrivateChannels(guild, channels);
-
-                textChannel.sendMessage(new EmbedBuilder()
-                        .setColor(ColorUtil.GREEN)
-                        .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "private_channel_created"))
-                        .setDescription(LanguageUtil.getArguedString(guild, Bundle.STRINGS, "private_channel_identifier", channels.getChannels().size()))
-                        .build()).queue();
-
-            });
-
-
+            PrivateChannelsManager.createChannel(message);
         } else {
             textChannel.sendMessage(LanguageUtil.getString(guild, Bundle.ERROR, "max_private_voice_channel_reached")).queue();
         }

@@ -6,6 +6,7 @@ import fr.slama.yeahbot.config.Config;
 import fr.slama.yeahbot.listeners.*;
 import fr.slama.yeahbot.managers.DatabaseManager;
 import fr.slama.yeahbot.managers.MusicManager;
+import fr.slama.yeahbot.managers.PrivateChannelsManager;
 import fr.slama.yeahbot.redis.RedisAccess;
 import fr.slama.yeahbot.rest.Application;
 import fr.slama.yeahbot.sql.DatabaseUpdater;
@@ -62,7 +63,7 @@ public class YeahBot extends ListenerAdapter implements Runnable {
                 .addEventListeners(new CommandListener(commandMap))
                 .addEventListeners(new MusicListener(), new RoleListener())
                 .addEventListeners(new SpamListener(), new SwearingListener(), new AdvertisingListener())
-                .addEventListeners(new PrivateChannelsListener(), new JoinLeaveListener())
+                .addEventListeners(new PrivateChannelsManager(), new JoinLeaveListener())
                 .build();
         LOGGER.info("Logging in DBL API...");
         api = new DiscordBotListAPI.Builder()
