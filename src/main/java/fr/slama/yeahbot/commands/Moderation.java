@@ -24,6 +24,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import static fr.slama.yeahbot.commands.core.CommandError.ErrorType.*;
+
 /**
  * Created on 09/09/2018.
  */
@@ -49,14 +51,14 @@ public class Moderation {
             amount = Integer.parseInt(args[0]) + 1;
         } catch (NumberFormatException | IndexOutOfBoundsException e) {
             textChannel.sendMessage(
-                    new CommandError(command, command.getArguments(guild)[0], guild, CommandError.ErrorType.INTEGER).toEmbed()
+                    new CommandError(command, command.getArguments(guild)[0], guild, INTEGER).toEmbed()
             ).queue();
             return;
         }
 
         if (amount > 1001 || amount < 2) {
             textChannel.sendMessage(
-                    new CommandError(command, command.getArguments(guild)[0], guild, CommandError.ErrorType.INCORRECT_RANGE, "1", "1000").toEmbed()
+                    new CommandError(command, command.getArguments(guild)[0], guild, INCORRECT_RANGE, "1", "1000").toEmbed()
             ).queue();
             return;
         }
@@ -275,7 +277,7 @@ public class Moderation {
 
         if (message.getMentionedMembers().isEmpty()) {
             textChannel.sendMessage(
-                    new CommandError(cmd, cmd.getArguments(guild)[0], guild, CommandError.ErrorType.MISSING_VALUE).toEmbed()
+                    new CommandError(cmd, cmd.getArguments(guild)[0], guild, MISSING_VALUE).toEmbed()
             ).queue();
             return;
         }
@@ -353,7 +355,7 @@ public class Moderation {
 
         if (args.length == 0) {
             textChannel.sendMessage(
-                    new CommandError(cmd, cmd.getArguments(guild)[0], guild, CommandError.ErrorType.MISSING_VALUE).toEmbed()
+                    new CommandError(cmd, cmd.getArguments(guild)[0], guild, MISSING_VALUE).toEmbed()
             ).queue();
         } else {
             Settings settings = RedisData.getSettings(guild);
@@ -425,7 +427,7 @@ public class Moderation {
                     break;
                 default:
                     textChannel.sendMessage(
-                            new CommandError(cmd, cmd.getArguments(guild)[0], guild, CommandError.ErrorType.MISSING_VALUE).toEmbed()
+                            new CommandError(cmd, cmd.getArguments(guild)[0], guild, MISSING_VALUE).toEmbed()
                     ).queue();
                     return;
             }
@@ -464,12 +466,12 @@ public class Moderation {
             case "del":
                 if (message.getMentionedChannels().isEmpty())
                     textChannel.sendMessage(
-                            new CommandError(cmd, cmd.getArguments(guild)[2], guild, CommandError.ErrorType.MISSING_VALUE).toEmbed()
+                            new CommandError(cmd, cmd.getArguments(guild)[2], guild, MISSING_VALUE).toEmbed()
                     ).queue();
                 break;
             default:
                 textChannel.sendMessage(
-                        new CommandError(cmd, cmd.getArguments(guild)[1], guild, CommandError.ErrorType.MISSING_VALUE).toEmbed()
+                        new CommandError(cmd, cmd.getArguments(guild)[1], guild, MISSING_VALUE).toEmbed()
                 ).queue();
         }
     }
