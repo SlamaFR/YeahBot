@@ -370,7 +370,9 @@ public class Moderation {
                     if (result != null) {
                         if ("add".equals(args[1])) settings.spamIgnoredChannels.addAll(result);
                         if ("del".equals(args[1])) settings.spamIgnoredChannels.removeAll(result);
-                        textChannel.sendMessage(LanguageUtil.getString(guild, Bundle.CAPTION, "setting_updated")).queue();
+                        textChannel.sendMessage(
+                                MessageUtil.getSuccessEmbed(guild, LanguageUtil.getString(guild, Bundle.CAPTION, "setting_updated"))
+                        ).queue();
                     } else {
                         handleError(message, args, cmd);
                     }
@@ -383,7 +385,9 @@ public class Moderation {
                     if (result != null) {
                         if ("add".equals(args[1])) settings.swearingIgnoredChannels.addAll(result);
                         if ("del".equals(args[1])) settings.swearingIgnoredChannels.removeAll(result);
-                        textChannel.sendMessage(embed).queue();
+                        textChannel.sendMessage(
+                                MessageUtil.getSuccessEmbed(guild, LanguageUtil.getString(guild, Bundle.CAPTION, "setting_updated"))
+                        ).queue();
                     } else {
                         handleError(message, args, cmd);
                     }
@@ -397,7 +401,9 @@ public class Moderation {
                     if (result != null) {
                         if ("add".equals(args[1])) settings.advertisingIgnoredChannels.addAll(result);
                         if ("del".equals(args[1])) settings.advertisingIgnoredChannels.removeAll(result);
-                        textChannel.sendMessage(embed).queue();
+                        textChannel.sendMessage(
+                                MessageUtil.getSuccessEmbed(guild, LanguageUtil.getString(guild, Bundle.CAPTION, "setting_updated"))
+                        ).queue();
                     } else {
                         handleError(message, args, cmd);
                     }
@@ -420,7 +426,9 @@ public class Moderation {
                             settings.swearingIgnoredChannels.removeAll(result);
                             settings.advertisingIgnoredChannels.removeAll(result);
                         }
-                        textChannel.sendMessage(embed).queue();
+                        textChannel.sendMessage(
+                                MessageUtil.getSuccessEmbed(guild, LanguageUtil.getString(guild, Bundle.CAPTION, "setting_updated"))
+                        ).queue();
                     } else {
                         handleError(message, args, cmd);
                     }
