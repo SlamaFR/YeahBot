@@ -8,10 +8,10 @@ import fr.slama.yeahbot.settings.AvailableVariables;
 import fr.slama.yeahbot.settings.IgnoreSetting;
 import fr.slama.yeahbot.settings.LongType;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import static fr.slama.yeahbot.blub.Sanction.Type.*;
 import static fr.slama.yeahbot.settings.AvailableVariables.Variables.*;
@@ -63,11 +63,11 @@ public class Settings {
     public int timeScaleSwearingTrigger = 5;
 
     @IgnoreSetting
-    public List<Long> spamIgnoredChannels = new ArrayList<>();
+    public Set<Long> spamIgnoredChannels = new HashSet<>();
     @IgnoreSetting
-    public List<Long> swearingIgnoredChannels = new ArrayList<>();
+    public Set<Long> swearingIgnoredChannels = new HashSet<>();
     @IgnoreSetting
-    public List<Long> advertisingIgnoredChannels = new ArrayList<>();
+    public Set<Long> advertisingIgnoredChannels = new HashSet<>();
 
     @AvailableVariables(variables = {USER})
     public String advertisingWarningSentence = "";
