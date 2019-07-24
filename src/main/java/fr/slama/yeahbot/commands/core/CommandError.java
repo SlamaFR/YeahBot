@@ -12,16 +12,16 @@ import net.dv8tion.jda.core.entities.MessageEmbed;
  */
 public class CommandError {
 
-    private final String argument;
+    private final int argumentIndex;
     private final Guild guild;
     private final ErrorType type;
     private final String[] args;
     private BotCommand cmd;
 
-    public CommandError(BotCommand cmd, String argument, Guild guild, ErrorType type, String... args) {
-        this.cmd = cmd;
-        this.argument = argument;
+    public CommandError(Guild guild, BotCommand cmd, int argumentIndex, ErrorType type, String... args) {
         this.guild = guild;
+        this.cmd = cmd;
+        this.argumentIndex = argumentIndex;
         this.type = type;
         this.args = args;
     }
@@ -31,7 +31,8 @@ public class CommandError {
         return new EmbedBuilder()
                 .setColor(ColorUtil.RED)
                 .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "argument_error"))
-                .setDescription(LanguageUtil.getArguedString(guild, Bundle.ERROR, type.toString(), argument, args))
+                .setDescription(LanguageUtil.getArguedString(guild, Bundle.ERROR, type.toString(),
+                        cmd.getArguments(guild)[argumentIndex], args))
                 .addField(usageCaption, cmd.getUsage(guild), false)
                 .build();
     }

@@ -373,23 +373,12 @@ public class Miscellaneous {
 
         if (args.length == 0) {
             textChannel.sendMessage(
-                    new CommandError(
-                            cmd,
-                            cmd.getArguments(guild)[0],
-                            guild,
-                            CommandError.ErrorType.MISSING_VALUE
-                    ).toEmbed()
+                    new CommandError(guild, cmd, 0, CommandError.ErrorType.MISSING_VALUE).toEmbed()
             ).queue();
         } else if (args.length == 1) {
             if (args[0].length() > 32) {
                 textChannel.sendMessage(
-                        new CommandError(
-                                cmd,
-                                cmd.getArguments(guild)[0],
-                                guild,
-                                CommandError.ErrorType.TOO_LONG,
-                                "32"
-                        ).toEmbed()
+                        new CommandError(guild, cmd, 0, CommandError.ErrorType.TOO_LONG, "32").toEmbed()
                 ).queue();
                 return;
             }
@@ -413,12 +402,7 @@ public class Miscellaneous {
 
         if (args.length == 0) {
             textChannel.sendMessage(
-                    new CommandError(
-                            cmd,
-                            cmd.getArguments(guild)[0],
-                            guild,
-                            CommandError.ErrorType.MISSING_VALUE
-                    ).toEmbed()
+                    new CommandError(guild, cmd, 0, CommandError.ErrorType.MISSING_VALUE).toEmbed()
             ).queue();
         } else if (args.length == 1) {
             if (Language.languages.contains(args[0].toLowerCase())) {
@@ -431,13 +415,8 @@ public class Miscellaneous {
                 ).queue();
             } else {
                 textChannel.sendMessage(
-                        new CommandError(
-                                cmd,
-                                cmd.getArguments(guild)[0],
-                                guild,
-                                CommandError.ErrorType.INCORRECT_VALUE,
-                                (String[]) Language.languages.toArray()
-                        ).toEmbed()
+                        new CommandError(guild, cmd, 0, CommandError.ErrorType.INCORRECT_VALUE,
+                                (String[]) Language.languages.toArray()).toEmbed()
                 ).queue();
             }
         } else {

@@ -26,7 +26,7 @@ public class Fun {
     private void lmgtfy(Guild guild, TextChannel textChannel, Message message, String[] args, BotCommand cmd) {
 
         if (args.length < 1) {
-            textChannel.sendMessage(new CommandError(cmd, cmd.getArguments(guild)[0], guild, CommandError.ErrorType.MISSING_VALUE).toEmbed()).queue();
+            textChannel.sendMessage(new CommandError(guild, cmd, 0, CommandError.ErrorType.MISSING_VALUE).toEmbed()).queue();
             return;
         }
 
@@ -79,7 +79,7 @@ public class Fun {
         if (guild == null) return;
 
         if (args.length == 0) {
-            textChannel.sendMessage(new CommandError(cmd, cmd.getArguments(guild)[1], guild, CommandError.ErrorType.MISSING_VALUE).toEmbed()).queue();
+            textChannel.sendMessage(new CommandError(guild, cmd, 1, CommandError.ErrorType.MISSING_VALUE).toEmbed()).queue();
         } else if (args.length == 1) {
             try {
                 int maximum = Integer.parseInt(args[0]);
@@ -87,11 +87,11 @@ public class Fun {
             } catch (NumberFormatException e) {
                 if (Long.parseLong(args[0]) > Integer.MAX_VALUE || Long.parseLong(args[0]) < Integer.MIN_VALUE) {
                     textChannel.sendMessage(
-                            new CommandError(cmd, cmd.getArguments(guild)[1], guild, CommandError.ErrorType.INCORRECT_RANGE, String.valueOf(Integer.MIN_VALUE), String.valueOf(Integer.MAX_VALUE)).toEmbed()
+                            new CommandError(guild, cmd, 1, CommandError.ErrorType.INCORRECT_RANGE, String.valueOf(Integer.MIN_VALUE), String.valueOf(Integer.MAX_VALUE)).toEmbed()
                     ).queue();
                 } else {
                     textChannel.sendMessage(
-                            new CommandError(cmd, cmd.getArguments(guild)[0], guild, CommandError.ErrorType.INTEGER).toEmbed()
+                            new CommandError(guild, cmd, 0, CommandError.ErrorType.INTEGER).toEmbed()
                     ).queue();
                 }
             }
@@ -108,15 +108,15 @@ public class Fun {
             } catch (NumberFormatException e) {
                 if (Long.parseLong(args[0]) > Integer.MAX_VALUE || Long.parseLong(args[0]) < Integer.MIN_VALUE) {
                     textChannel.sendMessage(
-                            new CommandError(cmd, cmd.getArguments(guild)[0], guild, CommandError.ErrorType.INCORRECT_RANGE, String.valueOf(Integer.MIN_VALUE), String.valueOf(Integer.MAX_VALUE)).toEmbed()
+                            new CommandError(guild, cmd, 0, CommandError.ErrorType.INCORRECT_RANGE, String.valueOf(Integer.MIN_VALUE), String.valueOf(Integer.MAX_VALUE)).toEmbed()
                     ).queue();
                 } else if (Long.parseLong(args[1]) > Integer.MAX_VALUE || Long.parseLong(args[1]) < Integer.MIN_VALUE) {
                     textChannel.sendMessage(
-                            new CommandError(cmd, cmd.getArguments(guild)[1], guild, CommandError.ErrorType.INCORRECT_RANGE, String.valueOf(Integer.MIN_VALUE), String.valueOf(Integer.MAX_VALUE)).toEmbed()
+                            new CommandError(guild, cmd, 1, CommandError.ErrorType.INCORRECT_RANGE, String.valueOf(Integer.MIN_VALUE), String.valueOf(Integer.MAX_VALUE)).toEmbed()
                     ).queue();
                 } else {
                     textChannel.sendMessage(
-                            new CommandError(cmd, cmd.getArguments(guild)[0], guild, CommandError.ErrorType.INTEGER).toEmbed()
+                            new CommandError(guild, cmd, 0, CommandError.ErrorType.INTEGER).toEmbed()
                     ).queue();
                 }
             }

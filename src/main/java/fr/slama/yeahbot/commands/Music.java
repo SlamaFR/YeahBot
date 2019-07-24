@@ -44,7 +44,7 @@ public class Music {
 
         if (args.length == 0) {
             textChannel.sendMessage(
-                    new CommandError(cmd, cmd.getArguments(guild)[0], guild, CommandError.ErrorType.MISSING_VALUE).toEmbed()
+                    new CommandError(guild, cmd, 0, CommandError.ErrorType.MISSING_VALUE).toEmbed()
             ).queue();
             return;
         }
@@ -114,7 +114,7 @@ public class Music {
                 amount = Integer.parseInt(args[0]);
             } catch (NumberFormatException e) {
                 textChannel.sendMessage(
-                        new CommandError(cmd, cmd.getArguments(guild)[0], guild, CommandError.ErrorType.INTEGER).toEmbed()
+                        new CommandError(guild, cmd, 0, CommandError.ErrorType.INTEGER).toEmbed()
                 ).queue();
                 return;
             }
@@ -307,7 +307,7 @@ public class Music {
                     break;
                 default:
                     textChannel.sendMessage(
-                            new CommandError(cmd, cmd.getArguments(guild)[0], guild, CommandError.ErrorType.MISSING_VALUE).toEmbed()
+                            new CommandError(guild, cmd, 0, CommandError.ErrorType.MISSING_VALUE).toEmbed()
                     ).queue();
                     return;
             }
@@ -357,7 +357,7 @@ public class Music {
                     break;
                 default:
                     textChannel.sendMessage(
-                            new CommandError(cmd, cmd.getArguments(guild)[0], guild, CommandError.ErrorType.MISSING_VALUE).toEmbed()
+                            new CommandError(guild, cmd, 0, CommandError.ErrorType.MISSING_VALUE).toEmbed()
                     ).queue();
                     return;
             }
@@ -414,7 +414,7 @@ public class Music {
                 volume = Integer.parseInt(args[0]);
             } catch (NumberFormatException e) {
                 textChannel.sendMessage(
-                        new CommandError(cmd, cmd.getArguments(guild)[0], guild, CommandError.ErrorType.INTEGER).toEmbed()
+                        new CommandError(guild, cmd, 0, CommandError.ErrorType.INTEGER).toEmbed()
                 ).queue();
                 return;
             }
@@ -446,7 +446,7 @@ public class Music {
 
         if (args.length == 0) {
             textChannel.sendMessage(
-                    new CommandError(cmd, cmd.getArguments(guild)[0], guild, CommandError.ErrorType.MISSING_VALUE).toEmbed()
+                    new CommandError(guild, cmd, 0, CommandError.ErrorType.MISSING_VALUE).toEmbed()
             ).queue();
         } else {
             int hours = 0;
@@ -473,7 +473,7 @@ public class Music {
                 }
             } catch (NumberFormatException e) {
                 textChannel.sendMessage(
-                        new CommandError(cmd, cmd.getArguments(guild)[0], guild, CommandError.ErrorType.INTEGER).toEmbed()
+                        new CommandError(guild, cmd, 0, CommandError.ErrorType.INTEGER).toEmbed()
                 ).queue();
                 return;
             }
@@ -566,14 +566,14 @@ public class Music {
 
         if (builder.length() < 1) {
             textChannel.sendMessage(
-                    new CommandError(cmd, cmd.getArguments(guild)[0], guild, CommandError.ErrorType.MISSING_VALUE).toEmbed()
+                    new CommandError(guild, cmd, 0, CommandError.ErrorType.MISSING_VALUE).toEmbed()
             ).queue();
             return;
         }
 
         if (url == null) {
             textChannel.sendMessage(
-                    new CommandError(cmd, cmd.getArguments(guild)[1], guild, CommandError.ErrorType.URL).toEmbed()
+                    new CommandError(guild, cmd, 1, CommandError.ErrorType.URL).toEmbed()
             ).queue();
             return;
         }
@@ -678,7 +678,7 @@ public class Music {
     private boolean hasNotValue(Guild guild, TextChannel textChannel, BotCommand cmd, String[] args) {
         if (args.length == 0) {
             textChannel.sendMessage(
-                    new CommandError(cmd, cmd.getArguments(guild)[0], guild, CommandError.ErrorType.MISSING_VALUE).toEmbed()
+                    new CommandError(guild, cmd, 1, CommandError.ErrorType.MISSING_VALUE).toEmbed()
             ).queue();
             return true;
         }
