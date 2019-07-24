@@ -1,0 +1,34 @@
+{
+  "version": "1.4.3",
+  "date": 1563919200000,
+  "fr": {
+    "title": "Bulletin de mise à jour",
+    "adds": [
+      "Ajout de l'argument 'all' à la commande 'ignore'."
+    ],
+    "removes": [],
+    "changes": [
+      "La commande 'lmgtfy' affiche désormais le lien sous un spoiler afin d'éviter la paranoïa.",
+      "Améliorations graphiques mineures.",
+      "Amélioration de la génération du rôle 'Muet'.",
+      "L'application d'une sanction est maintenant confirmé dans le salon courant.",
+      "Les salons privés temporaires expirent désormais après 1 minute si personne ne les rejoint."
+    ],
+    "coming": []
+  },
+  "en": {
+    "title": "Update report",
+    "adds": [
+      "Added 'all' argument to the 'ignore' command."
+    ],
+    "removes": [],
+    "changes": [
+      "The 'lmgtfy' command now displays the link under a spoiler to avoid paranoia.",
+      "Minor graphical enhancements.",
+      "Improved 'Muted' role generation.",
+      "Sanction application is now confirmed in the current channel.",
+      "Temporary private channels now expire after 1 minute if nobody joins them."
+    ],
+    "coming": []
+  }
+}
