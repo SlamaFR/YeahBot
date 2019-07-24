@@ -31,7 +31,7 @@ public class Util {
             discordPermission = {Permission.MANAGE_PERMISSIONS, Permission.MANAGE_CHANNEL},
             category = Command.CommandCategory.UTIL,
             executor = Command.CommandExecutor.USER)
-    private void privateVoiceChannel(Guild guild, TextChannel textChannel, Member member, Message message) {
+    private void privateVoiceChannel(Guild guild, TextChannel textChannel, Message message) {
 
         if (guild == null) return;
 
