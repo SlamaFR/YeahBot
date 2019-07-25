@@ -96,7 +96,7 @@ public class GuildUtil {
             return guild.getTextChannelById(settings.updateChannel);
         }
 
-        String[] keyWords = {"update", "mise-a-jour", "mise-à-jour"};
+        String[] keyWords = {"update", "mise-a-jour", "mise-à-jour", "mises-a-jour", "mises-à-jour"};
 
         for (String word : keyWords) {
             Optional<TextChannel> textChannel = guild.getTextChannels().stream().filter(tc -> tc.getName().contains(word)).findFirst();
@@ -118,7 +118,7 @@ public class GuildUtil {
             return guild.getTextChannelById(settings.joinLeaveChannel);
         }
 
-        String[] keyWords = {"welcome", "bienvenue", "nouveaux"};
+        String[] keyWords = {"welcome", "bienvenue", "nouveaux", "arrivée"};
 
         for (String word : keyWords) {
             Optional<TextChannel> textChannel = guild.getTextChannels().stream().filter(tc -> tc.getName().contains(word)).findFirst();
