@@ -23,8 +23,8 @@ import java.util.stream.Collectors;
 public class MusicListener extends ListenerAdapter {
 
     private final MusicManager manager = YeahBot.getInstance().getMusicManager();
-    private final Map<Guild, TaskScheduler> leavingTasks = new HashMap<>();
-    private final Map<Guild, Long> leavingMessages = new HashMap<>();
+    private final Map<Long, TaskScheduler> leavingTasks = new HashMap<>();
+    private final Map<Long, Long> leavingMessages = new HashMap<>();
 
     @Override
     public void onGuildVoiceLeave(GuildVoiceLeaveEvent event) {
@@ -123,18 +123,18 @@ public class MusicListener extends ListenerAdapter {
                 .setColor(ColorUtil.YELLOW)
                 .build();
 
-        textChannel.sendMessage(embed).queue(message -> leavingMessages.put(guild, message.getIdLong()));
+        textChannel.sendMessage(embed).queue(message -> leavingMessages.put(guild.getIdLong(), message.getIdLong()));
 
         manager.getPlayer(guild).getTrackScheduler().pause(false);
-        leavingTasks.put(guild, TaskScheduler.scheduleDelayed(() -> leave(textChannel), 60 * 1000));
+        leavingTasks.put(guild.getIdLong(), TaskScheduler.scheduleDelayed(() -> leave(textChannel), 60 * 1000));
     }
 
     private void cancelLeaving(TextChannel textChannel) {
         Guild guild = textChannel.getGuild();
 
-        if (leavingTasks.containsKey(guild)) leavingTasks.remove(guild).stop();
-        if (leavingMessages.containsKey(guild))
-            textChannel.getMessageById(leavingMessages.remove(guild)).queue(message -> message.delete().queue());
+        if (leavingTasks.containsKey(guild.getIdLong())) leavingTasks.remove(guild.getIdLong()).stop();
+        if (leavingMessages.containsKey(guild.getIdLong()))
+            textChannel.getMessageById(leavingMessages.remove(guild.getIdLong())).queue(message -> message.delete().queue());
         manager.getPlayer(guild).getTrackScheduler().resume(false);
     }
 
@@ -158,8 +158,8 @@ public class MusicListener extends ListenerAdapter {
 
     private void leave(TextChannel textChannel) {
         Guild guild = textChannel.getGuild();
-        tell(textChannel, leavingMessages.containsKey(guild) ? leavingMessages.remove(guild) : 0);
-        if (leavingTasks.containsKey(guild)) leavingTasks.remove(guild).stop();
+        tell(textChannel, leavingMessages.containsKey(guild.getIdLong()) ? leavingMessages.remove(guild.getIdLong()) : 0);
+        if (leavingTasks.containsKey(guild.getIdLong())) leavingTasks.remove(guild.getIdLong()).stop();
         manager.getPlayer(guild).getTrackScheduler().resume(false);
         manager.getPlayer(guild).getTrackScheduler().stop();
     }
