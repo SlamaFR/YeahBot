@@ -105,20 +105,14 @@ public class YeahBot extends ListenerAdapter implements Runnable {
     public void onReady(ReadyEvent event) {
         super.onReady(event);
         if (event.getGuildAvailableCount() < event.getGuildTotalCount()) return;
-        TaskScheduler.scheduleRepeating(new DatabaseUpdater(), 10L * 1000, 300L * 1000);
-        TaskScheduler.scheduleRepeating(new SpamTask(), 10L * 1000, 5L * 1000);
-        TaskScheduler.scheduleRepeating(new SwearingTask(), 10L * 1000, 60L * 1000);
+        TaskScheduler.scheduleRepeating(new DatabaseUpdater(), 5 * 1000, 300 * 1000);
+        TaskScheduler.scheduleRepeating(new SpamTask(), 5 * 1000, 5 * 1000);
+        TaskScheduler.scheduleRepeating(new SwearingTask(), 5 * 1000, 60 * 1000);
+
+        TaskScheduler.scheduleDelayed(new UnmuteTask(), 5 * 1000);
+        TaskScheduler.scheduleDelayed(new PrivateChannelsTask(), 5 * 1000);
 
         TaskScheduler.async(() -> Jooby.run(Application::new, "application.port=" + CONFIG.apiPort));
-
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        new UnmuteTask().run();
-        new PrivateChannelsTask().run();
 
         shardManager.removeEventListener(this);
     }
