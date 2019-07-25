@@ -28,13 +28,11 @@ public class MusicListener extends ListenerAdapter {
 
     @Override
     public void onGuildVoiceLeave(GuildVoiceLeaveEvent event) {
-        check(event.getChannelLeft(), event);
         if (!isBot(event)) {
+            check(event.getChannelLeft(), event);
             checkDeafen(event.getChannelLeft(), event);
-        } else {
-            Guild guild = event.getGuild();
-            if (leavingTasks.containsKey(guild)) leavingTasks.remove(guild).stop();
-            leavingMessages.remove(guild);
+        } else if (manager.getPlayer(event.getGuild()).getTextChannel() != null) {
+            leave(manager.getPlayer(event.getGuild()).getTextChannel());
         }
         super.onGuildVoiceLeave(event);
     }
@@ -91,6 +89,8 @@ public class MusicListener extends ListenerAdapter {
         VoiceChannel botChannel = event.getGuild().getSelfMember().getVoiceState().getChannel();
         TextChannel textChannel = manager.getPlayer(channel.getGuild()).getTextChannel();
 
+        if (botChannel == null) return;
+
         List<Member> members = channel.getMembers().stream().filter(m -> !m.getUser().isBot()).collect(Collectors.toList());
 
         boolean botLeft = event.getMember().getUser().getIdLong() == event.getJDA().getSelfUser().getIdLong();
@@ -126,11 +126,7 @@ public class MusicListener extends ListenerAdapter {
         textChannel.sendMessage(embed).queue(message -> leavingMessages.put(guild, message.getIdLong()));
 
         manager.getPlayer(guild).getTrackScheduler().pause(false);
-        leavingTasks.put(guild, TaskScheduler.scheduleDelayed(() -> {
-            if (leavingMessages.containsKey(guild)) tell(textChannel, leavingMessages.get(guild));
-            manager.getPlayer(guild).getTrackScheduler().stop();
-            manager.getPlayer(guild).getTrackScheduler().resume(false);
-        }, 60 * 1000));
+        leavingTasks.put(guild, TaskScheduler.scheduleDelayed(() -> leave(textChannel), 60 * 1000));
     }
 
     private void cancelLeaving(TextChannel textChannel) {
@@ -150,7 +146,7 @@ public class MusicListener extends ListenerAdapter {
                 .setColor(ColorUtil.ORANGE)
                 .build();
 
-        if (textChannel.getLatestMessageIdLong() == messageId) {
+        if (textChannel.hasLatestMessage() && textChannel.getLatestMessageIdLong() == messageId) {
             textChannel.getMessageById(messageId).queue(message -> message.editMessage(embed).queue(), t -> {
             });
         } else {
@@ -158,5 +154,13 @@ public class MusicListener extends ListenerAdapter {
             });
             textChannel.sendMessage(embed).queue();
         }
+    }
+
+    private void leave(TextChannel textChannel) {
+        Guild guild = textChannel.getGuild();
+        tell(textChannel, leavingMessages.containsKey(guild) ? leavingMessages.remove(guild) : 0);
+        if (leavingTasks.containsKey(guild)) leavingTasks.remove(guild).stop();
+        manager.getPlayer(guild).getTrackScheduler().resume(false);
+        manager.getPlayer(guild).getTrackScheduler().stop();
     }
 }
