@@ -108,7 +108,8 @@ public class ReportsManager {
         return new EmbedBuilder()
                 .setColor(ColorUtil.ORANGE)
                 .setTitle(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, type))
-                .addField(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "user"), author.getAsMention(), true)
+                .addField(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "user"),
+                        String.format("%s (%s#%s)", author.getAsMention(), author.getUser().getName(), author.getUser().getDiscriminator()), true)
                 .addField(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "text_channel"), textChannel.getAsMention(), true)
                 .addField(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "jump_to_message"),
                         (textChannel.getMessageById(message.getId()) != null
