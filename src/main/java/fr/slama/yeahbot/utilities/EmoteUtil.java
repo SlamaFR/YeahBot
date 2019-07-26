@@ -17,6 +17,10 @@ public class EmoteUtil {
     public static final String NO_EMOTE = "514172078153400335";
     public static final String YES_EMOTE = "514172065788461068";
 
+    public static final String GREEN_DOT = "<:green_dot:604164103833124885>";
+    public static final String ORANGE_DOT = "<:orange_dot:604164105116450836> ";
+    public static final String RED_DOT = "<:red_dot:604164105523167243>";
+
     public static final String PREVIOUS = "⬅";
     public static final String NEXT = "➡";
     public static final String EMOJI_REGEX = "(?:[\\u2700-\\u27bf]|" +
