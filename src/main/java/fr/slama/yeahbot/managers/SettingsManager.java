@@ -148,10 +148,10 @@ public class SettingsManager {
                     (e, ew) -> {
                         String newValue;
                         try {
-                            if (e.getReactionEmote().getId().equals(EmoteUtil.NO_EMOTE)) {
+                            if (e.getReactionEmote().getId().equals(EmoteUtil.NO_REACTION)) {
                                 field.set(settings, false);
                                 newValue = LanguageUtil.getState(guild, false);
-                            } else if (e.getReactionEmote().getId().equals(EmoteUtil.YES_EMOTE)) {
+                            } else if (e.getReactionEmote().getId().equals(EmoteUtil.YES_REACTION)) {
                                 field.set(settings, true);
                                 newValue = LanguageUtil.getState(guild, true);
                             } else {

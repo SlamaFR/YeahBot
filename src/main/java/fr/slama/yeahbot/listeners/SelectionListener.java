@@ -37,13 +37,13 @@ public class SelectionListener extends ListenerAdapter implements Closeable {
 
     private final User user;
     private final Message message;
-    private final ArrayList<String> choices;
+    private final List<String> choices;
     private final Consumer<List<String>> result;
     private final boolean multiple;
     private final Timer timer = new Timer();
     private final List<String> selection = new ArrayList<>();
 
-    public SelectionListener(Message message, User user, int delay, ArrayList<String> choices, Consumer<List<String>> result, boolean multiple) {
+    public SelectionListener(Message message, User user, int delay, List<String> choices, Consumer<List<String>> result, boolean multiple) {
         this.user = user;
         this.message = message;
         this.choices = choices;
@@ -99,8 +99,8 @@ public class SelectionListener extends ListenerAdapter implements Closeable {
         return new ArrayList<>(Arrays.asList(EMOTES).subList(0, count));
     }
 
-    public static ArrayList<String> getQuestion() {
-        return new ArrayList<>(Arrays.asList(EmoteUtil.NO_EMOTE, EmoteUtil.YES_EMOTE));
+    public static List<String> getQuestion() {
+        return EmoteUtil.getQuestionEmotes();
     }
 
     @Override
@@ -144,7 +144,8 @@ public class SelectionListener extends ListenerAdapter implements Closeable {
     private void handleEvent(GenericMessageReactionEvent event, Runnable runnable) {
         if (event.getMessageId().equals(message.getId())) {
             event.getChannel().getMessageById(event.getMessageIdLong()).queue((Message m) -> event.getReaction().getUsers().queue(users -> {
-                if (users.contains(event.getJDA().getSelfUser()) && event.getUser().equals(user)) runnable.run();
+                if (users.contains(event.getJDA().getSelfUser()) && event.getUser().getIdLong() == user.getIdLong())
+                    runnable.run();
             }));
         }
     }

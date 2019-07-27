@@ -14,9 +14,11 @@ public class EmoteUtil {
     /*
     Constants
      */
-    public static final String NO_EMOTE = "514172078153400335";
-    public static final String YES_EMOTE = "514172065788461068";
+    public static final String NO_REACTION = "514172078153400335";
+    public static final String YES_REACTION = "514172065788461068";
 
+    public static final String YES = "<:yes:514172065788461068>";
+    public static final String NO = "<:no:514172078153400335>";
     public static final String GREEN_DOT = "<:green_dot:604164103833124885>";
     public static final String ORANGE_DOT = "<:orange_dot:604164105116450836> ";
     public static final String RED_DOT = "<:red_dot:604164105523167243>";
@@ -71,7 +73,7 @@ public class EmoteUtil {
     }
 
     public static List<String> getQuestionEmotes() {
-        return Arrays.asList(NO_EMOTE, YES_EMOTE);
+        return Arrays.asList(NO_REACTION, YES_REACTION);
     }
 
     public static ArrayList<String> getNumbers(int count) {
