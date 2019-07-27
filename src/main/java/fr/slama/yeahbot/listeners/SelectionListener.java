@@ -52,12 +52,13 @@ public class SelectionListener extends ListenerAdapter implements Closeable {
 
         if (!message.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE)) {
             MessageUtil.sendPermissionEmbed(message.getGuild(), message.getTextChannel(), Permission.MESSAGE_MANAGE);
+            close();
             return;
         }
 
         if (!message.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_ADD_REACTION)) {
             MessageUtil.sendPermissionEmbed(message.getGuild(), message.getTextChannel(), Permission.MESSAGE_ADD_REACTION);
-            message.delete().queue();
+            close();
             return;
         }
 
@@ -75,7 +76,7 @@ public class SelectionListener extends ListenerAdapter implements Closeable {
 
         if (!message.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_HISTORY)) {
             MessageUtil.sendPermissionEmbed(message.getGuild(), message.getTextChannel(), Permission.MESSAGE_HISTORY);
-            message.delete().queue();
+            close();
             return;
         }
 
