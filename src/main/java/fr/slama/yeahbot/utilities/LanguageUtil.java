@@ -27,16 +27,16 @@ public class LanguageUtil {
 
         String lang = language;
 
-        if (lang == null || lang.isEmpty()) lang = Language.ENGLISH;
+        if (lang == null || lang.isEmpty()) lang = Language.ENGLISH.getCode();
 
-        if (!Language.languages.contains(lang)) lang = Language.ENGLISH;
+        if (!Language.has(lang)) lang = Language.ENGLISH.getCode();
 
         ResourceBundle resourceBundle;
         try {
             resourceBundle = ResourceBundle.getBundle(bundle.getName(), new Locale(lang));
         } catch (MissingResourceException e) {
             LOGGER.error("[FATAL] Missing {} bundle!", bundle);
-            return lang.equals(Language.ENGLISH) ? Language.MISSING : getString(Language.ENGLISH, bundle, key);
+            return lang.equals(Language.ENGLISH.getCode()) ? Language.MISSING : getString(Language.ENGLISH, bundle, key);
         }
 
         try {
@@ -44,11 +44,15 @@ public class LanguageUtil {
             return new String(value.getBytes(ISO_8859_1), UTF_8);
         } catch (MissingResourceException e) {
             if (bundle.equals(Bundle.DESCRIPTION) || bundle.equals(Bundle.ARGUMENTS) || bundle.equals(Bundle.ARGUMENTS_DESCRIPTION))
-                return lang.equals(Language.ENGLISH) ? "" : getString(Language.ENGLISH, bundle, key);
+                return lang.equals(Language.ENGLISH.getCode()) ? "" : getString(Language.ENGLISH, bundle, key);
             LOGGER.error("[FATAL] Missing {} key in {} bundle!", key, bundle);
-            return lang.equals(Language.ENGLISH) ? Language.MISSING : getString(Language.ENGLISH, bundle, key);
+            return lang.equals(Language.ENGLISH.getCode()) ? Language.MISSING : getString(Language.ENGLISH, bundle, key);
         }
 
+    }
+
+    public static String getString(Language language, Bundle bundle, String key) {
+        return getString(language.getCode(), bundle, key);
     }
 
     public static String getString(Guild guild, Bundle bundle, String key) {
@@ -67,9 +71,13 @@ public class LanguageUtil {
             }
         }
 
-        if (value.contains("{")) return MessageFormat.format(value.replace("'", "''"), (Object[]) arguments);
+        if (value.contains("{")) return MessageFormat.format(value.replace("'", "''"), arguments);
         else return MessageFormat.format(value, arguments);
 
+    }
+
+    public static String getArguedString(Language language, Bundle bundle, String key, Object... arguments) {
+        return getArguedString(language.getCode(), bundle, key, arguments);
     }
 
     public static String getArguedString(Guild guild, Bundle bundle, String key, Object... arguments) {

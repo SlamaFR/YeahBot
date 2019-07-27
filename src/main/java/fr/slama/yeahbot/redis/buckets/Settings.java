@@ -27,7 +27,7 @@ public class Settings {
     @IgnoreSetting
     public String prefix = "!";
     @IgnoreSetting
-    public String locale = Language.ENGLISH;
+    public String locale = Language.ENGLISH.getCode();
     @LongType(type = ROLE)
     public long muteRole = 0L;
 

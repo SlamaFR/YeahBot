@@ -141,7 +141,7 @@ public class Application extends Jooby {
                 JSONObject permission = new JSONObject();
                 JSONObject discordPermission = new JSONObject();
                 JSONObject category = new JSONObject();
-                for (String l : Language.languages) {
+                for (String l : Language.codeValues()) {
                     description.put(l, cmd.getDescription(l));
                     arguments.put(l, cmd.getArguments(l));
                     argumentsDescription.put(l, cmd.getArgumentsDescription(l));
