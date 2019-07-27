@@ -5,7 +5,8 @@ package fr.slama.yeahbot.blub;
  */
 public class Playlist {
 
-    private String url, name;
+    private String url;
+    private String name;
     private long owner;
 
     public Playlist(String url, String name, long owner) {

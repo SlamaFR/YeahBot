@@ -40,7 +40,8 @@ public @interface Command {
         FUN("fun", "\uD83C\uDF89 "),
         MISCELLANEOUS("miscellaneous", "⚙");
 
-        private String name, emote;
+        private String name;
+        private String emote;
 
         CommandCategory(String name, String emote) {
             this.name = name;
