@@ -1,10 +1,12 @@
 package fr.slama.yeahbot.listeners;
 
+import fr.slama.yeahbot.blub.SetupAssistant;
 import fr.slama.yeahbot.language.Bundle;
 import fr.slama.yeahbot.redis.RedisData;
 import fr.slama.yeahbot.redis.buckets.Settings;
 import fr.slama.yeahbot.utilities.LanguageUtil;
 import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
@@ -13,6 +15,14 @@ import net.dv8tion.jda.core.hooks.ListenerAdapter;
  * Created on 04/12/2018.
  */
 public class JoinLeaveListener extends ListenerAdapter {
+
+    @Override
+    public void onGuildJoin(GuildJoinEvent event) {
+        if (event.getGuild().getDefaultChannel() != null) {
+            new SetupAssistant(event.getGuild().getDefaultChannel(), event.getGuild().getOwner()).start();
+        }
+        super.onGuildJoin(event);
+    }
 
     @Override
     public void onGuildMemberJoin(GuildMemberJoinEvent event) {

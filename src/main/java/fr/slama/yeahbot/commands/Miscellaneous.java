@@ -2,6 +2,7 @@ package fr.slama.yeahbot.commands;
 
 import fr.slama.yeahbot.YeahBot;
 import fr.slama.yeahbot.blub.Paginator;
+import fr.slama.yeahbot.blub.SetupAssistant;
 import fr.slama.yeahbot.commands.core.BotCommand;
 import fr.slama.yeahbot.commands.core.Command;
 import fr.slama.yeahbot.commands.core.CommandError;
@@ -405,7 +406,7 @@ public class Miscellaneous {
                     new CommandError(guild, cmd, 0, CommandError.ErrorType.MISSING_VALUE).toEmbed()
             ).queue();
         } else if (args.length == 1) {
-            if (Language.languages.contains(args[0].toLowerCase())) {
+            if (Language.has(args[0].toLowerCase())) {
                 Settings settings = RedisData.getSettings(guild);
                 settings.locale = args[0].toLowerCase();
                 RedisData.setSettings(guild, settings);
@@ -416,7 +417,7 @@ public class Miscellaneous {
             } else {
                 textChannel.sendMessage(
                         new CommandError(guild, cmd, 0, CommandError.ErrorType.INCORRECT_VALUE,
-                                (String[]) Language.languages.toArray()).toEmbed()
+                                Language.codeValues()).toEmbed()
                 ).queue();
             }
         } else {
@@ -582,6 +583,25 @@ public class Miscellaneous {
                             .build()
             ).queue();
         });
+
+    }
+
+    @Command(name = "setup")
+    private void setup(TextChannel textChannel, Member member) {
+
+        new SetupAssistant(textChannel, member).start();
+
+        /*
+        textChannel.sendMessage(
+                new EmbedBuilder()
+                        .setTitle("Étape 2 : Permissions")
+                        .addField(String.format("%s Modération", EmoteUtil.NO),
+                                String.format("%s Gérer les salons\n%s Expulser des membres\n%s Bannir des membres\n%s Gérer les messages\n%s Gérer les rôles",
+                                        EmoteUtil.ORANGE_DOT, EmoteUtil.GREEN_DOT, EmoteUtil.GREEN_DOT, EmoteUtil.RED_DOT, EmoteUtil.ORANGE_DOT), false)
+                        .build()
+        ).queue();
+
+         */
 
     }
 
