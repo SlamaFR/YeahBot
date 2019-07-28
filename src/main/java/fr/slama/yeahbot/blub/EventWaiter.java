@@ -27,13 +27,11 @@ public class EventWaiter implements EventListener, Closeable {
 
         YeahBot.getInstance().getShardManager().addEventListener(this);
 
-        Runnable runnable = () -> {
-            if (builder.timeoutAction != null) builder.timeoutAction.run();
-            this.close();
-        };
-
-        if (builder.timeout > 0 && builder.unit != null) {
-            TaskScheduler.scheduleDelayed(runnable, builder.unit.toMillis(builder.timeout));
+        if (builder.timeout > -1 && builder.unit != null) {
+            TaskScheduler.scheduleDelayed(() -> {
+                if (builder.timeoutAction != null) builder.timeoutAction.run();
+                this.close();
+            }, builder.unit.toMillis(builder.timeout));
         }
     }
 
