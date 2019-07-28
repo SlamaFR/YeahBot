@@ -21,13 +21,14 @@ import net.dv8tion.jda.core.utils.Checks;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
  * Created on 2019-07-26.
  */
-public class SetupAssistant {
+public class SetupWizard {
 
     private static final String REFRESH_EMOTE = "\uD83D\uDD04";
     private static final String SUBMIT_EMOTE = "✅";
@@ -63,7 +64,7 @@ public class SetupAssistant {
 
     private long permissionMessage = 0;
 
-    public SetupAssistant(TextChannel textChannel, Member member) {
+    public SetupWizard(TextChannel textChannel, Member member) {
         this.guild = member.getGuild();
         this.textChannel = textChannel;
         this.member = member;
@@ -73,17 +74,34 @@ public class SetupAssistant {
     }
 
     public void start() {
-        step1();
+        EmbedBuilder builder = new EmbedBuilder()
+                .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "setup_start_title"))
+                .setDescription(LanguageUtil.getArguedString(guild, Bundle.STRINGS, "setup_start_summary", SUBMIT_EMOTE))
+                .setColor(ColorUtil.WHITE);
+        addFooter(builder);
+        textChannel.sendMessage(builder.build()).queue(message -> {
+            message.addReaction(SUBMIT_EMOTE).queue();
+            new EventWaiter.Builder(MessageReactionAddEvent.class,
+                    e -> e.getUser().getIdLong() == member.getUser().getIdLong() && e.getMessageIdLong() == message.getIdLong(),
+                    (e, ew) -> {
+                        if (e.getReactionEmote().getName().equals(SUBMIT_EMOTE)) {
+                            ew.close();
+                            message.delete().queue(m -> step1());
+                        }
+                    })
+                    .timeout(30, TimeUnit.SECONDS)
+                    .timeoutAction(() -> message.delete().queue())
+                    .build();
+        });
     }
 
     private void save() {
         RedisData.setSettings(guild, settings);
     }
 
-    private EmbedBuilder addFooter(EmbedBuilder builder) {
+    private void addFooter(EmbedBuilder builder) {
         builder.setFooter(LanguageUtil.getArguedString(guild, Bundle.CAPTION, "waiting_for_response_of",
                 member.getEffectiveName()), member.getUser().getAvatarUrl());
-        return builder;
     }
 
     /* STEP 1: Language */
@@ -113,9 +131,11 @@ public class SetupAssistant {
         textChannel.sendMessage(embed.build()).queue(message -> new SelectionListener(message, member.getUser(), -1, emotes, r -> {
             Language language = Language.fromEmote(r.get(0));
             settings.locale = language.getCode();
-            message.delete().queue(s -> step2());
+            message.delete().queue(s -> {
+                save();
+                step2();
+            });
         }, false));
-        save();
     }
 
     /* STEP 2: Permissions check */
@@ -225,7 +245,10 @@ public class SetupAssistant {
                                 break;
                             case SUBMIT_EMOTE:
                                 ew.close();
-                                message.delete().queue(s -> step3());
+                                message.delete().queue(s -> {
+                                    save();
+                                    step3();
+                                });
                                 break;
                             default:
                         }
@@ -233,7 +256,6 @@ public class SetupAssistant {
                     .autoClose(false)
                     .build();
         });
-        save();
     }
 
     /* STEP 3: Protections */
@@ -271,9 +293,9 @@ public class SetupAssistant {
                     default:
                 }
             }
+            save();
             end();
         }, true));
-        save();
     }
 
     private void end() {

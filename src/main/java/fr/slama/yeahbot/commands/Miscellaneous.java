@@ -2,7 +2,7 @@ package fr.slama.yeahbot.commands;
 
 import fr.slama.yeahbot.YeahBot;
 import fr.slama.yeahbot.blub.Paginator;
-import fr.slama.yeahbot.blub.SetupAssistant;
+import fr.slama.yeahbot.blub.SetupWizard;
 import fr.slama.yeahbot.commands.core.BotCommand;
 import fr.slama.yeahbot.commands.core.Command;
 import fr.slama.yeahbot.commands.core.CommandError;
@@ -589,7 +589,7 @@ public class Miscellaneous {
     @Command(name = "setup")
     private void setup(TextChannel textChannel, Member member) {
 
-        new SetupAssistant(textChannel, member).start();
+        new SetupWizard(textChannel, member).start();
 
         /*
         textChannel.sendMessage(
