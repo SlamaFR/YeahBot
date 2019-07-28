@@ -1,6 +1,7 @@
 package fr.slama.yeahbot.listeners;
 
 import fr.slama.yeahbot.YeahBot;
+import fr.slama.yeahbot.blub.TaskScheduler;
 import fr.slama.yeahbot.utilities.EmoteUtil;
 import fr.slama.yeahbot.utilities.MessageUtil;
 import net.dv8tion.jda.core.Permission;
@@ -12,7 +13,9 @@ import net.dv8tion.jda.core.events.message.react.MessageReactionRemoveEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
 import java.io.Closeable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.function.Consumer;
 
 /**
@@ -40,7 +43,7 @@ public class SelectionListener extends ListenerAdapter implements Closeable {
     private final List<String> choices;
     private final Consumer<List<String>> result;
     private final boolean multiple;
-    private final Timer timer = new Timer();
+    private TaskScheduler task = null;
     private final List<String> selection = new ArrayList<>();
 
     public SelectionListener(Message message, User user, int delay, List<String> choices, Consumer<List<String>> result, boolean multiple) {
@@ -50,29 +53,14 @@ public class SelectionListener extends ListenerAdapter implements Closeable {
         this.result = result;
         this.multiple = multiple;
 
-        if (!message.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE)) {
-            MessageUtil.sendPermissionEmbed(message.getGuild(), message.getTextChannel(), Permission.MESSAGE_MANAGE);
-            close();
-            return;
-        }
-
         if (!message.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_ADD_REACTION)) {
             MessageUtil.sendPermissionEmbed(message.getGuild(), message.getTextChannel(), Permission.MESSAGE_ADD_REACTION);
             close();
             return;
         }
-
         YeahBot.getInstance().getShardManager().addEventListener(this);
 
-        if (delay > -1) {
-            timer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    message.delete().queue();
-                    YeahBot.getInstance().getShardManager().removeEventListener(this);
-                }
-            }, delay);
-        }
+        if (delay > -1) task = TaskScheduler.scheduleDelayed(this::close, delay);
 
         if (!message.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_HISTORY)) {
             MessageUtil.sendPermissionEmbed(message.getGuild(), message.getTextChannel(), Permission.MESSAGE_HISTORY);
@@ -92,11 +80,10 @@ public class SelectionListener extends ListenerAdapter implements Closeable {
                 });
             }
         }
-
         if (multiple) message.addReaction(OK_EMOTE).queue();
     }
 
-    public static ArrayList<String> get(int count) {
+    public static List<String> get(int count) {
         return new ArrayList<>(Arrays.asList(EMOTES).subList(0, count));
     }
 
@@ -109,7 +96,7 @@ public class SelectionListener extends ListenerAdapter implements Closeable {
         YeahBot.getInstance().getShardManager().removeEventListener(this);
         result.accept(selection);
         message.delete().queue();
-        timer.cancel();
+        if (task != null) task.stop();
     }
 
     @Override
