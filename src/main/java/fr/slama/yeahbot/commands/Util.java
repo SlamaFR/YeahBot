@@ -8,6 +8,7 @@ import fr.slama.yeahbot.redis.RedisData;
 import fr.slama.yeahbot.redis.buckets.Channels;
 import fr.slama.yeahbot.utilities.ColorUtil;
 import fr.slama.yeahbot.utilities.LanguageUtil;
+import fr.slama.yeahbot.utilities.StringUtil;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
@@ -69,7 +70,7 @@ public class Util {
                         String.format("`%s`", String.join(", ", colors)),
                         true
                 )
-                .setFooter(LanguageUtil.getString(guild, Bundle.CAPTION, "waiting_for_response_embed"), null)
+                .setFooter(StringUtil.response(guild).canCancel(true).build(), null)
                 .build();
 
         EmbedBuilder embed = new EmbedBuilder();

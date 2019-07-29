@@ -8,10 +8,7 @@ import fr.slama.yeahbot.redis.buckets.Settings;
 import fr.slama.yeahbot.settings.AvailableVariables;
 import fr.slama.yeahbot.settings.IgnoreSetting;
 import fr.slama.yeahbot.settings.LongType;
-import fr.slama.yeahbot.utilities.ColorUtil;
-import fr.slama.yeahbot.utilities.EmoteUtil;
-import fr.slama.yeahbot.utilities.LanguageUtil;
-import fr.slama.yeahbot.utilities.MessageUtil;
+import fr.slama.yeahbot.utilities.*;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
@@ -92,7 +89,7 @@ public class SettingsManager {
                                 LanguageUtil.getArguedString(guild, Bundle.STRINGS, "current_value", value),
                                 false
                         )
-                        .setFooter(LanguageUtil.getString(guild, Bundle.CAPTION, "waiting_for_response"), null)
+                        .setFooter(StringUtil.response(guild).canCancel(true).canReset(true).build(), null)
                         .build()
         ).queue(message -> new EventWaiter.Builder(GuildMessageReceivedEvent.class, condition, (e, ew) -> {
             String newValue = LanguageUtil.getString(guild, Bundle.CAPTION, "none");
@@ -180,7 +177,7 @@ public class SettingsManager {
                 .addField(LanguageUtil.getString(guild, Bundle.SETTINGS, getSettingKey(field)),
                         LanguageUtil.getArguedString(guild, Bundle.STRINGS, "current_value", value),
                         false)
-                .setFooter(LanguageUtil.getString(guild, Bundle.CAPTION, "waiting_for_response"), null);
+                .setFooter(StringUtil.response(guild).canCancel(true).canReset(true).build(), null);
 
         if (field.isAnnotationPresent(AvailableVariables.class)) {
             StringBuilder stringBuilder = new StringBuilder();
