@@ -34,52 +34,9 @@ public class SpamListener extends ListenerAdapter {
         Settings settings = RedisData.getSettings(event.getGuild());
         if (settings.spamIgnoredChannels.contains(event.getChannel().getIdLong())) return;
 
-        if (settings.detectingCapsSpam || settings.detectingEmojisSpam) {
+        if (settings.detectingCapsSpam && checkCapsSpam(event, settings)) return;
 
-            char[] chars = event.getMessage().getContentRaw().toCharArray();
-            int upperChar = 0;
-            int emojis = 0;
-
-            for (char character : chars) {
-                if (Character.isUpperCase(character)) upperChar++;
-            }
-
-            final Pattern pattern = Pattern.compile(EmoteUtil.EMOJI_REGEX);
-            final Matcher matcher = pattern.matcher(event.getMessage().getContentRaw());
-            while (matcher.find()) emojis++;
-
-            if (settings.detectingCapsSpam) {
-                double capsPercentage = upperChar * 100D / chars.length;
-                if (capsPercentage >= 50D && chars.length > 15) {
-                    SpamTask.idSpamCapsMap.get(event.getGuild().getIdLong()).getAndIncrement(event.getAuthor().getIdLong());
-                }
-                if (SpamTask.idSpamCapsMap.get(event.getGuild().getIdLong()).containsKey(event.getAuthor().getIdLong()) &&
-                        SpamTask.idSpamCapsMap
-                                .get(event.getGuild().getIdLong())
-                                .get(event.getAuthor().getIdLong()) >= settings.timeScaleSpamTrigger) {
-                    SpamTask.idSpamCapsMap.get(event.getGuild().getIdLong()).remove(event.getAuthor().getIdLong());
-                    ReportsManager.reportSpam(event.getMessage(), SpamType.CAPS);
-                    return;
-                }
-            }
-
-            if (settings.detectingEmojisSpam) {
-                double emojisPercentage = emojis * 100D / chars.length;
-
-                if (emojis > 5 && emojisPercentage >= 25D) {
-                    SpamTask.idSpamEmotesMap.get(event.getGuild().getIdLong()).getAndIncrement(event.getAuthor().getIdLong());
-                }
-                if (SpamTask.idSpamEmotesMap.get(event.getGuild().getIdLong()).containsKey(event.getAuthor().getIdLong()) &&
-                        SpamTask.idSpamEmotesMap
-                                .get(event.getGuild().getIdLong())
-                                .get(event.getAuthor().getIdLong()) >= settings.timeScaleSpamTrigger / 2) {
-                    SpamTask.idSpamEmotesMap.get(event.getGuild().getIdLong()).remove(event.getAuthor().getIdLong());
-                    ReportsManager.reportSpam(event.getMessage(), SpamType.EMOJIS);
-                    return;
-                }
-            }
-
-        }
+        if (settings.detectingEmojisSpam && checkEmojiSpam(event, settings)) return;
 
         if (settings.detectingFlood) {
             SpamTask.idSpamMap.get(event.getGuild().getIdLong()).getAndIncrement(event.getAuthor().getIdLong());
@@ -115,6 +72,46 @@ public class SpamListener extends ListenerAdapter {
             ReportsManager.reportSpam(event.getChannel().getMessageById(event.getMessageId()).complete(), SpamType.REACTIONS);
         }
 
+    }
+
+    private boolean checkCapsSpam(GuildMessageReceivedEvent event, Settings settings) {
+        char[] chars = event.getMessage().getContentRaw().toCharArray();
+        int upperChar = 0;
+
+        for (char character : chars) if (Character.isUpperCase(character)) upperChar++;
+        double capsPercentage = upperChar * 100D / chars.length;
+
+        if (capsPercentage >= 50D && chars.length > 15) {
+            SpamTask.idSpamCapsMap.get(event.getGuild().getIdLong()).getAndIncrement(event.getAuthor().getIdLong());
+        }
+        if (SpamTask.idSpamCapsMap.get(event.getGuild().getIdLong()).containsKey(event.getAuthor().getIdLong()) &&
+                SpamTask.idSpamCapsMap.get(event.getGuild().getIdLong()).get(event.getAuthor().getIdLong()) >= settings.timeScaleSpamTrigger) {
+            SpamTask.idSpamCapsMap.get(event.getGuild().getIdLong()).remove(event.getAuthor().getIdLong());
+            ReportsManager.reportSpam(event.getMessage(), SpamType.CAPS);
+            return true;
+        }
+        return false;
+    }
+
+    private boolean checkEmojiSpam(GuildMessageReceivedEvent event, Settings settings) {
+        char[] chars = event.getMessage().getContentRaw().toCharArray();
+        int emojis = 0;
+
+        Pattern pattern = Pattern.compile(EmoteUtil.EMOJI_REGEX);
+        Matcher matcher = pattern.matcher(event.getMessage().getContentRaw());
+        while (matcher.find()) emojis++;
+        double emojisPercentage = emojis * 100D / chars.length;
+
+        if (emojis > 5 && emojisPercentage >= 25D) {
+            SpamTask.idSpamEmotesMap.get(event.getGuild().getIdLong()).getAndIncrement(event.getAuthor().getIdLong());
+        }
+        if (SpamTask.idSpamEmotesMap.get(event.getGuild().getIdLong()).containsKey(event.getAuthor().getIdLong()) &&
+                SpamTask.idSpamEmotesMap.get(event.getGuild().getIdLong()).get(event.getAuthor().getIdLong()) >= settings.timeScaleSpamTrigger / 2) {
+            SpamTask.idSpamEmotesMap.get(event.getGuild().getIdLong()).remove(event.getAuthor().getIdLong());
+            ReportsManager.reportSpam(event.getMessage(), SpamType.EMOJIS);
+            return true;
+        }
+        return false;
     }
 
 }
