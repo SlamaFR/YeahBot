@@ -1,6 +1,7 @@
 package fr.slama.yeahbot.blub;
 
 import com.google.common.collect.Sets;
+import fr.slama.yeahbot.YeahBot;
 import fr.slama.yeahbot.commands.core.Command;
 import fr.slama.yeahbot.commands.core.CommandMap;
 import fr.slama.yeahbot.language.Bundle;
@@ -8,12 +9,11 @@ import fr.slama.yeahbot.language.Language;
 import fr.slama.yeahbot.listeners.SelectionListener;
 import fr.slama.yeahbot.redis.RedisData;
 import fr.slama.yeahbot.redis.buckets.Settings;
-import fr.slama.yeahbot.utilities.ColorUtil;
-import fr.slama.yeahbot.utilities.EmoteUtil;
-import fr.slama.yeahbot.utilities.LanguageUtil;
+import fr.slama.yeahbot.utilities.*;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.utils.Checks;
@@ -32,6 +32,10 @@ public class SetupWizard {
 
     private static final String REFRESH_EMOTE = "\uD83D\uDD04";
     private static final String SUBMIT_EMOTE = "✅";
+    private final Consumer<? super Object> SUCCESS = s -> {
+    };
+    private final Consumer<Throwable> FAIL = s -> {
+    };
 
     private static final Set<Permission> NECESSARY_PERMISSION = Sets.newHashSet(
             Permission.MESSAGE_MANAGE, Permission.MESSAGE_WRITE, Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_READ,
@@ -61,14 +65,28 @@ public class SetupWizard {
     private final TextChannel textChannel;
     private final Member member;
     private final Settings settings;
+    private final EventWaiter eventWaiter;
 
+    private SelectionListener selectionListener;
+    private Message lastMessage;
     private long permissionMessage = 0;
+    private boolean running = true;
 
     public SetupWizard(TextChannel textChannel, Member member) {
         this.guild = member.getGuild();
         this.textChannel = textChannel;
         this.member = member;
-        settings = RedisData.getSettings(guild);
+        this.settings = RedisData.getSettings(guild);
+        this.eventWaiter = new EventWaiter.Builder(GuildMessageReceivedEvent.class,
+                e -> e.getMember().equals(member) && e.getMessage().getTextChannel().equals(textChannel),
+                (e, ew) -> {
+                    if (e.getMessage().getContentRaw().equals("cancel")) {
+                        ew.close();
+                        end(true);
+                    }
+                })
+                .autoClose(false)
+                .build();
 
         Checks.check(Command.CommandPermission.SERVER_OWNER.test(member), "Member must be owner!");
     }
@@ -80,19 +98,20 @@ public class SetupWizard {
                 .setColor(ColorUtil.WHITE);
         addFooter(builder);
         textChannel.sendMessage(builder.build()).queue(message -> {
-            message.addReaction(SUBMIT_EMOTE).queue();
+            lastMessage = message;
+            message.addReaction(SUBMIT_EMOTE).queue(SUCCESS, FAIL);
             new EventWaiter.Builder(MessageReactionAddEvent.class,
                     e -> e.getUser().getIdLong() == member.getUser().getIdLong() && e.getMessageIdLong() == message.getIdLong(),
                     (e, ew) -> {
-                        if (e.getReactionEmote().getName().equals(SUBMIT_EMOTE)) {
+                        if (SUBMIT_EMOTE.equals(e.getReactionEmote().getName())) {
                             ew.close();
-                            message.delete().queue(m -> step1());
+                            message.delete().queue(m -> step1(), FAIL);
                         }
                     })
-                    .timeout(30, TimeUnit.SECONDS)
-                    .timeoutAction(() -> message.delete().queue())
+                    .timeout(1, TimeUnit.MINUTES)
+                    .timeoutAction(() -> message.delete().queue(SUCCESS, FAIL))
                     .build();
-        });
+        }, FAIL);
     }
 
     private void save() {
@@ -100,8 +119,8 @@ public class SetupWizard {
     }
 
     private void addFooter(EmbedBuilder builder) {
-        builder.setFooter(LanguageUtil.getArguedString(guild, Bundle.CAPTION, "waiting_for_response_of",
-                member.getEffectiveName()), member.getUser().getAvatarUrl());
+        builder.setFooter(StringUtil.response(guild).of(member).canCancel(true).build(),
+                member.getUser().getAvatarUrl());
     }
 
     /* STEP 1: Language */
@@ -120,6 +139,7 @@ public class SetupWizard {
     }
 
     private void step1() {
+        if (!running) return;
         List<String> emotes = Arrays.stream(Language.values()).map(Language::getEmote).collect(Collectors.toList());
         EmbedBuilder embed = new EmbedBuilder()
                 .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "setup_step_1_title"))
@@ -128,14 +148,30 @@ public class SetupWizard {
                 .setColor(ColorUtil.WHITE);
         addFooter(embed);
 
-        textChannel.sendMessage(embed.build()).queue(message -> new SelectionListener(message, member.getUser(), -1, emotes, r -> {
-            Language language = Language.fromEmote(r.get(0));
-            settings.locale = language.getCode();
-            message.delete().queue(s -> {
-                save();
-                step2();
-            });
-        }, false));
+        textChannel.sendMessage(embed.build()).queue(message -> {
+            lastMessage = message;
+            selectionListener = new SelectionListener(message, member.getUser(), -1, emotes, r -> {
+                if (!r.isEmpty()) {
+                    Language language = Language.fromEmote(r.get(0));
+                    settings.locale = language.getCode();
+                }
+                message.delete().queue(s -> {
+                    save();
+                    step2();
+                }, FAIL);
+            }, false);
+            new EventWaiter.Builder(MessageReactionAddEvent.class,
+                    e -> e.getUser().getIdLong() == member.getUser().getIdLong() && e.getMessageIdLong() == message.getIdLong(),
+                    (e, ew) -> {
+                        if (SUBMIT_EMOTE.equals(e.getReactionEmote().getName())) {
+                            ew.close();
+                            message.delete().queue(m -> step1(), FAIL);
+                        }
+                    })
+                    .timeout(30, TimeUnit.SECONDS)
+                    .timeoutAction(() -> message.delete().queue(SUCCESS, FAIL))
+                    .build();
+        }, FAIL);
     }
 
     /* STEP 2: Permissions check */
@@ -203,16 +239,18 @@ public class SetupWizard {
 
         if (permissionMessage > 0) {
             textChannel.getMessageById(permissionMessage).queue(message -> {
-                message.editMessage(embed.build()).queue();
+                lastMessage = message;
+                message.editMessage(embed.build()).queue(SUCCESS, FAIL);
             }, throwable -> textChannel.sendMessage(embed.build()).queue(message -> {
                 permissionMessage = message.getIdLong();
                 result.accept(message);
-            }));
+            }, FAIL));
         } else {
             textChannel.sendMessage(embed.build()).queue(message -> {
+                lastMessage = message;
                 permissionMessage = message.getIdLong();
                 result.accept(message);
-            });
+            }, FAIL);
         }
     }
 
@@ -222,14 +260,16 @@ public class SetupWizard {
 
     private void addReactions(Message message, boolean now) {
         if (test(NECESSARY_PERMISSION)) {
-            message.addReaction(SUBMIT_EMOTE).queue();
+            message.addReaction(SUBMIT_EMOTE).queue(SUCCESS, FAIL);
         } else {
-            TaskScheduler.scheduleDelayed(() -> message.addReaction(REFRESH_EMOTE).queue(), now ? 0 : 10 * 1000L);
+            TaskScheduler.scheduleDelayed(() -> message.addReaction(REFRESH_EMOTE).queue(SUCCESS, FAIL), now ? 0 : 10 * 1000L);
         }
     }
 
     private void step2() {
+        if (!running) return;
         sendPermissionMessage(message -> {
+            lastMessage = message;
             addReactions(message, true);
             new EventWaiter.Builder(MessageReactionAddEvent.class,
                     e -> e.getUser().getIdLong() == member.getUser().getIdLong() && e.getMessageIdLong() == message.getIdLong(),
@@ -237,9 +277,9 @@ public class SetupWizard {
                         switch (e.getReactionEmote().getName()) {
                             case REFRESH_EMOTE:
                                 try {
-                                    message.clearReactions().queue(r -> addReactions(message, false));
+                                    message.clearReactions().queue(r -> addReactions(message, false), FAIL);
                                 } catch (InsufficientPermissionException ex) {
-                                    e.getReaction().removeReaction().queue(r -> addReactions(message, false));
+                                    e.getReaction().removeReaction().queue(r -> addReactions(message, false), FAIL);
                                 }
                                 sendPermissionMessage();
                                 break;
@@ -248,7 +288,7 @@ public class SetupWizard {
                                 message.delete().queue(s -> {
                                     save();
                                     step3();
-                                });
+                                }, FAIL);
                                 break;
                             default:
                         }
@@ -261,6 +301,7 @@ public class SetupWizard {
     /* STEP 3: Protections */
 
     private void step3() {
+        if (!running) return;
         EmbedBuilder embed = new EmbedBuilder()
                 .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "setup_step_3_title"))
                 .setDescription(LanguageUtil.getString(guild, Bundle.STRINGS, "setup_step_3_summary"))
@@ -268,47 +309,63 @@ public class SetupWizard {
                         LanguageUtil.getString(guild, Bundle.STRINGS, "protections_list"), true)
                 .setColor(ColorUtil.WHITE);
         addFooter(embed);
-        textChannel.sendMessage(embed.build()).queue(message -> new SelectionListener(message, member.getUser(),
-                -1, SelectionListener.get(6), r -> {
-            for (String s : r) {
-                switch (s.charAt(0) - '\u0030') {
-                    case 1:
-                        settings.detectingFlood = true;
-                        break;
-                    case 2:
-                        settings.detectingCapsSpam = true;
-                        break;
-                    case 3:
-                        settings.detectingEmojisSpam = true;
-                        break;
-                    case 4:
-                        settings.detectingReactionsSpam = true;
-                        break;
-                    case 5:
-                        settings.detectingSwearing = true;
-                        break;
-                    case 6:
-                        settings.detectingAdvertising = true;
-                        break;
-                    default:
+        textChannel.sendMessage(embed.build()).queue(message -> {
+            lastMessage = message;
+            selectionListener = new SelectionListener(message,
+                    member.getUser(), -1, SelectionListener.get(6), r -> {
+                for (String s : r) {
+                    switch (s.charAt(0) - '\u0030') {
+                        case 1:
+                            settings.detectingFlood = true;
+                            break;
+                        case 2:
+                            settings.detectingCapsSpam = true;
+                            break;
+                        case 3:
+                            settings.detectingEmojisSpam = true;
+                            break;
+                        case 4:
+                            settings.detectingReactionsSpam = true;
+                            break;
+                        case 5:
+                            settings.detectingSwearing = true;
+                            break;
+                        case 6:
+                            settings.detectingAdvertising = true;
+                            break;
+                        default:
+                    }
                 }
-            }
-            save();
-            end();
-        }, true));
+                save();
+                end(false);
+            }, true);
+        }, FAIL);
     }
 
-    private void end() {
-        textChannel.sendMessage(
-                new EmbedBuilder()
-                        .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "setup_finish"))
-                        .setDescription(LanguageUtil.getArguedString(guild, Bundle.STRINGS, "setup_finish",
-                                CommandMap.getPrefix(guild)))
-                        .addField(LanguageUtil.getString(guild, Bundle.CAPTION, "one_more_thing"),
-                                LanguageUtil.getString(guild, Bundle.STRINGS, "setup_finish_more"), false)
-                        .setColor(ColorUtil.GREEN)
-                        .build()
-        ).queue();
+    private void end(boolean forced) {
+        if (!running) return;
+        running = false;
+        YeahBot.getInstance().getSetupManager().deleteWizard(guild);
+        if (selectionListener != null) selectionListener.close();
+        if (lastMessage != null) lastMessage.delete().queue(SUCCESS, FAIL);
+        eventWaiter.close();
+        if (forced) {
+            textChannel.sendMessage(
+                    MessageUtil.getSuccessEmbed(guild, LanguageUtil.getArguedString(guild, Bundle.STRINGS, "setup_ended",
+                            CommandMap.getPrefix(guild)))
+            ).queue();
+        } else {
+            textChannel.sendMessage(
+                    new EmbedBuilder()
+                            .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "setup_finish"))
+                            .setDescription(LanguageUtil.getArguedString(guild, Bundle.STRINGS, "setup_finish",
+                                    CommandMap.getPrefix(guild)))
+                            .addField(LanguageUtil.getString(guild, Bundle.CAPTION, "one_more_thing"),
+                                    LanguageUtil.getString(guild, Bundle.STRINGS, "setup_finish_more"), false)
+                            .setColor(ColorUtil.GREEN)
+                            .build()
+            ).queue(SUCCESS, FAIL);
+        }
     }
 
 }

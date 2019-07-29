@@ -2,7 +2,6 @@ package fr.slama.yeahbot.commands;
 
 import fr.slama.yeahbot.YeahBot;
 import fr.slama.yeahbot.blub.Paginator;
-import fr.slama.yeahbot.blub.SetupWizard;
 import fr.slama.yeahbot.commands.core.BotCommand;
 import fr.slama.yeahbot.commands.core.Command;
 import fr.slama.yeahbot.commands.core.CommandError;
@@ -17,6 +16,7 @@ import fr.slama.yeahbot.redis.buckets.Settings;
 import fr.slama.yeahbot.utilities.ColorUtil;
 import fr.slama.yeahbot.utilities.GuildUtil;
 import fr.slama.yeahbot.utilities.LanguageUtil;
+import fr.slama.yeahbot.utilities.MessageUtil;
 import net.dv8tion.jda.bot.sharding.ShardManager;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
@@ -587,21 +587,13 @@ public class Miscellaneous {
     }
 
     @Command(name = "setup")
-    private void setup(TextChannel textChannel, Member member) {
+    private void setup(Guild guild, TextChannel textChannel, Member member) {
 
-        new SetupWizard(textChannel, member).start();
-
-        /*
-        textChannel.sendMessage(
-                new EmbedBuilder()
-                        .setTitle("Étape 2 : Permissions")
-                        .addField(String.format("%s Modération", EmoteUtil.NO),
-                                String.format("%s Gérer les salons\n%s Expulser des membres\n%s Bannir des membres\n%s Gérer les messages\n%s Gérer les rôles",
-                                        EmoteUtil.ORANGE_DOT, EmoteUtil.GREEN_DOT, EmoteUtil.GREEN_DOT, EmoteUtil.RED_DOT, EmoteUtil.ORANGE_DOT), false)
-                        .build()
-        ).queue();
-
-         */
+        if (!YeahBot.getInstance().getSetupManager().startWizard(textChannel, member)) {
+            textChannel.sendMessage(
+                    MessageUtil.getErrorEmbed(guild, LanguageUtil.getString(guild, Bundle.ERROR, "setup_already_started"))
+            ).queue();
+        }
 
     }
 

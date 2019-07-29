@@ -7,6 +7,7 @@ import fr.slama.yeahbot.listeners.*;
 import fr.slama.yeahbot.managers.DatabaseManager;
 import fr.slama.yeahbot.managers.MusicManager;
 import fr.slama.yeahbot.managers.PrivateChannelsManager;
+import fr.slama.yeahbot.managers.SetupManager;
 import fr.slama.yeahbot.redis.RedisAccess;
 import fr.slama.yeahbot.rest.Application;
 import fr.slama.yeahbot.sql.DatabaseUpdater;
@@ -44,6 +45,7 @@ public class YeahBot extends ListenerAdapter implements Runnable {
     private final Snowflake snowflake;
     private final ShardManager shardManager;
     private final DiscordBotListAPI api;
+    private final SetupManager setupManager;
 
     private boolean running;
 
@@ -56,6 +58,7 @@ public class YeahBot extends ListenerAdapter implements Runnable {
         databaseManager = new DatabaseManager();
         commandMap = new CommandMap();
         snowflake = new Snowflake(CONFIG.datacenterId, CONFIG.workerId);
+        setupManager = new SetupManager();
 
         LOGGER.info("Logging in Discord API...");
         shardManager = new DefaultShardManagerBuilder(CONFIG.token)
@@ -162,6 +165,10 @@ public class YeahBot extends ListenerAdapter implements Runnable {
 
     public DiscordBotListAPI getDiscordBotAPI() {
         return api;
+    }
+
+    public SetupManager getSetupManager() {
+        return setupManager;
     }
 
     public void setRunning(boolean running) {

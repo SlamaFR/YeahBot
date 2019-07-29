@@ -1,6 +1,6 @@
 package fr.slama.yeahbot.listeners;
 
-import fr.slama.yeahbot.blub.SetupWizard;
+import fr.slama.yeahbot.YeahBot;
 import fr.slama.yeahbot.language.Bundle;
 import fr.slama.yeahbot.redis.RedisData;
 import fr.slama.yeahbot.redis.buckets.Settings;
@@ -19,7 +19,7 @@ public class JoinLeaveListener extends ListenerAdapter {
     @Override
     public void onGuildJoin(GuildJoinEvent event) {
         if (event.getGuild().getDefaultChannel() != null) {
-            new SetupWizard(event.getGuild().getDefaultChannel(), event.getGuild().getOwner()).start();
+            YeahBot.getInstance().getSetupManager().startWizard(event.getGuild().getDefaultChannel(), event.getGuild().getOwner());
         }
         super.onGuildJoin(event);
     }
