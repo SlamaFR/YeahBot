@@ -43,7 +43,7 @@ public class SpamListener extends ListenerAdapter {
 
             if (SpamTask.idSpamMap.get(event.getGuild().getIdLong()).get(event.getAuthor().getIdLong()) >= settings.timeScaleSpamTrigger) {
                 SpamTask.idSpamMap.get(event.getGuild().getIdLong()).remove(event.getAuthor().getIdLong());
-                ReportsManager.reportSpam(event.getMessage(), SpamType.FLOOD);
+                ReportsManager.reportSpam(event.getMember(), event.getMessage(), SpamType.FLOOD);
             }
         }
 
@@ -62,14 +62,15 @@ public class SpamListener extends ListenerAdapter {
 
         event.getReaction().getUsers().queue(users -> {
             if (users.size() < 2) {
-                SpamTask.idSpamReactionMap.get(event.getGuild().getIdLong()).getAndIncrement(event.getUser().getIdLong());
+                SpamTask.idSpamReactionMap.get(event.getGuild().getIdLong()).getAndIncrement(
+                        event.getUser().getIdLong());
             }
         });
 
         if (SpamTask.idSpamReactionMap.get(event.getGuild().getIdLong()).containsKey(event.getUser().getIdLong()) &&
                 SpamTask.idSpamReactionMap.get(event.getGuild().getIdLong()).get(event.getUser().getIdLong()) >= 7) {
             SpamTask.idSpamReactionMap.get(event.getGuild().getIdLong()).remove(event.getUser().getIdLong());
-            ReportsManager.reportSpam(event.getChannel().getMessageById(event.getMessageId()).complete(), SpamType.REACTIONS);
+            ReportsManager.reportSpam(event.getMember(), event.getChannel().getMessageById(event.getMessageId()).complete(), SpamType.REACTIONS);
         }
 
     }
@@ -87,7 +88,7 @@ public class SpamListener extends ListenerAdapter {
         if (SpamTask.idSpamCapsMap.get(event.getGuild().getIdLong()).containsKey(event.getAuthor().getIdLong()) &&
                 SpamTask.idSpamCapsMap.get(event.getGuild().getIdLong()).get(event.getAuthor().getIdLong()) >= settings.timeScaleSpamTrigger) {
             SpamTask.idSpamCapsMap.get(event.getGuild().getIdLong()).remove(event.getAuthor().getIdLong());
-            ReportsManager.reportSpam(event.getMessage(), SpamType.CAPS);
+            ReportsManager.reportSpam(event.getMember(), event.getMessage(), SpamType.CAPS);
             return true;
         }
         return false;
@@ -108,7 +109,7 @@ public class SpamListener extends ListenerAdapter {
         if (SpamTask.idSpamEmotesMap.get(event.getGuild().getIdLong()).containsKey(event.getAuthor().getIdLong()) &&
                 SpamTask.idSpamEmotesMap.get(event.getGuild().getIdLong()).get(event.getAuthor().getIdLong()) >= settings.timeScaleSpamTrigger / 2) {
             SpamTask.idSpamEmotesMap.get(event.getGuild().getIdLong()).remove(event.getAuthor().getIdLong());
-            ReportsManager.reportSpam(event.getMessage(), SpamType.EMOJIS);
+            ReportsManager.reportSpam(event.getMember(), event.getMessage(), SpamType.EMOJIS);
             return true;
         }
         return false;
