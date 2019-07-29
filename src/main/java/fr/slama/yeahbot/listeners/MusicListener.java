@@ -156,11 +156,15 @@ public class MusicListener extends ListenerAdapter {
         }
     }
 
-    private void leave(TextChannel textChannel) {
+    public void leave(TextChannel textChannel) {
         Guild guild = textChannel.getGuild();
         tell(textChannel, leavingMessages.containsKey(guild.getIdLong()) ? leavingMessages.remove(guild.getIdLong()) : 0);
         if (leavingTasks.containsKey(guild.getIdLong())) leavingTasks.remove(guild.getIdLong()).stop();
         manager.getPlayer(guild).getTrackScheduler().resume(false);
         manager.getPlayer(guild).getTrackScheduler().stop();
+    }
+
+    public Map<Long, TaskScheduler> getLeavingTasks() {
+        return leavingTasks;
     }
 }

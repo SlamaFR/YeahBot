@@ -46,6 +46,7 @@ public class YeahBot extends ListenerAdapter implements Runnable {
     private final ShardManager shardManager;
     private final DiscordBotListAPI api;
     private final SetupManager setupManager;
+    private final MusicListener musicListener;
 
     private boolean running;
 
@@ -59,12 +60,13 @@ public class YeahBot extends ListenerAdapter implements Runnable {
         commandMap = new CommandMap();
         snowflake = new Snowflake(CONFIG.datacenterId, CONFIG.workerId);
         setupManager = new SetupManager();
+        musicListener = new MusicListener();
 
         LOGGER.info("Logging in Discord API...");
         shardManager = new DefaultShardManagerBuilder(CONFIG.token)
                 .addEventListeners(this)
                 .addEventListeners(new CommandListener(commandMap))
-                .addEventListeners(new MusicListener(), new RoleListener())
+                .addEventListeners(musicListener, new RoleListener())
                 .addEventListeners(new SpamListener(), new SwearingListener(), new AdvertisingListener())
                 .addEventListeners(new PrivateChannelsManager(), new JoinLeaveListener())
                 .build();
@@ -169,6 +171,10 @@ public class YeahBot extends ListenerAdapter implements Runnable {
 
     public SetupManager getSetupManager() {
         return setupManager;
+    }
+
+    public MusicListener getMusicListener() {
+        return musicListener;
     }
 
     public void setRunning(boolean running) {

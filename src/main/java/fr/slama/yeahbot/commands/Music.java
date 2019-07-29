@@ -153,8 +153,12 @@ public class Music {
             }
         }
 
+        if (YeahBot.getInstance().getMusicListener().getLeavingTasks().containsKey(guild.getIdLong())) {
+            YeahBot.getInstance().getMusicListener().leave(player.getTextChannel());
+        } else {
+            textChannel.sendMessage(LanguageUtil.getString(guild, Bundle.STRINGS, "music_stopped")).queue();
+        }
         player.getTrackScheduler().stop();
-        textChannel.sendMessage(LanguageUtil.getString(guild, Bundle.STRINGS, "music_stopped")).queue();
 
     }
 
