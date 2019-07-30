@@ -56,14 +56,16 @@ public class Music {
         boolean firstPosition = false;
         boolean multi = false;
 
-        if (argsList.contains("--next")) {
-            query = query.replace("--next", "");
+        if (argsList.contains("--next") || argsList.contains("-n")) {
             firstPosition = true;
+            if (argsList.contains("--next")) query = query.replace("--next", "");
+            if (argsList.contains("-n")) query = query.replace("-n", "");
         }
 
-        if (argsList.contains("--multi")) {
-            query = query.replace("--multi", "");
+        if (argsList.contains("--multi") || argsList.contains("-m")) {
             multi = true;
+            if (argsList.contains("--multi")) query = query.replace("--multi", "");
+            if (argsList.contains("-m")) query = query.replace("-m", "");
         }
 
         query = query.trim();
