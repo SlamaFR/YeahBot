@@ -16,6 +16,7 @@ public class EventWaiter implements EventListener {
     private final Class classType;
     private final Predicate condition;
     private final BiConsumer action;
+    private TaskScheduler timeoutTask = null;
     private boolean autoClose;
 
     private EventWaiter(Builder builder) {
@@ -27,7 +28,7 @@ public class EventWaiter implements EventListener {
         YeahBot.getInstance().getShardManager().addEventListener(this);
 
         if (builder.timeout > -1 && builder.unit != null) {
-            TaskScheduler.scheduleDelayed(() -> {
+            timeoutTask = TaskScheduler.scheduleDelayed(() -> {
                 if (builder.timeoutAction != null) builder.timeoutAction.run();
                 this.close();
             }, builder.unit.toMillis(builder.timeout));
@@ -35,6 +36,7 @@ public class EventWaiter implements EventListener {
     }
 
     public void close() {
+        if (timeoutTask != null) timeoutTask.stop();
         YeahBot.getInstance().getShardManager().removeEventListener(this);
     }
 

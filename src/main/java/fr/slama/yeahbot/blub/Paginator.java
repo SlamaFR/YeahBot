@@ -123,6 +123,7 @@ public class Paginator<T> {
                         switch (e.getReactionEmote().getName()) {
                             case EmoteUtil.PREVIOUS:
                                 if (this.page > 0) this.page--;
+                                ew.close();
                                 init();
                                 return;
                             case EmoteUtil.NEXT:
