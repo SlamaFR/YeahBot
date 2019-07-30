@@ -57,7 +57,7 @@ public class MusicManager {
         private final String source;
         private final Member member;
         private boolean firstPosition = false;
-        private boolean useIndex = false;
+        private boolean useIndex = true;
         private boolean multi = false;
 
         public TrackLoader(TextChannel textChannel, Member member, String source) {

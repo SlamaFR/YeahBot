@@ -551,7 +551,7 @@ public class Music {
             }
 
             Playlist playlist = playlists.getPlaylists().get(name);
-            manager.getLoader(textChannel, member, playlist.getUrl()).load();
+            manager.getLoader(textChannel, member, playlist.getUrl()).useIndex(false).load();
         }
 
     }
