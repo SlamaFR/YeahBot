@@ -9,7 +9,10 @@ import fr.slama.yeahbot.language.Language;
 import fr.slama.yeahbot.listeners.SelectionListener;
 import fr.slama.yeahbot.redis.RedisData;
 import fr.slama.yeahbot.redis.buckets.Settings;
-import fr.slama.yeahbot.utilities.*;
+import fr.slama.yeahbot.utilities.EmoteUtil;
+import fr.slama.yeahbot.utilities.LanguageUtil;
+import fr.slama.yeahbot.utilities.MessageUtil;
+import fr.slama.yeahbot.utilities.StringUtil;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
@@ -24,6 +27,8 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+
+import static fr.slama.yeahbot.utilities.ColorUtil.*;
 
 /**
  * Created on 2019-07-26.
@@ -80,7 +85,7 @@ public class SetupWizard {
         this.eventWaiter = new EventWaiter.Builder(GuildMessageReceivedEvent.class,
                 e -> e.getMember().equals(member) && e.getMessage().getTextChannel().equals(textChannel),
                 (e, ew) -> {
-                    if (e.getMessage().getContentRaw().equals("cancel")) {
+                    if (e.getMessage().getContentRaw().equalsIgnoreCase("cancel")) {
                         ew.close();
                         end(true);
                     }
@@ -95,7 +100,7 @@ public class SetupWizard {
         EmbedBuilder builder = new EmbedBuilder()
                 .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "setup_start_title"))
                 .setDescription(LanguageUtil.getArguedString(guild, Bundle.STRINGS, "setup_start_summary", SUBMIT_EMOTE))
-                .setColor(ColorUtil.WHITE);
+                .setColor(WHITE);
         addFooter(builder);
         textChannel.sendMessage(builder.build()).queue(message -> {
             lastMessage = message;
@@ -145,7 +150,7 @@ public class SetupWizard {
                 .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "setup_step_1_title"))
                 .setDescription(LanguageUtil.getString(guild, Bundle.STRINGS, "setup_step_1_summary"))
                 .addField(LanguageUtil.getString(guild, Bundle.CAPTION, "languages_list"), getLanguageList(), false)
-                .setColor(ColorUtil.WHITE);
+                .setColor(WHITE);
         addFooter(embed);
 
         textChannel.sendMessage(embed.build()).queue(message -> {
@@ -234,7 +239,7 @@ public class SetupWizard {
                 .addField(getPermissionField(MUSIC_PERMISSION, LanguageUtil.getString(guild, Bundle.CATEGORY, "music")))
                 .addField(getPermissionField(MISCELLANEOUS_PERMISSION, LanguageUtil.getString(guild, Bundle.CATEGORY, "miscellaneous")))
                 .addField(getPermissionField(FUN_PERMISSION, LanguageUtil.getString(guild, Bundle.CATEGORY, "fun")))
-                .setColor(test(NECESSARY_PERMISSION) ? ColorUtil.WHITE : ColorUtil.RED);
+                .setColor(test(NECESSARY_PERMISSION) ? WHITE : RED);
         addFooter(embed);
 
         if (permissionMessage > 0) {
@@ -307,7 +312,7 @@ public class SetupWizard {
                 .setDescription(LanguageUtil.getString(guild, Bundle.STRINGS, "setup_step_3_summary"))
                 .addField(LanguageUtil.getString(guild, Bundle.CAPTION, "protections_list"),
                         LanguageUtil.getString(guild, Bundle.STRINGS, "protections_list"), true)
-                .setColor(ColorUtil.WHITE);
+                .setColor(WHITE);
         addFooter(embed);
         textChannel.sendMessage(embed.build()).queue(message -> {
             lastMessage = message;
@@ -337,9 +342,30 @@ public class SetupWizard {
                     }
                 }
                 save();
-                end(false);
+                step4();
             }, true);
         }, FAIL);
+    }
+
+    private void step4() {
+        if (!running) return;
+        EmbedBuilder embed = new EmbedBuilder()
+                .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "setup_step_4_title"))
+                .setDescription(LanguageUtil.getString(guild, Bundle.STRINGS, "setup_step_4_summary"))
+                .setColor(WHITE);
+        textChannel.sendMessage(embed.build()).queue(message -> new EventWaiter.Builder(GuildMessageReceivedEvent.class,
+                e -> e.getMember().equals(member) && e.getMessage().getTextChannel().equals(textChannel),
+                (e, ew) -> {
+                    if (!e.getMessage().getMentionedChannels().isEmpty()) {
+                        settings.updateChannel = e.getMessage().getMentionedChannels().get(0).getIdLong();
+                        ew.close();
+                        save();
+                        end(false);
+                    } else if (e.getMessage().getContentRaw().equalsIgnoreCase("no")) {
+                        ew.close();
+                        end(false);
+                    }
+                }).build());
     }
 
     private void end(boolean forced) {
@@ -362,7 +388,7 @@ public class SetupWizard {
                                     CommandMap.getPrefix(guild)))
                             .addField(LanguageUtil.getString(guild, Bundle.CAPTION, "one_more_thing"),
                                     LanguageUtil.getString(guild, Bundle.STRINGS, "setup_finish_more"), false)
-                            .setColor(ColorUtil.GREEN)
+                            .setColor(GREEN)
                             .build()
             ).queue(SUCCESS, FAIL);
         }
