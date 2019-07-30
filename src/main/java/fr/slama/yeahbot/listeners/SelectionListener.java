@@ -12,7 +12,6 @@ import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.core.events.message.react.MessageReactionRemoveEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
-import java.io.Closeable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -22,7 +21,7 @@ import java.util.function.Consumer;
  * Created on 24/09/2018.
  */
 
-public class SelectionListener extends ListenerAdapter implements Closeable {
+public class SelectionListener extends ListenerAdapter {
 
     private static final String[] EMOTES = new String[]{
             "\u0031\u20E3",
@@ -91,7 +90,6 @@ public class SelectionListener extends ListenerAdapter implements Closeable {
         return EmoteUtil.getQuestionEmotes();
     }
 
-    @Override
     public void close() {
         YeahBot.getInstance().getShardManager().removeEventListener(this);
         result.accept(selection);

@@ -4,7 +4,6 @@ import fr.slama.yeahbot.YeahBot;
 import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.hooks.EventListener;
 
-import java.io.Closeable;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
@@ -12,7 +11,7 @@ import java.util.function.Predicate;
 /**
  * Created on 17/12/2018.
  */
-public class EventWaiter implements EventListener, Closeable {
+public class EventWaiter implements EventListener {
 
     private final Class classType;
     private final Predicate condition;
@@ -35,7 +34,6 @@ public class EventWaiter implements EventListener, Closeable {
         }
     }
 
-    @Override
     public void close() {
         YeahBot.getInstance().getShardManager().removeEventListener(this);
     }
