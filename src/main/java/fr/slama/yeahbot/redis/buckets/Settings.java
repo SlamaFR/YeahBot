@@ -41,7 +41,6 @@ public class Settings {
     public byte loop = 0;
     @IgnoreSetting
     public int maxSearchResults = 5;
-    public boolean multipleResultsSearch = true;
 
     public boolean detectingFlood = true;
     public boolean detectingCapsSpam = true;

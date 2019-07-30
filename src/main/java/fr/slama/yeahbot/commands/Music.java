@@ -22,6 +22,7 @@ import net.dv8tion.jda.core.entities.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -50,12 +51,19 @@ public class Music {
         }
 
         String query = String.join(" ", args);
+        List<String> argsList = Arrays.asList(args);
 
         boolean firstPosition = false;
+        boolean multi = false;
 
-        if (query.contains("--next")) {
+        if (argsList.contains("--next")) {
             query = query.replace("--next", "");
             firstPosition = true;
+        }
+
+        if (argsList.contains("--multi")) {
+            query = query.replace("--multi", "");
+            multi = true;
         }
 
         query = query.trim();
@@ -66,7 +74,7 @@ public class Music {
             query = "ytsearch:" + query;
         }
 
-        manager.loadTrack(textChannel, query, member, firstPosition);
+        manager.getLoader(textChannel, member, query).firstPosition(firstPosition).multi(multi).load();
 
     }
 
@@ -541,7 +549,7 @@ public class Music {
             }
 
             Playlist playlist = playlists.getPlaylists().get(name);
-            manager.loadTrack(textChannel, playlist.getUrl(), member, false, false);
+            manager.getLoader(textChannel, member, playlist.getUrl()).load();
         }
 
     }

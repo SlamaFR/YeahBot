@@ -47,175 +47,206 @@ public class MusicManager {
         return players.get(guild.getIdLong());
     }
 
-    public void loadTrack(final TextChannel textChannel, final String source, Member member, final boolean firstPosition) {
-        this.loadTrack(textChannel, source, member, firstPosition, true);
+    public TrackLoader getLoader(TextChannel textChannel, Member member, String source) {
+        return new TrackLoader(textChannel, member, source);
     }
 
-    public void loadTrack(final TextChannel textChannel, final String source, Member member, final boolean firstPosition, final boolean useIndex) {
-        MusicPlayer player = getPlayer(textChannel.getGuild());
-        textChannel.getGuild().getAudioManager().setSendingHandler(player.getAudioHandler());
+    public class TrackLoader {
 
-        manager.loadItemOrdered(player, source, new AudioLoadResultHandler() {
-            @Override
-            public void trackLoaded(AudioTrack track) {
-                textChannel.sendMessage(
-                        new EmbedBuilder()
-                                .setColor(ColorUtil.GREEN)
-                                .setTitle(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "track_added"))
-                                .setDescription(track.getInfo().title)
-                                .build()
-                ).queue();
-                if (player.getTextChannel() == null) player.setTextChannel(textChannel);
-                player.playTrack(track, member, firstPosition);
-            }
+        private final TextChannel textChannel;
+        private final String source;
+        private final Member member;
+        private boolean firstPosition = false;
+        private boolean useIndex = false;
+        private boolean multi = false;
 
-            @Override
-            public void playlistLoaded(AudioPlaylist playlist) {
-                if (!playlist.isSearchResult()) {
-                    loadPlaylist(textChannel, source, member, playlist, useIndex);
-                } else {
-                    loadSearch(textChannel, source, member, playlist, firstPosition);
-                }
-            }
-
-            @Override
-            public void noMatches() {
-                textChannel.sendMessage(LanguageUtil.getString(textChannel.getGuild(), Bundle.STRINGS, "no_result")).queue();
-            }
-
-            @Override
-            public void loadFailed(FriendlyException exception) {
-                textChannel.sendMessage(new EmbedBuilder()
-                        .setColor(ColorUtil.RED)
-                        .setTitle(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "error"))
-                        .setDescription(String.format("```\n%s\n```", exception.getMessage()))
-                        .setFooter(LanguageUtil.getTimeExpiration(textChannel.getGuild(), 20, TimeUnit.SECONDS), null)
-                        .build()
-                ).queue(message -> message.delete().queueAfter(20, TimeUnit.SECONDS));
-            }
-        });
-    }
-
-    private void loadPlaylist(final TextChannel textChannel, final String source, Member member, AudioPlaylist playlist, final boolean useIndex) {
-        Guild guild = member.getGuild();
-        MusicPlayer player = getPlayer(guild);
-
-        int from = 0;
-        long totalDuration = 0L;
-        StringBuilder trackList = new StringBuilder();
-
-        for (String s : source.split("&")) {
-            if (!useIndex) break;
-            if (s.startsWith("index=")) try {
-                from = Integer.parseInt(s.replace("index=", ""));
-            } catch (NumberFormatException e) {
-                break;
-            }
+        public TrackLoader(TextChannel textChannel, Member member, String source) {
+            this.textChannel = textChannel;
+            this.member = member;
+            this.source = source;
         }
 
-        EmbedBuilder embedBuilder = new EmbedBuilder();
-        if (from > 0) {
-            playlist.getTracks().subList(0, from - 1).clear();
-            embedBuilder.setTitle(LanguageUtil.getArguedString(guild, Bundle.CAPTION, "playlist_added_from", from));
-        } else embedBuilder.setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "playlist_added"));
-
-        for (AudioTrack track : playlist.getTracks()) {
-            totalDuration += track.getDuration();
-            if (playlist.getTracks().indexOf(track) < 10) {
-                if (trackList.length() > 1) trackList.append("\n");
-                trackList.append(String.format("● `%s`", track.getInfo().title));
-            }
+        public TrackLoader firstPosition(boolean bool) {
+            this.firstPosition = bool;
+            return this;
         }
 
-        embedBuilder.setColor(ColorUtil.GREEN);
-        embedBuilder.setDescription(playlist.getName());
-        embedBuilder.addField(LanguageUtil.getString(guild, Bundle.CAPTION, "music_track_duration"), "⏱ " + TimeUtil.toTime(totalDuration), false);
-        embedBuilder.addField(LanguageUtil.getString(guild, Bundle.CAPTION, "music_tracks_loaded"), trackList.toString(), false);
-        if (playlist.getTracks().size() > 10)
-            embedBuilder.setFooter(LanguageUtil.getArguedString(guild, Bundle.STRINGS, "music_other_tracks", playlist.getTracks().size() - 10, playlist.getTracks().size() - 10 > 1 ? "s" : ""), null);
+        public TrackLoader useIndex(boolean bool) {
+            this.useIndex = bool;
+            return this;
+        }
 
-        textChannel.sendMessage(embedBuilder.build()).queue();
+        public TrackLoader multi(boolean bool) {
+            this.multi = bool;
+            return this;
+        }
 
-        if (player.getTextChannel() == null) player.setTextChannel(textChannel);
-        playlist.getTracks().forEach(audioTrack -> player.playTrack(audioTrack, member, false));
-    }
+        public void load() {
+            MusicPlayer player = getPlayer(textChannel.getGuild());
+            textChannel.getGuild().getAudioManager().setSendingHandler(player.getAudioHandler());
 
-    private void loadSearch(final TextChannel textChannel, final String source, Member member, AudioPlaylist playlist, final boolean firstPosition) {
-        Guild guild = member.getGuild();
-        MusicPlayer player = getPlayer(guild);
-        final Settings settings = RedisData.getSettings(textChannel.getGuild());
-
-        StringBuilder results = new StringBuilder();
-        int maxResults = settings.maxSearchResults;
-
-        if (maxResults > 1) {
-
-            for (int i = 0; i < playlist.getTracks().size() && i < maxResults; i++) {
-                AudioTrack track = playlist.getTracks().get(i);
-                if (results.length() > 1) results.append("\n");
-                results.append(String.format("`%d` - `%s` [%s](%s)", i + 1,
-                        TimeUtil.toTime(track.getDuration()),
-                        track.getInfo().title,
-                        track.getInfo().uri));
-            }
-
-            String url = "https://www.youtube.com/results?search_query=" + source.substring(9).replace(" ", "+");
-
-            textChannel.sendMessage(new EmbedBuilder()
-                    .addField(LanguageUtil.getString(guild, Bundle.CAPTION, "search_results"), results.toString(), false)
-                    .addField(LanguageUtil.getString(guild, Bundle.CAPTION, "more_results"), LanguageUtil.getArguedString(guild, Bundle.STRINGS, "results_page", url), false)
-                    .setFooter(LanguageUtil.getTimeExpiration(guild, 30, TimeUnit.SECONDS), null)
-                    .build()).queue(message -> new SelectionListener(message, member.getUser(), 30 * 1000, SelectionListener.get(playlist.getTracks().size() > maxResults ? maxResults : playlist.getTracks().size()), r -> {
-
-                if (member.getVoiceState().getChannel() == null) {
-                    textChannel.sendMessage(LanguageUtil.getString(guild, Bundle.STRINGS, "must_stay_connected")).queue();
-                    return;
-                }
-
-                if (r.isEmpty()) return;
-
-                if (r.size() == 1) {
-                    loadSingleTrack(textChannel, member, playlist.getTracks().get(r.get(0).charAt(0) - '\u0030' - 1), firstPosition);
-                } else {
-                    StringBuilder trackList = new StringBuilder();
-                    if (player.getTextChannel() == null) player.setTextChannel(textChannel);
-                    for (String c : r) {
-                        AudioTrack track = playlist.getTracks().get(c.charAt(0) - '\u0030' - 1);
-                        if (trackList.length() > 1) trackList.append("\n");
-                        trackList.append(String.format("● %s", track.getInfo().title));
-                    }
+            manager.loadItemOrdered(player, source, new AudioLoadResultHandler() {
+                @Override
+                public void trackLoaded(AudioTrack track) {
                     textChannel.sendMessage(
                             new EmbedBuilder()
                                     .setColor(ColorUtil.GREEN)
-                                    .setTitle(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "tracks_added"))
-                                    .setDescription(trackList.toString())
+                                    .setTitle(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "track_added"))
+                                    .setDescription(track.getInfo().title)
                                     .build()
                     ).queue();
+                    if (player.getTextChannel() == null) player.setTextChannel(textChannel);
+                    player.playTrack(track, member, firstPosition);
+                }
 
-                    for (String c : r) {
-                        AudioTrack track = playlist.getTracks().get(c.charAt(0) - '\u0030' - 1);
-                        player.playTrack(track, member, false);
+                @Override
+                public void playlistLoaded(AudioPlaylist playlist) {
+                    if (!playlist.isSearchResult()) {
+                        loadPlaylist(playlist);
+                    } else {
+                        loadSearch(playlist);
                     }
                 }
 
-            }, settings.multipleResultsSearch));
+                @Override
+                public void noMatches() {
+                    textChannel.sendMessage(LanguageUtil.getString(textChannel.getGuild(), Bundle.STRINGS, "no_result")).queue();
+                }
 
-        } else {
-            loadSingleTrack(textChannel, member, playlist.getTracks().get(0), firstPosition);
+                @Override
+                public void loadFailed(FriendlyException exception) {
+                    textChannel.sendMessage(new EmbedBuilder()
+                            .setColor(ColorUtil.RED)
+                            .setTitle(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "error"))
+                            .setDescription(String.format("```\n%s\n```", exception.getMessage()))
+                            .setFooter(LanguageUtil.getTimeExpiration(textChannel.getGuild(), 20, TimeUnit.SECONDS), null)
+                            .build()
+                    ).queue(message -> message.delete().queueAfter(20, TimeUnit.SECONDS));
+                }
+            });
         }
-    }
 
-    private void loadSingleTrack(TextChannel textChannel, Member member, AudioTrack audioTrack, boolean firstPosition) {
-        MusicPlayer player = getPlayer(member.getGuild());
-        textChannel.sendMessage(
-                new EmbedBuilder()
-                        .setColor(ColorUtil.GREEN)
-                        .setTitle(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "track_added"))
-                        .setDescription(audioTrack.getInfo().title)
-                        .build()
-        ).queue();
-        if (player.getTextChannel() == null) player.setTextChannel(textChannel);
-        player.playTrack(audioTrack, member, firstPosition);
+        private void loadPlaylist(AudioPlaylist playlist) {
+            Guild guild = member.getGuild();
+            MusicPlayer player = getPlayer(guild);
+
+            int from = 0;
+            long totalDuration = 0L;
+            StringBuilder trackList = new StringBuilder();
+
+            for (String s : source.split("&")) {
+                if (!useIndex) break;
+                if (s.startsWith("index=")) try {
+                    from = Integer.parseInt(s.replace("index=", ""));
+                } catch (NumberFormatException e) {
+                    break;
+                }
+            }
+
+            EmbedBuilder embedBuilder = new EmbedBuilder();
+            if (from > 0) {
+                playlist.getTracks().subList(0, from - 1).clear();
+                embedBuilder.setTitle(LanguageUtil.getArguedString(guild, Bundle.CAPTION, "playlist_added_from", from));
+            } else embedBuilder.setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "playlist_added"));
+
+            for (AudioTrack track : playlist.getTracks()) {
+                totalDuration += track.getDuration();
+                if (playlist.getTracks().indexOf(track) < 10) {
+                    if (trackList.length() > 1) trackList.append("\n");
+                    trackList.append(String.format("● `%s`", track.getInfo().title));
+                }
+            }
+
+            embedBuilder.setColor(ColorUtil.GREEN);
+            embedBuilder.setDescription(playlist.getName());
+            embedBuilder.addField(LanguageUtil.getString(guild, Bundle.CAPTION, "music_track_duration"), "⏱ " + TimeUtil.toTime(totalDuration), false);
+            embedBuilder.addField(LanguageUtil.getString(guild, Bundle.CAPTION, "music_tracks_loaded"), trackList.toString(), false);
+            if (playlist.getTracks().size() > 10)
+                embedBuilder.setFooter(LanguageUtil.getArguedString(guild, Bundle.STRINGS, "music_other_tracks", playlist.getTracks().size() - 10, playlist.getTracks().size() - 10 > 1 ? "s" : ""), null);
+
+            textChannel.sendMessage(embedBuilder.build()).queue();
+
+            if (player.getTextChannel() == null) player.setTextChannel(textChannel);
+            playlist.getTracks().forEach(audioTrack -> player.playTrack(audioTrack, member, false));
+        }
+
+        private void loadSearch(AudioPlaylist playlist) {
+            Guild guild = member.getGuild();
+            MusicPlayer player = getPlayer(guild);
+            final Settings settings = RedisData.getSettings(textChannel.getGuild());
+
+            StringBuilder results = new StringBuilder();
+            int maxResults = settings.maxSearchResults;
+
+            if (maxResults > 1) {
+
+                for (int i = 0; i < playlist.getTracks().size() && i < maxResults; i++) {
+                    AudioTrack track = playlist.getTracks().get(i);
+                    if (results.length() > 1) results.append("\n");
+                    results.append(String.format("`%d` - `%s` [%s](%s)", i + 1,
+                            TimeUtil.toTime(track.getDuration()),
+                            track.getInfo().title,
+                            track.getInfo().uri));
+                }
+
+                String url = "https://www.youtube.com/results?search_query=" + source.substring(9).replace(" ", "+");
+
+                textChannel.sendMessage(new EmbedBuilder()
+                        .addField(LanguageUtil.getString(guild, Bundle.CAPTION, "search_results"), results.toString(), false)
+                        .addField(LanguageUtil.getString(guild, Bundle.CAPTION, "more_results"), LanguageUtil.getArguedString(guild, Bundle.STRINGS, "results_page", url), false)
+                        .setFooter(LanguageUtil.getTimeExpiration(guild, 30, TimeUnit.SECONDS), null)
+                        .build()).queue(message -> new SelectionListener(message, member.getUser(), 30 * 1000, SelectionListener.get(Math.min(playlist.getTracks().size(), maxResults)), r -> {
+
+                    if (member.getVoiceState().getChannel() == null) {
+                        textChannel.sendMessage(LanguageUtil.getString(guild, Bundle.STRINGS, "must_stay_connected")).queue();
+                        return;
+                    }
+
+                    if (r.isEmpty()) return;
+
+                    if (r.size() == 1) {
+                        loadSingleTrack(playlist.getTracks().get(r.get(0).charAt(0) - '\u0030' - 1));
+                    } else {
+                        StringBuilder trackList = new StringBuilder();
+                        if (player.getTextChannel() == null) player.setTextChannel(textChannel);
+                        for (String c : r) {
+                            AudioTrack track = playlist.getTracks().get(c.charAt(0) - '\u0030' - 1);
+                            if (trackList.length() > 1) trackList.append("\n");
+                            trackList.append(String.format("● %s", track.getInfo().title));
+                        }
+                        textChannel.sendMessage(
+                                new EmbedBuilder()
+                                        .setColor(ColorUtil.GREEN)
+                                        .setTitle(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "tracks_added"))
+                                        .setDescription(trackList.toString())
+                                        .build()
+                        ).queue();
+
+                        for (String c : r) {
+                            AudioTrack track = playlist.getTracks().get(c.charAt(0) - '\u0030' - 1);
+                            player.playTrack(track, member, false);
+                        }
+                    }
+
+                }, multi));
+
+            } else {
+                loadSingleTrack(playlist.getTracks().get(0));
+            }
+        }
+
+        private void loadSingleTrack(AudioTrack audioTrack) {
+            MusicPlayer player = getPlayer(member.getGuild());
+            textChannel.sendMessage(
+                    new EmbedBuilder()
+                            .setColor(ColorUtil.GREEN)
+                            .setTitle(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "track_added"))
+                            .setDescription(audioTrack.getInfo().title)
+                            .build()
+            ).queue();
+            if (player.getTextChannel() == null) player.setTextChannel(textChannel);
+            player.playTrack(audioTrack, member, firstPosition);
+        }
     }
 
 }
