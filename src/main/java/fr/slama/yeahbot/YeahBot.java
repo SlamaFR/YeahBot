@@ -28,6 +28,7 @@ import xyz.downgoon.snowflake.Snowflake;
 import javax.security.auth.login.LoginException;
 import java.util.Arrays;
 import java.util.Scanner;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Created on 09/09/2018.
@@ -175,6 +176,10 @@ public class YeahBot extends ListenerAdapter implements Runnable {
 
     public MusicListener getMusicListener() {
         return musicListener;
+    }
+
+    public ThreadLocalRandom getRandomGenerator() {
+        return ThreadLocalRandom.current();
     }
 
     public void setRunning(boolean running) {

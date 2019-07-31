@@ -1,5 +1,6 @@
 package fr.slama.yeahbot.commands;
 
+import fr.slama.yeahbot.YeahBot;
 import fr.slama.yeahbot.commands.core.BotCommand;
 import fr.slama.yeahbot.commands.core.Command;
 import fr.slama.yeahbot.commands.core.CommandError;
@@ -7,13 +8,14 @@ import fr.slama.yeahbot.language.Bundle;
 import fr.slama.yeahbot.redis.RedisData;
 import fr.slama.yeahbot.utilities.ColorUtil;
 import fr.slama.yeahbot.utilities.LanguageUtil;
+import fr.slama.yeahbot.utilities.MessageUtil;
 import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.*;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 /**
  * Created on 09/09/2018.
@@ -122,6 +124,45 @@ public class Fun {
             }
         } else {
             cmd.sendUsageEmbed(textChannel);
+        }
+
+    }
+
+    @Command(name = "choose",
+            category = Command.CommandCategory.FUN,
+            executor = Command.CommandExecutor.USER)
+    private void choose(Guild guild, TextChannel textChannel, Message message, BotCommand cmd) {
+
+        if (guild == null) return;
+
+        if (message.getMentionedMembers().isEmpty() && message.getMentionedRoles().isEmpty()) {
+            textChannel.sendMessage(
+                    new CommandError(guild, cmd, 0, CommandError.ErrorType.MISSING_VALUE).toEmbed()
+            ).queue();
+            return;
+        }
+
+        Member chosenOne = null;
+        if (!message.getMentionedMembers().isEmpty()) {
+            List<Member> members = message.getMentionedMembers();
+            chosenOne = members.get(YeahBot.getInstance().getRandomGenerator().nextInt(members.size()));
+        } else if (!message.getMentionedRoles().isEmpty()) {
+            Role role = message.getMentionedRoles().get(0);
+            List<Member> members = guild.getMembers().stream().filter(m -> m.getRoles().contains(role)).collect(Collectors.toList());
+            chosenOne = members.get(YeahBot.getInstance().getRandomGenerator().nextInt(members.size()));
+        }
+
+        if (chosenOne != null) {
+            textChannel.sendMessage(
+                    new EmbedBuilder()
+                            .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "result"))
+                            .setDescription(LanguageUtil.getArguedString(guild, Bundle.STRINGS, "chosen_one",
+                                    chosenOne.getAsMention()))
+                            .setColor(ColorUtil.PURPLE)
+                            .build()
+            ).queue();
+        } else {
+            MessageUtil.getErrorEmbed(guild, LanguageUtil.getString(guild, Bundle.ERROR, "something_went_wrong"));
         }
 
     }
