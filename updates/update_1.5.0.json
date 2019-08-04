@@ -1,0 +1,40 @@
+{
+  "version": "1.5.0",
+  "date": 1563919200000,
+  "fr": {
+    "title": "Bulletin de mise à jour",
+    "adds": [
+      "Ajout d'un assistant de configuration.",
+      "Ajout de la commande 'setup'.",
+      "Ajout de la commande 'pick'."
+    ],
+    "removes": [
+      "Suppression du paramètre 'Recherche à résultats multiples'."
+    ],
+    "changes": [
+      "La commande 'stop' est maintenant liée à la déconnexion automatique.",
+      "Ajout d'un argument à la commande 'play' pour faire une recherche à résultats multiples.",
+      "Résolution d'un bug avec la déconnexion automatique.",
+      "Nettoyage profond du code."
+    ],
+    "coming": []
+  },
+  "en": {
+    "title": "Update report",
+    "adds": [
+      "Added a setup wizard.",
+      "Added 'setup' command.",
+      "Added 'pick' command."
+    ],
+    "removes": [
+      "Removed 'Multiple results search' setting."
+    ],
+    "changes": [
+      "The 'stop' command is now linked with auto-disconnect.",
+      "Added argument to 'play' command to perform multiple results search.",
+      "Fixed a bug with auto-disconnect.",
+      "Deep code cleaning."
+    ],
+    "coming": []
+  }
+}
