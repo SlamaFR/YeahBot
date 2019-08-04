@@ -129,10 +129,11 @@ public class Fun {
 
     }
 
-    @Command(name = "choose",
+    @Command(name = "pick",
+            aliases = "choose",
             category = Command.CommandCategory.FUN,
             executor = Command.CommandExecutor.USER)
-    private void choose(Guild guild, TextChannel textChannel, Message message, BotCommand cmd) {
+    private void pick(Guild guild, TextChannel textChannel, Message message, BotCommand cmd) {
 
         if (guild == null) return;
 
