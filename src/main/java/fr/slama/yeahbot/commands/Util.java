@@ -119,6 +119,15 @@ public class Util {
                 .build()));
     }
 
+    @Command(name = "poll",
+            displayInHelp = false,
+            category = Command.CommandCategory.UTIL,
+            permission = Command.CommandPermission.STAFF,
+            executor = Command.CommandExecutor.USER)
+    private void poll() {
+
+    }
+
     private EmbedBuilder handleResponse(String attribute, String arguments, EmbedBuilder embed) {
         String[] args = arguments.split("\\|\\|");
 
