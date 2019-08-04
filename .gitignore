@@ -5,6 +5,7 @@ classes/
 gradle/
 log/
 out/
+gradlew.bat
 
 ad_keywords.json
 bad_words.json
