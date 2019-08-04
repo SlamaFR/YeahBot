@@ -33,11 +33,12 @@ public class Fun {
         }
 
         message.delete().queue();
+        boolean iie = Arrays.asList(args).contains("--iie") || Arrays.asList(args).contains("-i");
 
         String url = String.format("http://%s.lmgtfy.com/?q=%s%s",
                 RedisData.getSettings(guild).locale,
                 String.join("+", args).replace("-iie", ""),
-                Arrays.asList(args).contains("--iie") ? "&iie=1" : "");
+                iie ? "&iie=1" : "");
 
         textChannel.sendMessage(new EmbedBuilder()
                 .setColor(ColorUtil.PURPLE)
