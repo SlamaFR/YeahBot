@@ -129,6 +129,7 @@ public class Application extends Jooby {
             JSONArray array = new JSONArray();
             for (BotCommand cmd : YeahBot.getInstance().getCommandMap().getRegistry()) {
                 if (!cmd.getExecutor().equals(Command.CommandExecutor.USER)) continue;
+                if (!cmd.displayInHelp()) continue;
 
                 JSONObject object = new JSONObject();
                 object.put("name", cmd.getName());
