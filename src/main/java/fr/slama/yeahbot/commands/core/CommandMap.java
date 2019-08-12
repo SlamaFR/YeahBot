@@ -46,6 +46,15 @@ public class CommandMap {
         return guild == null ? DEFAULT_PREFIX : RedisData.getSettings(guild).prefix;
     }
 
+    public Collection<String> getCommandNames() {
+        Collection<String> names = new HashSet<>();
+        for (BotCommand command : registry) {
+            names.addAll(Arrays.asList(command.getAliases()));
+            names.add(command.getName());
+        }
+        return names;
+    }
+
     public Collection<BotCommand> getCommands() {
         return commands.values();
     }
@@ -115,7 +124,8 @@ public class CommandMap {
                     ).queue();
                 }
             } else {
-                message.getTextChannel().sendMessage(MessageUtil.getErrorEmbed(message.getGuild(), "no_permission")).queue();
+                message.getTextChannel().sendMessage(MessageUtil.getErrorEmbed(message.getGuild(),
+                        LanguageUtil.getString(message.getGuild(), Bundle.ERROR, "command"))).queue();
             }
         } else {
             message.getChannel().sendMessage(new EmbedBuilder()
