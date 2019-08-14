@@ -8,7 +8,6 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.exceptions.ErrorResponseException;
-import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,51 +21,9 @@ public class GuildUtil {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GuildUtil.class);
 
-    public static Role getMutedRole(Guild guild, TextChannel textChannel, boolean needed) throws InsufficientPermissionException {
-/*
-        Settings settings = RedisData.getSettings(guild);
-        long id = settings.muteRole;
-
-        if (guild.getRoleById(id) != null) return guild.getRoleById(id);
-        if (!needed) return null;
-
-        Role role;
-        try {
-            role = guild.getController().createRole()
-                    .setName(LanguageUtil.getString(guild, Bundle.CAPTION, "muted"))
-                    .setMentionable(false)
-                    .complete();
-        } catch (ErrorResponseException e) {
-            assert guild.getDefaultChannel() != null;
-            if (e.getErrorCode() == 30005) {
-                guild.getDefaultChannel().sendMessage(LanguageUtil.getString(guild, Bundle.ERROR, "cannot_create_mute_role_max_reached")).queue();
-            }
-            return null;
-        }
-
-        for (TextChannel channel : guild.getTextChannels()) {
-            try {
-                channel.putPermissionOverride(role)
-                        .setDeny(Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_WRITE)
-                        .queue();
-            } catch (InsufficientPermissionException e) {
-                TextChannel logChannel = getLogChannel(guild);
-                assert logChannel != null;
-                try {
-                    logChannel.sendMessage(LanguageUtil.getArguedString(guild, Bundle.ERROR, "cannot_create_mute_role", channel.getAsMention())).queue();
-                } catch (InsufficientPermissionException e1) {
-                    LOGGER.warn("Unable to create mute role in {} and tell error.", guild);
-                }
-            }
-        }
-
-        settings.muteRole = role.getIdLong();
-        RedisData.setSettings(guild, settings);
-        return role;
-*/
+    public static Role getMutedRole(Guild guild, TextChannel textChannel, boolean needed) {
 
         Settings settings = RedisData.getSettings(guild);
-
 
         // Looking for the role id in settings.
         if (settings.muteRole > 0 && guild.getRoleById(settings.muteRole) != null) {
@@ -88,13 +45,14 @@ public class GuildUtil {
                                 .queue();
                     }
                     settings.muteRole = role.getIdLong();
+                    RedisData.setSettings(guild, settings);
+                    return role;
                 }
             } catch (ErrorResponseException | PermissionException e) {
                 LOGGER.warn("Unable to create mute role in {}!", guild);
             }
         }
 
-        RedisData.setSettings(guild, settings);
         return null;
 
     }
@@ -141,6 +99,7 @@ public class GuildUtil {
                     .findFirst();
             if (channel.isPresent()) {
                 settings.modChannel = channel.get().getIdLong();
+                RedisData.setSettings(guild, settings);
                 return channel.get();
             }
         }
@@ -156,13 +115,13 @@ public class GuildUtil {
                         .setDeny(Permission.MESSAGE_WRITE, Permission.MESSAGE_READ)
                         .queue();
                 settings.modChannel = channel.getIdLong();
+                RedisData.setSettings(guild, settings);
                 return channel;
             }
         } catch (ErrorResponseException | PermissionException e) {
             LOGGER.warn("Unable to create mod channel in {}!", guild);
         }
 
-        RedisData.setSettings(guild, settings);
         return null;
 
     }
@@ -189,6 +148,7 @@ public class GuildUtil {
                     .findFirst();
             if (textChannel.isPresent()) {
                 settings.updateChannel = textChannel.get().getIdLong();
+                RedisData.setSettings(guild, settings);
                 return textChannel.get();
             }
         }
@@ -204,13 +164,13 @@ public class GuildUtil {
                         .setDeny(Permission.MESSAGE_WRITE, Permission.MESSAGE_READ)
                         .queue();
                 settings.updateChannel = channel.getIdLong();
+                RedisData.setSettings(guild, settings);
                 return channel;
             }
         } catch (ErrorResponseException | PermissionException e) {
             LOGGER.warn("Unable to create updates channel in {}!", guild);
         }
 
-        RedisData.setSettings(guild, settings);
         return null;
     }
 
@@ -236,11 +196,11 @@ public class GuildUtil {
                     .findFirst();
             if (textChannel.isPresent()) {
                 settings.joinLeaveChannel = textChannel.get().getIdLong();
+                RedisData.setSettings(guild, settings);
                 return textChannel.get();
             }
         }
 
-        RedisData.setSettings(guild, settings);
         return null;
     }
 
