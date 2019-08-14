@@ -118,7 +118,7 @@ public class TrackScheduler extends AudioEventAdapter {
 
     public void pause(boolean tell) {
         musicPlayer.getAudioPlayer().setPaused(true);
-        assert musicPlayer.getTextChannel() != null;
+        if (musicPlayer.getTextChannel() == null) return;
         if (tell) musicPlayer.getTextChannel().sendMessage(
                 LanguageUtil.getString(musicPlayer.getGuild(), Bundle.STRINGS, "music_paused")
         ).queue();
@@ -126,7 +126,7 @@ public class TrackScheduler extends AudioEventAdapter {
 
     public void resume(boolean tell) {
         musicPlayer.getAudioPlayer().setPaused(false);
-        assert musicPlayer.getTextChannel() != null;
+        if (musicPlayer.getTextChannel() == null) return;
         if (tell) musicPlayer.getTextChannel().sendMessage(
                 LanguageUtil.getString(musicPlayer.getGuild(), Bundle.STRINGS, "music_resumed")
         ).queue();

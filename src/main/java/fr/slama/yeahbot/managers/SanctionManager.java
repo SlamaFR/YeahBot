@@ -38,8 +38,8 @@ public class SanctionManager {
         try {
             Mutes mutes = RedisData.getMutes(target.getGuild());
 
-            textChannel.getGuild().getController().addRolesToMember(target, GuildUtil.getMutedRole(textChannel.getGuild(), true)).queue();
-            TextChannel modChannel = GuildUtil.getModChannel(target.getGuild(), true);
+            textChannel.getGuild().getController().addRolesToMember(target, GuildUtil.getMutedRole(textChannel.getGuild(), textChannel, true)).queue();
+            TextChannel modChannel = GuildUtil.getModChannel(target.getGuild(), textChannel, true);
             if (modChannel == null) modChannel = textChannel;
 
             modChannel.sendMessage(
@@ -70,13 +70,14 @@ public class SanctionManager {
         Mutes mutes = RedisData.getMutes(target.getGuild());
 
         if (!mutes.getMutesMap().containsKey(target.getUser().getIdLong()) &&
-                !target.getRoles().contains(GuildUtil.getMutedRole(target.getGuild(), false))) return false;
+                !target.getRoles().contains(GuildUtil.getMutedRole(target.getGuild(), textChannel, false)))
+            return false;
 
         target.getGuild().getController()
-                .removeRolesFromMember(target, GuildUtil.getMutedRole(target.getGuild(), false))
+                .removeRolesFromMember(target, GuildUtil.getMutedRole(target.getGuild(), textChannel, false))
                 .queue();
 
-        TextChannel modChannel = GuildUtil.getModChannel(target.getGuild(), true);
+        TextChannel modChannel = GuildUtil.getModChannel(target.getGuild(), textChannel, true);
 
         if (modChannel == null && textChannel != null) modChannel = textChannel;
 
@@ -98,7 +99,7 @@ public class SanctionManager {
         try {
             target.getGuild().getController().kick(target, reason).queue();
 
-            TextChannel modChannel = GuildUtil.getModChannel(target.getGuild(), true);
+            TextChannel modChannel = GuildUtil.getModChannel(target.getGuild(), textChannel, true);
 
             if (modChannel == null) modChannel = textChannel;
 
@@ -119,7 +120,7 @@ public class SanctionManager {
         try {
             target.getGuild().getController().ban(target, 7, reason).queue();
 
-            TextChannel modChannel = GuildUtil.getModChannel(target.getGuild(), true);
+            TextChannel modChannel = GuildUtil.getModChannel(target.getGuild(), textChannel, true);
 
             if (modChannel == null) modChannel = textChannel;
 

@@ -83,7 +83,7 @@ public class MusicListener extends ListenerAdapter {
     }
 
     private void check(VoiceChannel channel, GenericGuildVoiceEvent event) {
-        assert event.getGuild().getAudioManager() != null;
+        if (event.getGuild().getAudioManager() == null) return;
         if (!event.getGuild().getAudioManager().isConnected()) return;
 
         VoiceChannel botChannel = event.getGuild().getSelfMember().getVoiceState().getChannel();

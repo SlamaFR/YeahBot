@@ -36,14 +36,14 @@ public class UnmuteTask extends TimerTask {
                     long now = System.currentTimeMillis();
                     if (now > timeout) {
                         guild.getController()
-                                .removeRolesFromMember(guild.getMemberById(userId), GuildUtil.getMutedRole(guild, false))
+                                .removeRolesFromMember(guild.getMemberById(userId), GuildUtil.getMutedRole(guild, null, false))
                                 .queue();
                         toRemove.add(userId);
                         LOGGER.info("Unmuted " + userId);
                     } else {
                         TaskScheduler.scheduleDelayed(() -> {
                             guild.getController()
-                                    .removeRolesFromMember(guild.getMemberById(userId), GuildUtil.getMutedRole(guild, false))
+                                    .removeRolesFromMember(guild.getMemberById(userId), GuildUtil.getMutedRole(guild, null, false))
                                     .queue();
                             mutes.getMutesMap().remove(userId);
                             RedisData.setMutes(guild, mutes);

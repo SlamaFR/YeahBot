@@ -9,6 +9,7 @@ import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.exceptions.ErrorResponseException;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
+import net.dv8tion.jda.core.exceptions.PermissionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,8 +22,8 @@ public class GuildUtil {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GuildUtil.class);
 
-    public static Role getMutedRole(Guild guild, boolean needed) throws InsufficientPermissionException {
-
+    public static Role getMutedRole(Guild guild, TextChannel textChannel, boolean needed) throws InsufficientPermissionException {
+/*
         Settings settings = RedisData.getSettings(guild);
         long id = settings.muteRole;
 
@@ -62,51 +63,154 @@ public class GuildUtil {
         settings.muteRole = role.getIdLong();
         RedisData.setSettings(guild, settings);
         return role;
+*/
+
+        Settings settings = RedisData.getSettings(guild);
+
+
+        // Looking for the role id in settings.
+        if (settings.muteRole > 0 && guild.getRoleById(settings.muteRole) != null) {
+            return guild.getRoleById(settings.muteRole);
+        } else {
+            // Creating role if needed.
+            try {
+                if (needed) {
+                    Role role = guild.getController().createRole()
+                            .setName(LanguageUtil.getString(guild, Bundle.CAPTION, "muted"))
+                            .setMentionable(false)
+                            .complete();
+                    for (TextChannel tc : guild.getTextChannels()) {
+                        tc.createPermissionOverride(role)
+                                .setAllow(Permission.MESSAGE_WRITE, Permission.MESSAGE_READ)
+                                .queue();
+                        tc.createPermissionOverride(role)
+                                .setDeny(Permission.MESSAGE_WRITE, Permission.MESSAGE_READ)
+                                .queue();
+                    }
+                    settings.muteRole = role.getIdLong();
+                }
+            } catch (ErrorResponseException | PermissionException e) {
+                LOGGER.warn("Unable to create mute role in {}!", guild);
+            }
+        }
+
+        RedisData.setSettings(guild, settings);
+        return null;
 
     }
 
     public static TextChannel getLogChannel(Guild guild) {
-        if (guild.getTextChannelsByName("yeahbot-logs", true).isEmpty())
-            return null;
-        return guild.getTextChannelsByName("yeahbot-logs", true).get(0);
-    }
-
-    public static TextChannel getModChannel(Guild guild, boolean needed) {
-        TextChannel channel;
-        if (guild.getTextChannelsByName("yeahbot-mod", true).isEmpty()) {
-            if (needed) {
-                channel = (TextChannel) guild.getController().createTextChannel("yeahbot-mod").complete();
-                channel.createPermissionOverride(guild.getSelfMember())
-                        .setAllow(Permission.MESSAGE_WRITE)
-                        .queue();
-                channel.createPermissionOverride(guild.getPublicRole())
-                        .setAllow(Permission.MESSAGE_READ)
-                        .setDeny(Permission.MESSAGE_WRITE, Permission.MESSAGE_ADD_REACTION)
-                        .queue();
-            } else return null;
-        }
-        return guild.getTextChannelsByName("yeahbot-mod", true).get(0);
-    }
-
-    public static TextChannel getUpdatesChannel(Guild guild) {
 
         Settings settings = RedisData.getSettings(guild);
 
-        if (settings.updateChannel > 0) {
-            return guild.getTextChannelById(settings.updateChannel);
+        if (settings.logChannel > 0 && guild.getTextChannelById(settings.logChannel) != null) {
+            return guild.getTextChannelById(settings.logChannel);
         }
 
-        String[] keyWords = {"update", "mise-a-jour", "mise-à-jour", "mises-a-jour", "mises-à-jour"};
+        String[] keyWords = {"log", "yeahbot"};
 
         for (String word : keyWords) {
             Optional<TextChannel> textChannel = guild.getTextChannels().stream().filter(tc -> tc.getName().contains(word)).findFirst();
             if (textChannel.isPresent()) {
-                settings.updateChannel = textChannel.get().getIdLong();
+                settings.logChannel = textChannel.get().getIdLong();
                 RedisData.setSettings(guild, settings);
                 return textChannel.get();
             }
         }
 
+        return null;
+
+    }
+
+    public static TextChannel getModChannel(Guild guild, TextChannel textChannel, boolean needed) {
+
+        Settings settings = RedisData.getSettings(guild);
+
+        // Looking for the channel id in settings.
+        if (settings.modChannel > 0 && guild.getTextChannelById(settings.modChannel) != null) {
+            return guild.getTextChannelById(settings.modChannel);
+        }
+
+        // Looking for the channel by its name.
+        String[] keyWords = {"mod", "sanction"};
+
+        for (String word : keyWords) {
+            Optional<TextChannel> channel = guild.getTextChannels()
+                    .stream()
+                    .filter(tc -> tc.getName().contains(word))
+                    .findFirst();
+            if (channel.isPresent()) {
+                settings.modChannel = channel.get().getIdLong();
+                return channel.get();
+            }
+        }
+
+        // Creating channel if needed.
+        try {
+            if (needed) {
+                TextChannel channel = (TextChannel) guild.getController().createTextChannel("yeahbot-mod").complete();
+                channel.createPermissionOverride(guild.getSelfMember())
+                        .setAllow(Permission.MESSAGE_WRITE, Permission.MESSAGE_READ)
+                        .queue();
+                channel.createPermissionOverride(guild.getPublicRole())
+                        .setDeny(Permission.MESSAGE_WRITE, Permission.MESSAGE_READ)
+                        .queue();
+                settings.modChannel = channel.getIdLong();
+                return channel;
+            }
+        } catch (ErrorResponseException | PermissionException e) {
+            LOGGER.warn("Unable to create mod channel in {}!", guild);
+        }
+
+        RedisData.setSettings(guild, settings);
+        return null;
+
+    }
+
+    public static TextChannel getUpdatesChannel(Guild guild, boolean needed) {
+
+        Settings settings = RedisData.getSettings(guild);
+
+        // Negative id means force not to look for the channel.
+        if (settings.updateChannel < 0) return null;
+
+        // Looking for the channel id in settings.
+        if (settings.updateChannel > 0 && guild.getTextChannelById(settings.updateChannel) != null) {
+            return guild.getTextChannelById(settings.updateChannel);
+        }
+
+        // Looking for the channel by its name.
+        String[] keyWords = {"update", "mise-a-jour", "mises-a-jour", "mise-à-jour", "mises-à-jour"};
+
+        for (String word : keyWords) {
+            Optional<TextChannel> textChannel = guild.getTextChannels()
+                    .stream()
+                    .filter(tc -> tc.getName().contains(word))
+                    .findFirst();
+            if (textChannel.isPresent()) {
+                settings.updateChannel = textChannel.get().getIdLong();
+                return textChannel.get();
+            }
+        }
+
+        // Creating channel if needed.
+        try {
+            if (needed) {
+                TextChannel channel = (TextChannel) guild.getController().createTextChannel("yeahbot-updates").complete();
+                channel.createPermissionOverride(guild.getSelfMember())
+                        .setAllow(Permission.MESSAGE_WRITE, Permission.MESSAGE_READ)
+                        .queue();
+                channel.createPermissionOverride(guild.getPublicRole())
+                        .setDeny(Permission.MESSAGE_WRITE, Permission.MESSAGE_READ)
+                        .queue();
+                settings.updateChannel = channel.getIdLong();
+                return channel;
+            }
+        } catch (ErrorResponseException | PermissionException e) {
+            LOGGER.warn("Unable to create updates channel in {}!", guild);
+        }
+
+        RedisData.setSettings(guild, settings);
         return null;
     }
 
@@ -114,21 +218,29 @@ public class GuildUtil {
 
         Settings settings = RedisData.getSettings(guild);
 
-        if (settings.joinLeaveChannel > 0) {
+        // Negative id means force not to look for the channel.
+        if (settings.joinLeaveChannel < 0) return null;
+
+        // Looking for the channel id in settings.
+        if (settings.joinLeaveChannel > 0 && guild.getTextChannelById(settings.joinLeaveChannel) != null) {
             return guild.getTextChannelById(settings.joinLeaveChannel);
         }
 
-        String[] keyWords = {"welcome", "bienvenue", "nouveaux", "arrivée"};
+        // Looking for the channel by its name.
+        String[] keyWords = {"nouveau", "welcome", "bienvenu", "arrivé", "arrive"};
 
         for (String word : keyWords) {
-            Optional<TextChannel> textChannel = guild.getTextChannels().stream().filter(tc -> tc.getName().contains(word)).findFirst();
+            Optional<TextChannel> textChannel = guild.getTextChannels()
+                    .stream()
+                    .filter(tc -> tc.getName().contains(word))
+                    .findFirst();
             if (textChannel.isPresent()) {
                 settings.joinLeaveChannel = textChannel.get().getIdLong();
-                RedisData.setSettings(guild, settings);
                 return textChannel.get();
             }
         }
 
+        RedisData.setSettings(guild, settings);
         return null;
     }
 

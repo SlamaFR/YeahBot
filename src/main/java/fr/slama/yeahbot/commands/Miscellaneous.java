@@ -517,13 +517,7 @@ public class Miscellaneous {
                 );
 
                 try {
-                    if (Arrays.asList(args).contains("force") && guild.getDefaultChannel() != null) {
-                        guild.getDefaultChannel().sendMessage(builder.build()).queue();
-                        count.getAndIncrement();
-                        continue;
-                    }
-
-                    TextChannel textChannel = GuildUtil.getUpdatesChannel(guild);
+                    TextChannel textChannel = GuildUtil.getUpdatesChannel(guild, Arrays.asList(args).contains("force"));
                     if (textChannel != null) {
                         textChannel.sendMessage(builder.build()).queue();
                         count.getAndIncrement();
@@ -586,7 +580,10 @@ public class Miscellaneous {
 
     }
 
-    @Command(name = "setup")
+    @Command(name = "setup",
+            permission = Command.CommandPermission.SERVER_OWNER,
+            discordPermission = {Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EMBED_LINKS},
+            executor = Command.CommandExecutor.USER)
     private void setup(Guild guild, TextChannel textChannel, Member member) {
 
         if (!YeahBot.getInstance().getSetupManager().startWizard(textChannel, member)) {

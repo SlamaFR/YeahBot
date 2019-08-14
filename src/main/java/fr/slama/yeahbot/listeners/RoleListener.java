@@ -14,7 +14,7 @@ public class RoleListener extends ListenerAdapter {
     public void onGuildMemberRoleRemove(GuildMemberRoleRemoveEvent event) {
         super.onGuildMemberRoleRemove(event);
 
-        if (event.getRoles().contains(GuildUtil.getMutedRole(event.getGuild(), false)))
+        if (event.getRoles().contains(GuildUtil.getMutedRole(event.getGuild(), null, false)))
             SanctionManager.unregisterMute(null, event.getMember());
     }
 }
