@@ -13,13 +13,13 @@ import fr.slama.yeahbot.utilities.EmoteUtil;
 import fr.slama.yeahbot.utilities.LanguageUtil;
 import fr.slama.yeahbot.utilities.MessageUtil;
 import fr.slama.yeahbot.utilities.StringUtil;
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
-import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent;
-import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
-import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
+import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import java.util.Arrays;
 import java.util.List;
@@ -83,7 +83,7 @@ public class SetupWizard {
         this.member = member;
         this.settings = RedisData.getSettings(guild);
         this.eventWaiter = new EventWaiter.Builder(GuildMessageReceivedEvent.class,
-                e -> e.getMember().equals(member) && e.getMessage().getTextChannel().equals(textChannel),
+                e -> member.equals(e.getMember()) && e.getMessage().getTextChannel().equals(textChannel),
                 (e, ew) -> {
                     if (e.getMessage().getContentRaw().equalsIgnoreCase("cancel")) {
                         ew.close();
@@ -243,7 +243,7 @@ public class SetupWizard {
         addFooter(embed);
 
         if (permissionMessage > 0) {
-            textChannel.getMessageById(permissionMessage).queue(message -> {
+            textChannel.retrieveMessageById(permissionMessage).queue(message -> {
                 lastMessage = message;
                 message.editMessage(embed.build()).queue(SUCCESS, FAIL);
             }, throwable -> textChannel.sendMessage(embed.build()).queue(message -> {
@@ -318,31 +318,16 @@ public class SetupWizard {
             lastMessage = message;
             selectionListener = new SelectionListener(message,
                     member.getUser(), -1, SelectionListener.get(6), r -> {
-                for (String s : r) {
-                    switch (s.charAt(0) - '\u0030') {
-                        case 1:
-                            settings.detectingFlood = true;
-                            break;
-                        case 2:
-                            settings.detectingCapsSpam = true;
-                            break;
-                        case 3:
-                            settings.detectingEmojisSpam = true;
-                            break;
-                        case 4:
-                            settings.detectingReactionsSpam = true;
-                            break;
-                        case 5:
-                            settings.detectingSwearing = true;
-                            break;
-                        case 6:
-                            settings.detectingAdvertising = true;
-                            break;
-                        default:
-                    }
-                }
-                save();
-                step4();
+                settings.detectingFlood = r.contains("\u0031\u20E3");
+                settings.detectingCapsSpam = r.contains("\u0032\u20E3");
+                settings.detectingEmojisSpam = r.contains("\u0033\u20E3");
+                settings.detectingReactionsSpam = r.contains("\u0034\u20E3");
+                settings.detectingSwearing = r.contains("\u0035\u20E3");
+                settings.detectingAdvertising = r.contains("\u0036\u20E3");
+                message.delete().queue(msg -> {
+                    save();
+                    step4();
+                }, FAIL);
             }, true);
         }, FAIL);
     }
@@ -353,17 +338,23 @@ public class SetupWizard {
                 .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "setup_step_4_title"))
                 .setDescription(LanguageUtil.getString(guild, Bundle.STRINGS, "setup_step_4_summary"))
                 .setColor(WHITE);
+        addFooter(embed);
         textChannel.sendMessage(embed.build()).queue(message -> new EventWaiter.Builder(GuildMessageReceivedEvent.class,
-                e -> e.getMember().equals(member) && e.getMessage().getTextChannel().equals(textChannel),
+                e -> member.getIdLong() == e.getMember().getIdLong() && e.getMessage().getTextChannel().equals(textChannel),
                 (e, ew) -> {
                     if (!e.getMessage().getMentionedChannels().isEmpty()) {
-                        settings.updateChannel = e.getMessage().getMentionedChannels().get(0).getIdLong();
-                        ew.close();
-                        save();
-                        end(false);
-                    } else if (e.getMessage().getContentRaw().equalsIgnoreCase("no")) {
-                        ew.close();
-                        end(false);
+                        textChannel.deleteMessages(Arrays.asList(message, e.getMessage())).queue(msg -> {
+                            settings.updateChannel = e.getMessage().getMentionedChannels().get(0).getIdLong();
+                            ew.close();
+                            save();
+                            end(false);
+                        }, FAIL);
+                    } else if (e.getMessage().getContentRaw().trim().equalsIgnoreCase("no")) {
+                        textChannel.deleteMessages(Arrays.asList(message, e.getMessage())).queue(msg -> {
+                            settings.updateChannel = -1;
+                            ew.close();
+                            end(false);
+                        }, FAIL);
                     }
                 }).build());
     }

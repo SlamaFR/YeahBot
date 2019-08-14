@@ -3,7 +3,7 @@ package fr.slama.yeahbot.utilities;
 import fr.slama.yeahbot.language.Bundle;
 import fr.slama.yeahbot.language.Language;
 import fr.slama.yeahbot.redis.RedisData;
-import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.api.entities.Guild;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

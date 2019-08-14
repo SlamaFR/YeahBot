@@ -1,9 +1,9 @@
 package fr.slama.yeahbot.blub;
 
 import fr.slama.yeahbot.managers.SanctionManager;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.TextChannel;
 
 import java.util.concurrent.TimeUnit;
 
@@ -41,7 +41,7 @@ public class Sanction {
     }
 
     public void apply(TextChannel textChannel, Member member, String reason) {
-        assert type != null;
+        if (type == null) return;
         Guild guild = textChannel.getGuild();
         switch (type) {
             case MUTE:

@@ -9,8 +9,8 @@ import fr.slama.yeahbot.redis.RedisData;
 import fr.slama.yeahbot.utilities.ColorUtil;
 import fr.slama.yeahbot.utilities.LanguageUtil;
 import fr.slama.yeahbot.utilities.MessageUtil;
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -130,7 +130,7 @@ public class Fun {
     }
 
     @Command(name = "pick",
-            aliases = "choose",
+            aliases = "pick",
             category = Command.CommandCategory.FUN,
             executor = Command.CommandExecutor.USER)
     private void pick(Guild guild, TextChannel textChannel, Message message, BotCommand cmd) {

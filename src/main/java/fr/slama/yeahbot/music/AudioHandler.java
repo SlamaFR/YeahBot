@@ -3,7 +3,10 @@ package fr.slama.yeahbot.music;
 import com.sedmelluq.discord.lavaplayer.format.OpusAudioDataFormat;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.track.playback.AudioFrame;
-import net.dv8tion.jda.core.audio.AudioSendHandler;
+import net.dv8tion.jda.api.audio.AudioSendHandler;
+
+import javax.annotation.Nullable;
+import java.nio.ByteBuffer;
 
 /**
  * Created on 19/09/2018.
@@ -23,9 +26,10 @@ public class AudioHandler implements AudioSendHandler {
         return lastFrame != null;
     }
 
+    @Nullable
     @Override
-    public byte[] provide20MsAudio() {
-        return lastFrame.getData();
+    public ByteBuffer provide20MsAudio() {
+        return ByteBuffer.wrap(lastFrame.getData());
     }
 
     @Override

@@ -4,13 +4,14 @@ import fr.slama.yeahbot.YeahBot;
 import fr.slama.yeahbot.blub.TaskScheduler;
 import fr.slama.yeahbot.utilities.EmoteUtil;
 import fr.slama.yeahbot.utilities.MessageUtil;
-import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent;
-import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent;
-import net.dv8tion.jda.core.events.message.react.MessageReactionRemoveEvent;
-import net.dv8tion.jda.core.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent;
+import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
+import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -70,13 +71,9 @@ public class SelectionListener extends ListenerAdapter {
         for (String emote : choices) {
             try {
                 long l = Long.parseLong(emote);
-                message.addReaction(YeahBot.getInstance().getShardManager().getEmoteById(l)).queue(s -> {
-                }, f -> {
-                });
+                message.addReaction(YeahBot.getInstance().getShardManager().getEmoteById(l)).queue();
             } catch (NumberFormatException e) {
-                message.addReaction(emote).queue(s -> {
-                }, f -> {
-                });
+                message.addReaction(emote).queue();
             }
         }
         if (multiple) message.addReaction(OK_EMOTE).queue();
@@ -98,17 +95,15 @@ public class SelectionListener extends ListenerAdapter {
     }
 
     @Override
-    public void onMessageReactionAdd(MessageReactionAddEvent event) {
+    public void onMessageReactionAdd(@NotNull MessageReactionAddEvent event) {
         super.onMessageReactionAdd(event);
         handleEvent(event, () -> {
-            String string = event.getReaction().getReactionEmote().getName();
-            String id = event.getReaction().getReactionEmote().getId();
 
-            if (choices.contains(string) && !selection.contains(string)) selection.add(string);
-            if (choices.contains(id) && !selection.contains(id)) selection.add(id);
+            String emote = event.getReactionEmote().isEmoji() ? event.getReactionEmote().getName() : event.getReactionEmote().getId();
+            if (choices.contains(emote) && !selection.contains(emote)) selection.add(emote);
 
             if (multiple) {
-                if (OK_EMOTE.equals(string)) close();
+                if (OK_EMOTE.equals(emote)) close();
             } else {
                 close();
             }
@@ -116,20 +111,17 @@ public class SelectionListener extends ListenerAdapter {
     }
 
     @Override
-    public void onMessageReactionRemove(MessageReactionRemoveEvent event) {
+    public void onMessageReactionRemove(@NotNull MessageReactionRemoveEvent event) {
         super.onMessageReactionRemove(event);
         handleEvent(event, () -> {
-            String string = event.getReaction().getReactionEmote().getName();
-            String id = event.getReaction().getReactionEmote().getId();
-
-            selection.remove(string);
-            selection.remove(id);
+            String emote = event.getReactionEmote().isEmoji() ? event.getReactionEmote().getName() : event.getReactionEmote().getId();
+            selection.remove(emote);
         });
     }
 
     private void handleEvent(GenericMessageReactionEvent event, Runnable runnable) {
         if (event.getMessageId().equals(message.getId())) {
-            event.getChannel().getMessageById(event.getMessageIdLong()).queue((Message m) -> event.getReaction().getUsers().queue(users -> {
+            event.getChannel().retrieveMessageById(event.getMessageIdLong()).queue((Message m) -> event.getReaction().retrieveUsers().queue(users -> {
                 if (users.contains(event.getJDA().getSelfUser()) && event.getUser().getIdLong() == user.getIdLong())
                     runnable.run();
             }));

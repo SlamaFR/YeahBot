@@ -2,8 +2,8 @@ package fr.slama.yeahbot.commands.core;
 
 import fr.slama.yeahbot.YeahBot;
 import fr.slama.yeahbot.managers.PremiumManager;
-import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Member;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

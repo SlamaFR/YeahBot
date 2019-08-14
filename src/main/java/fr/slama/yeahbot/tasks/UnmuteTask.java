@@ -5,7 +5,7 @@ import fr.slama.yeahbot.blub.TaskScheduler;
 import fr.slama.yeahbot.redis.RedisData;
 import fr.slama.yeahbot.redis.buckets.Mutes;
 import fr.slama.yeahbot.utilities.GuildUtil;
-import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.api.entities.Guild;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,15 +35,13 @@ public class UnmuteTask extends TimerTask {
                 try {
                     long now = System.currentTimeMillis();
                     if (now > timeout) {
-                        guild.getController()
-                                .removeRolesFromMember(guild.getMemberById(userId), GuildUtil.getMutedRole(guild, null, false))
+                        guild.removeRoleFromMember(guild.getMemberById(userId), GuildUtil.getMutedRole(guild, null, false))
                                 .queue();
                         toRemove.add(userId);
                         LOGGER.info("Unmuted " + userId);
                     } else {
                         TaskScheduler.scheduleDelayed(() -> {
-                            guild.getController()
-                                    .removeRolesFromMember(guild.getMemberById(userId), GuildUtil.getMutedRole(guild, null, false))
+                            guild.removeRoleFromMember(guild.getMemberById(userId), GuildUtil.getMutedRole(guild, null, false))
                                     .queue();
                             mutes.getMutesMap().remove(userId);
                             RedisData.setMutes(guild, mutes);

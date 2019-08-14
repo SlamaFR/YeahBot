@@ -9,10 +9,10 @@ import fr.slama.yeahbot.redis.buckets.Channels;
 import fr.slama.yeahbot.utilities.ColorUtil;
 import fr.slama.yeahbot.utilities.LanguageUtil;
 import fr.slama.yeahbot.utilities.StringUtil;
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 import java.awt.*;
 import java.util.Arrays;
@@ -119,6 +119,7 @@ public class Util {
                 .build()));
     }
 
+    /*
     @Command(name = "poll",
             displayInHelp = false,
             category = Command.CommandCategory.UTIL,
@@ -127,6 +128,7 @@ public class Util {
     private void poll() {
 
     }
+     */
 
     private EmbedBuilder handleResponse(String attribute, String arguments, EmbedBuilder embed) {
         String[] args = arguments.split("\\|\\|");

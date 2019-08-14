@@ -13,13 +13,13 @@ import fr.slama.yeahbot.utilities.ColorUtil;
 import fr.slama.yeahbot.utilities.LanguageUtil;
 import fr.slama.yeahbot.utilities.MessageUtil;
 import fr.slama.yeahbot.utilities.StringUtil;
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.exceptions.ErrorResponseException;
-import net.dv8tion.jda.core.requests.RequestFuture;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -80,7 +80,7 @@ public class Moderation {
             builder.setFooter(LanguageUtil.getString(guild, Bundle.STRINGS, "may_take_a_while"), null);
 
         textChannel.sendMessage(builder.build()).queue(msg -> {
-            RequestFuture.allOf(textChannel.purgeMessages(messages)).thenRun(() -> {
+            CompletableFuture.allOf(textChannel.purgeMessages(messages).toArray(new CompletableFuture[0])).thenRun(() -> {
 
                 MessageEmbed embed = new EmbedBuilder()
                         .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "success"))
@@ -330,9 +330,7 @@ public class Moderation {
 
         for (Member member : guild.getMembers()) {
             if (guild.getSelfMember().getUser().getIdLong() == member.getUser().getIdLong()) continue;
-            guild.getController().removeRolesFromMember(member, member.getRoles()).queue(s -> {
-            }, f -> {
-            });
+            guild.modifyMemberRoles(member, guild.getPublicRole()).queue();
         }
 
         textChannel.sendMessage(

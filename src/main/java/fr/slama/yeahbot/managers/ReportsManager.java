@@ -10,10 +10,10 @@ import fr.slama.yeahbot.redis.buckets.Settings;
 import fr.slama.yeahbot.utilities.ColorUtil;
 import fr.slama.yeahbot.utilities.GuildUtil;
 import fr.slama.yeahbot.utilities.LanguageUtil;
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.TextChannel;
 
 import java.time.Instant;
 import java.util.Collections;
@@ -113,7 +113,7 @@ public class ReportsManager {
                         String.format("%s (%s#%s)", author.getAsMention(), author.getUser().getName(), author.getUser().getDiscriminator()), true)
                 .addField(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "text_channel"), textChannel.getAsMention(), true)
                 .addField(LanguageUtil.getString(textChannel.getGuild(), Bundle.CAPTION, "jump_to_message"),
-                        (textChannel.getMessageById(message.getId()) != null
+                        (textChannel.retrieveMessageById(message.getId()) != null
                                 ? LanguageUtil.getLink(textChannel.getGuild(), message.getJumpUrl())
                                 : String.format("`%s`", LanguageUtil.getString(textChannel.getGuild(), Bundle.ERROR, "message_unavailable"))
                         ), true)
@@ -144,7 +144,7 @@ public class ReportsManager {
     }
 
     private static void notify(Member author, EmbedBuilder embedBuilder, Reports reports) {
-        TextChannel logChannel = GuildUtil.getLogChannel(author.getGuild());
+        TextChannel logChannel = GuildUtil.getLogChannel(author.getGuild(), false);
 
         RedisData.setReports(author.getGuild(), reports);
         if (logChannel != null) logChannel.sendMessage(embedBuilder.build()).queue();

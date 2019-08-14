@@ -1,8 +1,9 @@
 package fr.slama.yeahbot.blub;
 
 import fr.slama.yeahbot.YeahBot;
-import net.dv8tion.jda.core.events.Event;
-import net.dv8tion.jda.core.hooks.EventListener;
+import net.dv8tion.jda.api.events.Event;
+import net.dv8tion.jda.api.events.GenericEvent;
+import net.dv8tion.jda.api.hooks.EventListener;
 
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
@@ -42,7 +43,7 @@ public class EventWaiter implements EventListener {
 
     @Override
     @SuppressWarnings("unchecked")
-    public void onEvent(Event event) {
+    public void onEvent(GenericEvent event) {
         if (event.getClass().equals(classType) && (condition.test(event))) {
             action.accept(event, this);
             if (this.autoClose) this.close();

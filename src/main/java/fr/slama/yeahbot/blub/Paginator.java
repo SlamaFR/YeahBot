@@ -3,14 +3,14 @@ package fr.slama.yeahbot.blub;
 import fr.slama.yeahbot.language.Bundle;
 import fr.slama.yeahbot.utilities.EmoteUtil;
 import fr.slama.yeahbot.utilities.LanguageUtil;
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent;
-import net.dv8tion.jda.core.requests.restaction.MessageAction;
-import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
+import net.dv8tion.jda.api.requests.restaction.MessageAction;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -71,10 +71,8 @@ public class Paginator<T> {
         Checks.notNull(objectList, "List");
         Checks.notEmpty(objectList, "List");
         Checks.check(pageSize > 0, "Page size must be positive.");
-        if (textChannel.getGuild() != null) {
-            Checks.check(textChannel.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_ADD_REACTION), "Must have MESSAGE_ADD_REACTION");
-            Checks.check(textChannel.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE), "Must have MESSAGE_MANAGE");
-        }
+        Checks.check(textChannel.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_ADD_REACTION), "Must have MESSAGE_ADD_REACTION");
+        Checks.check(textChannel.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE), "Must have MESSAGE_MANAGE");
 
         this.maxPage = (int) Math.ceil(this.objectList.size() / (float) this.pageSize) - 1;
 
@@ -114,8 +112,7 @@ public class Paginator<T> {
                     (e, ew) -> {
                         e.getReaction().removeReaction(user).queue(SUCCESS, FAILURE);
 
-                        if (e.getReactionEmote().getId() != null &&
-                                e.getReactionEmote().getId().equals(EmoteUtil.NO_REACTION)) {
+                        if (e.getReactionEmote().getId().equals(EmoteUtil.NO_REACTION)) {
                             msg.delete().queue(SUCCESS, FAILURE);
                             return;
                         }

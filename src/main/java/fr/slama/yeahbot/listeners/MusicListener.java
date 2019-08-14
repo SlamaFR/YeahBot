@@ -7,10 +7,11 @@ import fr.slama.yeahbot.managers.MusicManager;
 import fr.slama.yeahbot.music.MusicPlayer;
 import fr.slama.yeahbot.utilities.ColorUtil;
 import fr.slama.yeahbot.utilities.LanguageUtil;
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.events.guild.voice.*;
-import net.dv8tion.jda.core.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.events.guild.voice.*;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.List;
@@ -27,7 +28,7 @@ public class MusicListener extends ListenerAdapter {
     private final Map<Long, Long> leavingMessages = new HashMap<>();
 
     @Override
-    public void onGuildVoiceLeave(GuildVoiceLeaveEvent event) {
+    public void onGuildVoiceLeave(@NotNull GuildVoiceLeaveEvent event) {
         if (!isBot(event)) {
             check(event.getChannelLeft(), event);
             checkDeafen(event.getChannelLeft(), event);
@@ -38,14 +39,14 @@ public class MusicListener extends ListenerAdapter {
     }
 
     @Override
-    public void onGuildVoiceJoin(GuildVoiceJoinEvent event) {
+    public void onGuildVoiceJoin(@NotNull GuildVoiceJoinEvent event) {
         check(event.getChannelJoined(), event);
         checkDeafen(event.getChannelJoined(), event);
         super.onGuildVoiceJoin(event);
     }
 
     @Override
-    public void onGuildVoiceMove(GuildVoiceMoveEvent event) {
+    public void onGuildVoiceMove(@NotNull GuildVoiceMoveEvent event) {
         check(event.getChannelJoined(), event);
         check(event.getChannelLeft(), event);
         checkDeafen(event.getChannelJoined(), event);
@@ -54,7 +55,7 @@ public class MusicListener extends ListenerAdapter {
     }
 
     @Override
-    public void onGuildVoiceDeafen(GuildVoiceDeafenEvent event) {
+    public void onGuildVoiceDeafen(@NotNull GuildVoiceDeafenEvent event) {
         checkDeafen(event.getVoiceState().getChannel(), event);
         super.onGuildVoiceDeafen(event);
     }
@@ -83,7 +84,6 @@ public class MusicListener extends ListenerAdapter {
     }
 
     private void check(VoiceChannel channel, GenericGuildVoiceEvent event) {
-        if (event.getGuild().getAudioManager() == null) return;
         if (!event.getGuild().getAudioManager().isConnected()) return;
 
         VoiceChannel botChannel = event.getGuild().getSelfMember().getVoiceState().getChannel();
@@ -134,7 +134,7 @@ public class MusicListener extends ListenerAdapter {
 
         if (leavingTasks.containsKey(guild.getIdLong())) leavingTasks.remove(guild.getIdLong()).stop();
         if (leavingMessages.containsKey(guild.getIdLong()))
-            textChannel.getMessageById(leavingMessages.remove(guild.getIdLong())).queue(message -> message.delete().queue());
+            textChannel.retrieveMessageById(leavingMessages.remove(guild.getIdLong())).queue(message -> message.delete().queue());
         manager.getPlayer(guild).getTrackScheduler().resume(false);
     }
 
@@ -147,10 +147,10 @@ public class MusicListener extends ListenerAdapter {
                 .build();
 
         if (textChannel.hasLatestMessage() && textChannel.getLatestMessageIdLong() == messageId) {
-            textChannel.getMessageById(messageId).queue(message -> message.editMessage(embed).queue(), t -> {
+            textChannel.retrieveMessageById(messageId).queue(message -> message.editMessage(embed).queue(), t -> {
             });
         } else {
-            textChannel.getMessageById(messageId).queue(message -> message.delete().queue(), t -> {
+            textChannel.retrieveMessageById(messageId).queue(message -> message.delete().queue(), t -> {
             });
             textChannel.sendMessage(embed).queue();
         }

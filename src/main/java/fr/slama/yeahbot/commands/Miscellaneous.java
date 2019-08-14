@@ -17,11 +17,11 @@ import fr.slama.yeahbot.utilities.ColorUtil;
 import fr.slama.yeahbot.utilities.GuildUtil;
 import fr.slama.yeahbot.utilities.LanguageUtil;
 import fr.slama.yeahbot.utilities.MessageUtil;
-import net.dv8tion.jda.bot.sharding.ShardManager;
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.exceptions.PermissionException;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.exceptions.PermissionException;
+import net.dv8tion.jda.api.sharding.ShardManager;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -173,109 +173,39 @@ public class Miscellaneous {
     @Command(name = "ping")
     private void ping(ShardManager shardManager, Guild guild, TextChannel textChannel, Command.CommandExecutor executor) {
 
-        double ping = shardManager.getAveragePing();
+        shardManager.getShards().get(0).getRestPing().queue(ping -> {
 
-        switch (executor) {
-            case USER:
-                Color color = ColorUtil.RED;
-                String state = LanguageUtil.getString(guild, Bundle.CAPTION, "connection_bad");
+            double httpPing = ping;
+            double gatewayPing = shardManager.getAverageGatewayPing();
+            double average = (ping + gatewayPing) / 2;
 
-                if (ping <= 250) {
-                    color = ColorUtil.GREEN;
-                    state = LanguageUtil.getString(guild, Bundle.CAPTION, "connection_good");
-                }
-                if (ping > 250 && ping <= 550) {
-                    color = ColorUtil.ORANGE;
-                    state = LanguageUtil.getString(guild, Bundle.CAPTION, "connection_medium");
-                }
+            switch (executor) {
+                case USER:
+                    Color color = ColorUtil.RED;
+                    String state = LanguageUtil.getString(guild, Bundle.CAPTION, "connection_bad");
 
-                textChannel.sendMessage(new EmbedBuilder()
-                        .addField(LanguageUtil.getString(guild, Bundle.CAPTION, "connection_state"), String.format("%sms - %s", ping, state), false)
-                        .setColor(color)
-                        .build()).queue();
-                break;
-            case CONSOLE:
-                LOGGER.info(String.format("Ping : %sms", ping));
-                break;
-            default:
-        }
+                    if (average <= 250) {
+                        color = ColorUtil.GREEN;
+                        state = LanguageUtil.getString(guild, Bundle.CAPTION, "connection_good");
+                    }
+                    if (average > 250 && average <= 550) {
+                        color = ColorUtil.ORANGE;
+                        state = LanguageUtil.getString(guild, Bundle.CAPTION, "connection_medium");
+                    }
 
-    }
-
-    @Command(name = "fetch",
-            displayInHelp = false,
-            executor = Command.CommandExecutor.CONSOLE)
-    private void fetch(ShardManager shardManager, String[] args) {
-
-        if (args.length == 0) {
-            System.out.println("fetch <user|guild|channel>");
-            return;
-        }
-
-        switch (args[0]) {
-            case "user":
-                if (args.length > 1) for (int i = 1; i < args.length - 1; i++) {
-                    try {
-                        System.out.printf("> %s <> %s%n",
-                                shardManager.getUserById(args[i]).toString(),
-                                shardManager.getUserById(args[i]).getMutualGuilds().toString()
-                        );
-                    } catch (NumberFormatException e) {
-                        System.out.println("Error");
+                    textChannel.sendMessage(new EmbedBuilder()
+                            .addField(LanguageUtil.getString(guild, Bundle.CAPTION, "connection_state"),
+                                    String.format("%sms - %s", average, state), false)
+                            .setColor(color)
+                            .build()).queue();
+                    break;
+                case CONSOLE:
+                    LOGGER.info(String.format("Ping : %sms", gatewayPing));
+                    break;
+                default:
                     }
                 }
-                break;
-            case "guild":
-                if (args.length > 1) for (int i = 1; i < args.length - 1; i++) {
-                    try {
-                        System.out.printf("> %s <> %d - %s%n",
-                                shardManager.getGuildById(args[i]).toString(),
-                                shardManager.getGuildById(args[i]).getMembers().size(),
-                                shardManager.getGuildById(args[i]).getCreationTime()
-                        );
-                    } catch (NumberFormatException e) {
-                        System.out.println("Error");
-                    }
-                }
-                else {
-                    System.out.println("> " + shardManager.getGuilds().size());
-                    for (Guild guild : shardManager.getGuilds()) {
-                        try {
-                            System.out.printf("> %s <> %d - Owner: %s%n",
-                                    guild.toString(),
-                                    guild.getMembers().size(),
-                                    guild.getOwner().getUser().toString()
-                            );
-                        } catch (NumberFormatException e) {
-                            System.out.println("Error");
-                        }
-                    }
-                }
-                break;
-            case "channel":
-                if (args.length > 1) for (int i = 1; i < args.length - 1; i++) {
-                    try {
-                        System.out.printf("> Private: %s%s%n",
-                                shardManager.getPrivateChannelById(args[i]),
-                                shardManager.getPrivateChannelById(args[i]) != null ? " <> " + shardManager.getPrivateChannelById(args[i]).getCreationTime() + " - " + shardManager.getPrivateChannelById(args[i]).getUser().toString() : ""
-                        );
-                        System.out.printf("> Text: %s%s%n",
-                                shardManager.getTextChannelById(args[i]),
-                                shardManager.getTextChannelById(args[i]) != null ? " <> " + shardManager.getTextChannelById(args[i]).getCreationTime() + " - " + shardManager.getTextChannelById(args[i]).getMembers().toString() : ""
-                        );
-                        System.out.printf("> Voice: %s%s%n",
-                                shardManager.getVoiceChannelById(args[i]),
-                                shardManager.getVoiceChannelById(args[i]) != null ? " <> " + shardManager.getVoiceChannelById(args[i]).getCreationTime() + " - " + shardManager.getVoiceChannelById(args[i]).getMembers().toString() : ""
-                        );
-                    } catch (NumberFormatException e) {
-                        System.out.println("Error");
-                    }
-                }
-                break;
-            default:
-                System.out.println("fetch <user|guild|channel>");
-                break;
-        }
+        );
 
     }
 
@@ -548,35 +478,28 @@ public class Miscellaneous {
 
         if (guild == null) return;
 
-        TextChannel logChannel = GuildUtil.getLogChannel(guild);
+        TextChannel logChannel = GuildUtil.getLogChannel(guild, false);
 
         if (logChannel != null) {
             textChannel.sendMessage(
-                    new EmbedBuilder()
-                            .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "warning"))
-                            .setDescription(LanguageUtil.getArguedString(guild, Bundle.ERROR, "log_channel_exists",
-                                    logChannel.getAsMention()))
-                            .setColor(ColorUtil.ORANGE)
-                            .build()
+                    MessageUtil.getWarningEmbed(guild, LanguageUtil.getArguedString(guild, Bundle.ERROR, "log_channel_exists",
+                            logChannel.getAsMention()))
             ).queue();
             return;
         }
 
-        guild.getController().createTextChannel("yeahbot-logs").queue(c -> {
-            c.createPermissionOverride(guild.getPublicRole())
-                    .setDeny(Permission.MESSAGE_READ).queue();
-            c.createPermissionOverride(guild.getSelfMember())
-                    .setAllow(Permission.MESSAGE_READ, Permission.MESSAGE_WRITE).queue();
+        logChannel = GuildUtil.getLogChannel(guild, true);
 
+        if (logChannel != null) {
             textChannel.sendMessage(
-                    new EmbedBuilder()
-                            .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "success"))
-                            .setDescription(LanguageUtil.getArguedString(guild, Bundle.STRINGS, "log_channel_created",
-                                    ((TextChannel) c).getAsMention()))
-                            .setColor(ColorUtil.GREEN)
-                            .build()
+                    MessageUtil.getSuccessEmbed(guild, LanguageUtil.getArguedString(guild, Bundle.ERROR, "log_channel_created",
+                            logChannel.getAsMention()))
             ).queue();
-        });
+        } else {
+            textChannel.sendMessage(
+                    MessageUtil.getErrorEmbed(guild, LanguageUtil.getString(guild, Bundle.ERROR, "cannot_create_logs_channel"))
+            ).queue();
+        }
 
     }
 

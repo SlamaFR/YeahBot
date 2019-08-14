@@ -3,12 +3,12 @@ package fr.slama.yeahbot.utilities;
 import fr.slama.yeahbot.language.Bundle;
 import fr.slama.yeahbot.redis.RedisData;
 import fr.slama.yeahbot.redis.buckets.Settings;
-import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Role;
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.exceptions.ErrorResponseException;
-import net.dv8tion.jda.core.exceptions.PermissionException;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.exceptions.ErrorResponseException;
+import net.dv8tion.jda.api.exceptions.PermissionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +32,7 @@ public class GuildUtil {
             // Creating role if needed.
             try {
                 if (needed) {
-                    Role role = guild.getController().createRole()
+                    Role role = guild.createRole()
                             .setName(LanguageUtil.getString(guild, Bundle.CAPTION, "muted"))
                             .setMentionable(false)
                             .complete();
@@ -57,7 +57,7 @@ public class GuildUtil {
 
     }
 
-    public static TextChannel getLogChannel(Guild guild) {
+    public static TextChannel getLogChannel(Guild guild, boolean needed) {
 
         Settings settings = RedisData.getSettings(guild);
 
@@ -65,7 +65,7 @@ public class GuildUtil {
             return guild.getTextChannelById(settings.logChannel);
         }
 
-        String[] keyWords = {"log", "yeahbot"};
+        String[] keyWords = {"log", "reports"};
 
         for (String word : keyWords) {
             Optional<TextChannel> textChannel = guild.getTextChannels().stream().filter(tc -> tc.getName().contains(word)).findFirst();
@@ -74,6 +74,24 @@ public class GuildUtil {
                 RedisData.setSettings(guild, settings);
                 return textChannel.get();
             }
+        }
+
+        // Creating channel if needed.
+        try {
+            if (needed) {
+                TextChannel channel = guild.createTextChannel("yeahbot-logs").complete();
+                channel.createPermissionOverride(guild.getSelfMember())
+                        .setAllow(Permission.MESSAGE_WRITE, Permission.MESSAGE_READ)
+                        .queue();
+                channel.createPermissionOverride(guild.getPublicRole())
+                        .setDeny(Permission.MESSAGE_WRITE, Permission.MESSAGE_READ)
+                        .queue();
+                settings.logChannel = channel.getIdLong();
+                RedisData.setSettings(guild, settings);
+                return channel;
+            }
+        } catch (ErrorResponseException | PermissionException e) {
+            LOGGER.warn("Unable to create logs channel in {}!", guild);
         }
 
         return null;
@@ -107,7 +125,7 @@ public class GuildUtil {
         // Creating channel if needed.
         try {
             if (needed) {
-                TextChannel channel = (TextChannel) guild.getController().createTextChannel("yeahbot-mod").complete();
+                TextChannel channel = guild.createTextChannel("yeahbot-mod").complete();
                 channel.createPermissionOverride(guild.getSelfMember())
                         .setAllow(Permission.MESSAGE_WRITE, Permission.MESSAGE_READ)
                         .queue();
@@ -156,7 +174,7 @@ public class GuildUtil {
         // Creating channel if needed.
         try {
             if (needed) {
-                TextChannel channel = (TextChannel) guild.getController().createTextChannel("yeahbot-updates").complete();
+                TextChannel channel = guild.createTextChannel("yeahbot-updates").complete();
                 channel.createPermissionOverride(guild.getSelfMember())
                         .setAllow(Permission.MESSAGE_WRITE, Permission.MESSAGE_READ)
                         .queue();

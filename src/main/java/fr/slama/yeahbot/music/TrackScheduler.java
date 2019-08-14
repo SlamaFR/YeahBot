@@ -13,10 +13,10 @@ import fr.slama.yeahbot.utilities.ColorUtil;
 import fr.slama.yeahbot.utilities.EmoteUtil;
 import fr.slama.yeahbot.utilities.LanguageUtil;
 import fr.slama.yeahbot.utilities.TimeUtil;
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.MessageEmbed;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -202,13 +202,13 @@ public class TrackScheduler extends AudioEventAdapter {
                 .build();
 
         if (nowPlayingMessageId > 0 && musicPlayer.getTextChannel().getLatestMessageIdLong() == nowPlayingMessageId) {
-            musicPlayer.getTextChannel().getMessageById(nowPlayingMessageId).queue(
+            musicPlayer.getTextChannel().retrieveMessageById(nowPlayingMessageId).queue(
                     msg -> msg.editMessage(embed).queue(),
                     t -> musicPlayer.getTextChannel().sendMessage(embed).queue(message -> nowPlayingMessageId = message.getIdLong())
             );
         } else {
             if (guild.getSelfMember().hasPermission(Permission.MESSAGE_HISTORY, Permission.MESSAGE_MANAGE))
-                musicPlayer.getTextChannel().getMessageById(nowPlayingMessageId).queue(message -> message.delete().queue(), t -> {
+                musicPlayer.getTextChannel().retrieveMessageById(nowPlayingMessageId).queue(message -> message.delete().queue(), t -> {
                 });
             musicPlayer.getTextChannel().sendMessage(embed).queue(message -> nowPlayingMessageId = message.getIdLong());
         }

@@ -2,8 +2,8 @@ package fr.slama.yeahbot.listeners;
 
 import fr.slama.yeahbot.managers.SanctionManager;
 import fr.slama.yeahbot.utilities.GuildUtil;
-import net.dv8tion.jda.core.events.guild.member.GuildMemberRoleRemoveEvent;
-import net.dv8tion.jda.core.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleRemoveEvent;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 /**
  * Created on 01/10/2018.

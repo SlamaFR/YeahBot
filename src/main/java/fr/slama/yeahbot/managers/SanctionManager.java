@@ -10,11 +10,11 @@ import fr.slama.yeahbot.utilities.ColorUtil;
 import fr.slama.yeahbot.utilities.GuildUtil;
 import fr.slama.yeahbot.utilities.LanguageUtil;
 import fr.slama.yeahbot.utilities.MessageUtil;
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,7 +38,7 @@ public class SanctionManager {
         try {
             Mutes mutes = RedisData.getMutes(target.getGuild());
 
-            textChannel.getGuild().getController().addRolesToMember(target, GuildUtil.getMutedRole(textChannel.getGuild(), textChannel, true)).queue();
+            textChannel.getGuild().addRoleToMember(target, GuildUtil.getMutedRole(textChannel.getGuild(), textChannel, true)).queue();
             TextChannel modChannel = GuildUtil.getModChannel(target.getGuild(), textChannel, true);
             if (modChannel == null) modChannel = textChannel;
 
@@ -73,8 +73,8 @@ public class SanctionManager {
                 !target.getRoles().contains(GuildUtil.getMutedRole(target.getGuild(), textChannel, false)))
             return false;
 
-        target.getGuild().getController()
-                .removeRolesFromMember(target, GuildUtil.getMutedRole(target.getGuild(), textChannel, false))
+        target.getGuild()
+                .removeRoleFromMember(target, GuildUtil.getMutedRole(target.getGuild(), textChannel, false))
                 .queue();
 
         TextChannel modChannel = GuildUtil.getModChannel(target.getGuild(), textChannel, true);
@@ -97,7 +97,7 @@ public class SanctionManager {
         if (isStaff(textChannel, target)) return false;
 
         try {
-            target.getGuild().getController().kick(target, reason).queue();
+            target.getGuild().kick(target, reason).queue();
 
             TextChannel modChannel = GuildUtil.getModChannel(target.getGuild(), textChannel, true);
 
@@ -118,7 +118,7 @@ public class SanctionManager {
         if (isStaff(textChannel, target)) return false;
 
         try {
-            target.getGuild().getController().ban(target, 7, reason).queue();
+            target.getGuild().ban(target, 7, reason).queue();
 
             TextChannel modChannel = GuildUtil.getModChannel(target.getGuild(), textChannel, true);
 

@@ -6,13 +6,13 @@ import fr.slama.yeahbot.redis.RedisData;
 import fr.slama.yeahbot.redis.buckets.Channels;
 import fr.slama.yeahbot.utilities.ColorUtil;
 import fr.slama.yeahbot.utilities.LanguageUtil;
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.events.guild.voice.GuildVoiceJoinEvent;
-import net.dv8tion.jda.core.events.guild.voice.GuildVoiceLeaveEvent;
-import net.dv8tion.jda.core.events.guild.voice.GuildVoiceMoveEvent;
-import net.dv8tion.jda.core.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.events.guild.voice.GuildVoiceJoinEvent;
+import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent;
+import net.dv8tion.jda.api.events.guild.voice.GuildVoiceMoveEvent;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -43,7 +43,7 @@ public class PrivateChannelsManager extends ListenerAdapter {
 
         long permissionOverride = Permission.getRaw(Permission.VOICE_CONNECT, Permission.VIEW_CHANNEL);
         int number = channels.getChannels().size() + 1;
-        guild.getController().createVoiceChannel(LanguageUtil.getArguedString(guild, Bundle.CAPTION, "private_channel_name", number))
+        guild.createVoiceChannel(LanguageUtil.getArguedString(guild, Bundle.CAPTION, "private_channel_name", number))
                 .addPermissionOverride(guild.getPublicRole(), 0L, permissionOverride)
                 .addPermissionOverride(guild.getSelfMember(), permissionOverride, 0L)
                 .addPermissionOverride(member, permissionOverride, 0L).queue(channel -> {
@@ -53,7 +53,7 @@ public class PrivateChannelsManager extends ListenerAdapter {
             RedisData.setPrivateChannels(guild, channels);
 
             cancellingTasks.put(channel.getIdLong(), TaskScheduler.scheduleDelayed(() -> {
-                deleteChannel(guild, (VoiceChannel) channel);
+                deleteChannel(guild, channel);
                 textChannel.sendMessage(
                         new EmbedBuilder()
                                 .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "private_channel"))

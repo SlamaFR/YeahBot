@@ -1,11 +1,11 @@
 package fr.slama.yeahbot.utilities;
 
 import fr.slama.yeahbot.language.Bundle;
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.MessageEmbed;
-import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.TextChannel;
 
 /**
  * Created on 2019-05-21.
@@ -50,6 +50,14 @@ public class MessageUtil {
                 .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "success"))
                 .setDescription(message)
                 .setColor(ColorUtil.GREEN)
+                .build();
+    }
+
+    public static MessageEmbed getWarningEmbed(Guild guild, String message) {
+        return new EmbedBuilder()
+                .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "warning"))
+                .setDescription(message)
+                .setColor(ColorUtil.ORANGE)
                 .build();
     }
 }

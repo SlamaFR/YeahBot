@@ -7,9 +7,9 @@ import fr.slama.yeahbot.redis.RedisData;
 import fr.slama.yeahbot.redis.buckets.Settings;
 import fr.slama.yeahbot.tasks.SpamTask;
 import fr.slama.yeahbot.utilities.EmoteUtil;
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
-import net.dv8tion.jda.core.events.message.guild.react.GuildMessageReactionAddEvent;
-import net.dv8tion.jda.core.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -60,7 +60,7 @@ public class SpamListener extends ListenerAdapter {
         if (!SpamTask.idSpamReactionMap.containsKey(event.getGuild().getIdLong()))
             SpamTask.idSpamReactionMap.put(event.getGuild().getIdLong(), AtomicLongMap.create());
 
-        event.getReaction().getUsers().queue(users -> {
+        event.getReaction().retrieveUsers().queue(users -> {
             if (users.size() < 2) {
                 SpamTask.idSpamReactionMap.get(event.getGuild().getIdLong()).getAndIncrement(
                         event.getUser().getIdLong());
@@ -70,7 +70,7 @@ public class SpamListener extends ListenerAdapter {
         if (SpamTask.idSpamReactionMap.get(event.getGuild().getIdLong()).containsKey(event.getUser().getIdLong()) &&
                 SpamTask.idSpamReactionMap.get(event.getGuild().getIdLong()).get(event.getUser().getIdLong()) >= 7) {
             SpamTask.idSpamReactionMap.get(event.getGuild().getIdLong()).remove(event.getUser().getIdLong());
-            ReportsManager.reportSpam(event.getMember(), event.getChannel().getMessageById(event.getMessageId()).complete(), SpamType.REACTIONS);
+            ReportsManager.reportSpam(event.getMember(), event.getChannel().retrieveMessageById(event.getMessageId()).complete(), SpamType.REACTIONS);
         }
 
     }
