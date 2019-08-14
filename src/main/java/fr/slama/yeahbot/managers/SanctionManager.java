@@ -13,6 +13,7 @@ import fr.slama.yeahbot.utilities.MessageUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import org.slf4j.Logger;
@@ -37,9 +38,12 @@ public class SanctionManager {
 
         try {
             Mutes mutes = RedisData.getMutes(target.getGuild());
+            Role role = GuildUtil.getMutedRole(textChannel.getGuild(), true);
 
-            textChannel.getGuild().addRoleToMember(target, GuildUtil.getMutedRole(textChannel.getGuild(), textChannel, true)).queue();
-            TextChannel modChannel = GuildUtil.getModChannel(target.getGuild(), textChannel, true);
+            if (role == null) return false;
+
+            textChannel.getGuild().addRoleToMember(target, role).queue();
+            TextChannel modChannel = GuildUtil.getModChannel(target.getGuild(), true);
             if (modChannel == null) modChannel = textChannel;
 
             modChannel.sendMessage(
@@ -50,14 +54,13 @@ public class SanctionManager {
             ).queue();
 
             Mute mute = new Mute(timeout);
-
             TaskScheduler.scheduleDelayed(() -> {
                 Mute m = RedisData.getMutes(target.getGuild()).getMutesMap().get(target.getUser().getIdLong());
                 if (m.getId() == mute.getId()) unregisterMute(textChannel, target);
             }, unit.toMillis(i));
             mutes.getMutesMap().put(target.getUser().getIdLong(), mute);
-
             RedisData.setMutes(target.getGuild(), mutes);
+
             LOGGER.info("{} Muted {}", author, target.getUser());
             return true;
         } catch (InsufficientPermissionException e) {
@@ -70,16 +73,20 @@ public class SanctionManager {
         Mutes mutes = RedisData.getMutes(target.getGuild());
 
         if (!mutes.getMutesMap().containsKey(target.getUser().getIdLong()) &&
-                !target.getRoles().contains(GuildUtil.getMutedRole(target.getGuild(), textChannel, false)))
+                !target.getRoles().contains(GuildUtil.getMutedRole(target.getGuild(), false)))
             return false;
 
+        Role role = GuildUtil.getMutedRole(target.getGuild(), true);
+
+        if (role == null) return false;
+
         target.getGuild()
-                .removeRoleFromMember(target, GuildUtil.getMutedRole(target.getGuild(), textChannel, false))
+                .removeRoleFromMember(target, role)
                 .queue();
 
-        TextChannel modChannel = GuildUtil.getModChannel(target.getGuild(), textChannel, true);
+        TextChannel modChannel = GuildUtil.getModChannel(target.getGuild(), true);
 
-        if (modChannel == null && textChannel != null) modChannel = textChannel;
+        if (modChannel == null) modChannel = textChannel;
 
         if (modChannel != null)
             modChannel.sendMessage(new EmbedBuilder()
@@ -99,7 +106,7 @@ public class SanctionManager {
         try {
             target.getGuild().kick(target, reason).queue();
 
-            TextChannel modChannel = GuildUtil.getModChannel(target.getGuild(), textChannel, true);
+            TextChannel modChannel = GuildUtil.getModChannel(target.getGuild(), true);
 
             if (modChannel == null) modChannel = textChannel;
 
@@ -120,7 +127,7 @@ public class SanctionManager {
         try {
             target.getGuild().ban(target, 7, reason).queue();
 
-            TextChannel modChannel = GuildUtil.getModChannel(target.getGuild(), textChannel, true);
+            TextChannel modChannel = GuildUtil.getModChannel(target.getGuild(), true);
 
             if (modChannel == null) modChannel = textChannel;
 

@@ -4,6 +4,7 @@ import fr.slama.yeahbot.YeahBot;
 import fr.slama.yeahbot.language.Bundle;
 import fr.slama.yeahbot.redis.RedisData;
 import fr.slama.yeahbot.redis.buckets.Settings;
+import fr.slama.yeahbot.utilities.GuildUtil;
 import fr.slama.yeahbot.utilities.LanguageUtil;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
@@ -36,13 +37,11 @@ public class JoinLeaveListener extends ListenerAdapter {
         if (message.isEmpty())
             message = LanguageUtil.getString(guild, Bundle.STRINGS, "welcome_message");
 
-        if (guild.getTextChannelById(settings.joinLeaveChannel) != null) {
-            guild.getTextChannelById(settings.joinLeaveChannel).sendMessage(
-                    message.replace("$guild", guild.getName())
-                            .replace("$user", event.getMember().getEffectiveName())
-                            .replace("$count", String.valueOf(guild.getMembers().size()))
-            ).queue();
-        }
+        GuildUtil.getWelcomeChannel(guild).sendMessage(
+                message.replace("$guild", guild.getName())
+                        .replace("$user", event.getMember().getEffectiveName())
+                        .replace("$count", String.valueOf(guild.getMembers().size()))
+        ).queue();
         super.onGuildMemberJoin(event);
     }
 
@@ -58,13 +57,11 @@ public class JoinLeaveListener extends ListenerAdapter {
         if (message.isEmpty())
             message = LanguageUtil.getString(guild, Bundle.STRINGS, "goodbye_message");
 
-        if (guild.getTextChannelById(settings.joinLeaveChannel) != null) {
-            guild.getTextChannelById(settings.joinLeaveChannel).sendMessage(
+        GuildUtil.getWelcomeChannel(guild).sendMessage(
                     message.replace("$guild", guild.getName())
                             .replace("$user", event.getMember().getEffectiveName())
                             .replace("$count", String.valueOf(guild.getMembers().size()))
             ).queue();
-        }
         super.onGuildMemberLeave(event);
     }
 }

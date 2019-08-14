@@ -17,6 +17,7 @@ import fr.slama.yeahbot.tasks.SwearingTask;
 import fr.slama.yeahbot.tasks.UnmuteTask;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import org.discordbots.api.client.DiscordBotListAPI;
@@ -72,6 +73,10 @@ public class YeahBot extends ListenerAdapter implements Runnable {
                 .addEventListeners(new PrivateChannelsManager(), new JoinLeaveListener())
                 .build();
         LOGGER.info("Logging in DBL API...");
+
+        RestAction.setPassContext(false);
+        RestAction.setDefaultFailure(null);
+
         api = new DiscordBotListAPI.Builder()
                 .token(CONFIG.dbl_token)
                 .botId(CONFIG.id)

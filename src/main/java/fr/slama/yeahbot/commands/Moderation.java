@@ -79,25 +79,25 @@ public class Moderation {
         if (messages.size() > 100)
             builder.setFooter(LanguageUtil.getString(guild, Bundle.STRINGS, "may_take_a_while"), null);
 
-        textChannel.sendMessage(builder.build()).queue(msg -> {
-            CompletableFuture.allOf(textChannel.purgeMessages(messages).toArray(new CompletableFuture[0])).thenRun(() -> {
+        textChannel.sendMessage(builder.build()).queue(msg ->
+                CompletableFuture.allOf(textChannel.purgeMessages(messages).toArray(new CompletableFuture[0])).thenRun(() -> {
 
-                MessageEmbed embed = new EmbedBuilder()
-                        .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "success"))
-                        .setDescription(LanguageUtil.getArguedString(guild, Bundle.CAPTION, "messages_deleted", messages.size() - 1))
-                        .setFooter(LanguageUtil.getTimeExpiration(guild, 10, TimeUnit.SECONDS), null)
-                        .setColor(ColorUtil.GREEN)
-                        .build();
+                    MessageEmbed embed = new EmbedBuilder()
+                            .setTitle(LanguageUtil.getString(guild, Bundle.CAPTION, "success"))
+                            .setDescription(LanguageUtil.getArguedString(guild, Bundle.CAPTION, "messages_deleted", messages.size() - 1))
+                            .setFooter(LanguageUtil.getTimeExpiration(guild, 10, TimeUnit.SECONDS), null)
+                            .setColor(ColorUtil.GREEN)
+                            .build();
 
-                Consumer<Message> timeout = m -> m.delete().queueAfter(10, TimeUnit.SECONDS);
+                    Consumer<Message> timeout = m -> m.delete().queueAfter(10, TimeUnit.SECONDS);
 
-                try {
-                    msg.editMessage(embed).queue(timeout);
-                } catch (ErrorResponseException e) {
-                    textChannel.sendMessage(embed).queue(timeout);
-                }
-            });
-        });
+                    try {
+                        msg.editMessage(embed).queue(timeout);
+                    } catch (ErrorResponseException e) {
+                        textChannel.sendMessage(embed).queue(timeout);
+                    }
+                })
+        );
 
     }
 
@@ -168,6 +168,8 @@ public class Moderation {
 
         if (success)
             textChannel.sendMessage(MessageUtil.getSuccessEmbed(guild, LanguageUtil.getString(guild, Bundle.STRINGS, "sanction_applied"))).queue();
+        else
+            textChannel.sendMessage(MessageUtil.getWarningEmbed(guild, LanguageUtil.getString(guild, Bundle.STRINGS, "sanction_non_applied"))).queue();
     }
 
     @Command(name = "unmute",

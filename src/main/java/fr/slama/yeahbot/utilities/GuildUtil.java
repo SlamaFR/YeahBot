@@ -21,7 +21,7 @@ public class GuildUtil {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GuildUtil.class);
 
-    public static Role getMutedRole(Guild guild, TextChannel textChannel, boolean needed) {
+    public static Role getMutedRole(Guild guild, boolean needed) {
 
         Settings settings = RedisData.getSettings(guild);
 
@@ -54,7 +54,6 @@ public class GuildUtil {
         }
 
         return null;
-
     }
 
     public static TextChannel getLogChannel(Guild guild, boolean needed) {
@@ -95,10 +94,9 @@ public class GuildUtil {
         }
 
         return null;
-
     }
 
-    public static TextChannel getModChannel(Guild guild, TextChannel textChannel, boolean needed) {
+    public static TextChannel getModChannel(Guild guild, boolean needed) {
 
         Settings settings = RedisData.getSettings(guild);
 
@@ -141,7 +139,6 @@ public class GuildUtil {
         }
 
         return null;
-
     }
 
     public static TextChannel getUpdatesChannel(Guild guild, boolean needed) {
