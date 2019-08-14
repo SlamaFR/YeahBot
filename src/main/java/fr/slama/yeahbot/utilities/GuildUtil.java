@@ -38,10 +38,7 @@ public class GuildUtil {
                             .complete();
                     for (TextChannel tc : guild.getTextChannels()) {
                         tc.createPermissionOverride(role)
-                                .setAllow(Permission.MESSAGE_WRITE, Permission.MESSAGE_READ)
-                                .queue();
-                        tc.createPermissionOverride(role)
-                                .setDeny(Permission.MESSAGE_WRITE, Permission.MESSAGE_READ)
+                                .setDeny(Permission.MESSAGE_WRITE, Permission.MESSAGE_ADD_REACTION)
                                 .queue();
                     }
                     settings.muteRole = role.getIdLong();
