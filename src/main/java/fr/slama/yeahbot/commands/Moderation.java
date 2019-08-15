@@ -1,5 +1,6 @@
 package fr.slama.yeahbot.commands;
 
+import fr.slama.yeahbot.blub.Mute;
 import fr.slama.yeahbot.commands.core.BotCommand;
 import fr.slama.yeahbot.commands.core.Command;
 import fr.slama.yeahbot.commands.core.CommandError;
@@ -7,6 +8,7 @@ import fr.slama.yeahbot.language.Bundle;
 import fr.slama.yeahbot.listeners.SelectionListener;
 import fr.slama.yeahbot.managers.SanctionManager;
 import fr.slama.yeahbot.redis.RedisData;
+import fr.slama.yeahbot.redis.buckets.Mutes;
 import fr.slama.yeahbot.redis.buckets.Reports;
 import fr.slama.yeahbot.redis.buckets.Settings;
 import fr.slama.yeahbot.utilities.ColorUtil;
@@ -168,8 +170,6 @@ public class Moderation {
 
         if (success)
             textChannel.sendMessage(MessageUtil.getSuccessEmbed(guild, LanguageUtil.getString(guild, Bundle.STRINGS, "sanction_applied"))).queue();
-        else
-            textChannel.sendMessage(MessageUtil.getWarningEmbed(guild, LanguageUtil.getString(guild, Bundle.STRINGS, "sanction_non_applied"))).queue();
     }
 
     @Command(name = "unmute",
@@ -177,19 +177,30 @@ public class Moderation {
             permission = Command.CommandPermission.STAFF,
             category = Command.CommandCategory.MODERATION,
             executor = Command.CommandExecutor.USER)
-    private void unmute(Guild guild, Message message, TextChannel textChannel, BotCommand command) {
+    private void unmute(Guild guild, Member member, String[] args, Message message, TextChannel textChannel, BotCommand command) {
 
         if (guild == null) return;
 
         if (message.getMentionedMembers().isEmpty()) {
-            command.sendUsageEmbed(textChannel);
+            textChannel.sendMessage(
+                    new CommandError(guild, command, 0, MISSING_VALUE).toEmbed()
+            ).queue();
             return;
         }
 
         List<Member> alreadyUnmuted = new ArrayList<>();
+        Mutes mutes = RedisData.getMutes(guild);
+        String[] args1 = Arrays.copyOfRange(args, message.getMentionedMembers().size(), args.length);
 
-        for (Member member : message.getMentionedMembers()) {
-            if (!SanctionManager.unregisterMute(textChannel, member))
+        for (Member target : message.getMentionedMembers()) {
+            Mute mute = mutes.getMutesMap().get(target.getUser().getIdLong());
+
+            String reason = mute.getReason();
+            if (args1.length > 0)
+                reason = String.join(" ", Arrays.copyOfRange(args1, 0, args1.length));
+            reason += String.format(" (%s)", LanguageUtil.getString(guild, Bundle.CAPTION, "cancellation"));
+
+            if (!SanctionManager.unregisterMute(member, target, textChannel, reason))
                 alreadyUnmuted.add(member);
         }
 

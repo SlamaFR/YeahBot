@@ -53,10 +53,12 @@ public class SanctionManager {
                             .build()
             ).queue();
 
-            Mute mute = new Mute(timeout);
+            Mute mute = new Mute(author.getIdLong(), timeout, reason);
             TaskScheduler.scheduleDelayed(() -> {
                 Mute m = RedisData.getMutes(target.getGuild()).getMutesMap().get(target.getUser().getIdLong());
-                if (m.getId() == mute.getId()) unregisterMute(textChannel, target);
+                if (m.getTargetId() == mute.getTargetId())
+                    unregisterMute(author, target, textChannel, String.format("%s (%s)",
+                            reason, LanguageUtil.getString(target.getGuild(), Bundle.CAPTION, "expiration")));
             }, unit.toMillis(i));
             mutes.getMutesMap().put(target.getUser().getIdLong(), mute);
             RedisData.setMutes(target.getGuild(), mutes);
@@ -69,34 +71,30 @@ public class SanctionManager {
         }
     }
 
-    public static boolean unregisterMute(@Nullable TextChannel textChannel, Member target) {
+    public static boolean unregisterMute(Member author, Member target, @Nullable TextChannel textChannel, String reason) {
         Mutes mutes = RedisData.getMutes(target.getGuild());
 
         if (!mutes.getMutesMap().containsKey(target.getUser().getIdLong()) &&
                 !target.getRoles().contains(GuildUtil.getMutedRole(target.getGuild(), false)))
             return false;
 
-        Role role = GuildUtil.getMutedRole(target.getGuild(), true);
+        mutes.getMutesMap().remove(target.getUser().getIdLong());
+        RedisData.setMutes(target.getGuild(), mutes);
 
+        Role role = GuildUtil.getMutedRole(target.getGuild(), true);
         if (role == null) return false;
 
-        target.getGuild()
-                .removeRoleFromMember(target, role)
-                .queue();
+        target.getGuild().removeRoleFromMember(target, role).queue();
 
         TextChannel modChannel = GuildUtil.getModChannel(target.getGuild(), true);
-
         if (modChannel == null) modChannel = textChannel;
 
         if (modChannel != null)
-            modChannel.sendMessage(new EmbedBuilder()
-                    .setColor(ColorUtil.GREEN)
-                    .setTitle(LanguageUtil.getString(target.getGuild(), Bundle.CAPTION, "sanction_cancellation"))
-                    .setDescription(LanguageUtil.getArguedString(target.getGuild(), Bundle.STRINGS, "user_unmuted", target.getAsMention()))
-                    .build()).queue();
+            modChannel.sendMessage(
+                    getEmbed(author, target, "unmute", reason, ColorUtil.DARK_GREEN).build()
+            ).queue();
 
-        mutes.getMutesMap().remove(target.getUser().getIdLong());
-        RedisData.setMutes(target.getGuild(), mutes);
+        LOGGER.info("{} Unmuted {}", author, target.getUser());
         return true;
     }
 
@@ -148,6 +146,11 @@ public class SanctionManager {
                     MessageUtil.getErrorEmbed(target.getGuild(), LanguageUtil.getString(target.getGuild(), Bundle.ERROR, "higher_member"))
             ).queue();
             return true;
+        } else if (target.getIdLong() == target.getGuild().getSelfMember().getIdLong()) {
+            textChannel.sendMessage(
+                    MessageUtil.getErrorEmbed(target.getGuild(), LanguageUtil.getString(target.getGuild(), Bundle.ERROR, "self_member"))
+            ).queue();
+            return true;
         }
         return false;
     }
@@ -159,7 +162,8 @@ public class SanctionManager {
                                 target.getUser().getDiscriminator()), true)
                 .addField(LanguageUtil.getString(target.getGuild(), Bundle.CAPTION, "author"),
                         author.getAsMention(), true)
-                .addField(LanguageUtil.getString(target.getGuild(), Bundle.CAPTION, "reason"), reason, false)
+                .addField(LanguageUtil.getString(target.getGuild(), Bundle.CAPTION, "reason"),
+                        reason != null ? reason : LanguageUtil.getString(target.getGuild(), Bundle.STRINGS, "no_reason"), false)
                 .setColor(color);
     }
 

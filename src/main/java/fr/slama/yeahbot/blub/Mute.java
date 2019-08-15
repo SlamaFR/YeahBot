@@ -7,22 +7,34 @@ import fr.slama.yeahbot.YeahBot;
  */
 public class Mute {
 
-    private long id;
+    private long authorId;
+    private long targetId;
     private long timeout;
+    private String reason;
 
     public Mute() {
     }
 
-    public Mute(long timeout) {
-        this.id = YeahBot.getInstance().getSnowflake().nextId();
+    public Mute(long authorId, long timeout, String reason) {
+        this.targetId = YeahBot.getInstance().getSnowflake().nextId();
+        this.authorId = authorId;
         this.timeout = timeout;
+        this.reason = reason;
     }
 
-    public long getId() {
-        return id;
+    public long getAuthorId() {
+        return authorId;
+    }
+
+    public long getTargetId() {
+        return targetId;
     }
 
     public long getTimeout() {
         return timeout;
+    }
+
+    public String getReason() {
+        return reason;
     }
 }
