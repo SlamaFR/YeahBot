@@ -105,20 +105,18 @@ public class CommandMap {
             return;
         BotCommand cmd = (BotCommand) object[0];
         if (!disabledCommand.contains(object[0])) {
-            if (message.getGuild() == null || cmd.getPermission().test(message.getGuild().getMember(user))) {
+            if (cmd.getPermission().test(message.getGuild().getMember(user))) {
                 try {
-                    if (message.getGuild() != null) {
-                        if (message.getGuild().getSelfMember().hasPermission(cmd.getDiscordPermission())) {
-                            execute(cmd, command, (String[]) object[1], message, Command.CommandExecutor.USER);
-                        } else {
-                            MessageUtil.sendPermissionEmbed(message.getGuild(), message.getTextChannel(), cmd.getDiscordPermission());
-                        }
-                    } else execute(cmd, command, (String[]) object[1], message, Command.CommandExecutor.USER);
+                    if (message.getGuild().getSelfMember().hasPermission(cmd.getDiscordPermission())) {
+                        execute(cmd, command, (String[]) object[1], message, Command.CommandExecutor.USER);
+                    } else {
+                        MessageUtil.sendPermissionEmbed(message.getGuild(), message.getTextChannel(), cmd.getDiscordPermission());
+                    }
                 } catch (PermissionException e) {
                     MessageUtil.sendPermissionEmbed(message.getGuild(), message.getTextChannel(), e.getPermission());
                 } catch (Exception e) {
                     LOGGER.error("The {} command failed", cmd.getName());
-                    LOGGER.error("Stack Trace:", e);
+                    if (YeahBot.isDev()) LOGGER.error("Stack Trace:", e);
                     message.getChannel().sendMessage(
                             MessageUtil.getErrorEmbed(message.getGuild(), LanguageUtil.getString(message.getGuild(), Bundle.ERROR, "command"))
                     ).queue();
@@ -175,7 +173,7 @@ public class CommandMap {
                 objects[i] = message;
             else if (parameters[i].getType() == Member.class) {
                 assert message != null;
-                objects[i] = message.getGuild() == null ? null : message.getGuild().getMember(message.getAuthor());
+                objects[i] = message.getGuild().getMember(message.getAuthor());
             } else if (parameters[i].getType() == ShardManager.class)
                 objects[i] = YeahBot.getInstance().getShardManager();
             else if (parameters[i].getType() == Command.CommandExecutor.class)
@@ -188,7 +186,7 @@ public class CommandMap {
             botCommand.getMethod().invoke(botCommand.getObject(), objects);
         } catch (Exception e) {
             LOGGER.error("An error occurred while executing {} command!", botCommand.getName());
-            e.getCause().printStackTrace();
+            if (YeahBot.isDev()) e.getCause().printStackTrace();
         }
 
     }

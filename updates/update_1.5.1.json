@@ -1,0 +1,26 @@
+{
+  "version": "1.5.1",
+  "date": 1563919200000,
+  "fr": {
+    "title": "Bulletin de mise à jour",
+    "adds": [],
+    "removes": [],
+    "changes": [
+      "Il est maintenant possible de mettre un auteur personnalisé dans le constructeur d'embed.",
+      "Le rôle 'Muet' est désormais synchronisé avec la création de nouveau salon textuels.",
+      "Amélioration du système de sanctions."
+    ],
+    "coming": []
+  },
+  "en": {
+    "title": "Update report",
+    "adds": [],
+    "removes": [],
+    "changes": [
+      "It is now possible to put a custom author in the embed builder.",
+      "The 'Muted' role is now synchronized with new text channel creation.",
+      "Improved sanction system."
+    ],
+    "coming": []
+  }
+}

@@ -175,27 +175,19 @@ public class Miscellaneous {
 
         shardManager.getShards().get(0).getRestPing().queue(ping -> {
 
-            double httpPing = ping;
             double gatewayPing = shardManager.getAverageGatewayPing();
             double average = (ping + gatewayPing) / 2;
 
             switch (executor) {
                 case USER:
                     Color color = ColorUtil.RED;
-                    String state = LanguageUtil.getString(guild, Bundle.CAPTION, "connection_bad");
 
-                    if (average <= 250) {
-                        color = ColorUtil.GREEN;
-                        state = LanguageUtil.getString(guild, Bundle.CAPTION, "connection_good");
-                    }
-                    if (average > 250 && average <= 550) {
-                        color = ColorUtil.ORANGE;
-                        state = LanguageUtil.getString(guild, Bundle.CAPTION, "connection_medium");
-                    }
+                    if (average <= 250) color = ColorUtil.GREEN;
+                    if (250 < average && average <= 550) color = ColorUtil.ORANGE;
 
                     textChannel.sendMessage(new EmbedBuilder()
                             .addField(LanguageUtil.getString(guild, Bundle.CAPTION, "connection_state"),
-                                    String.format("%sms - %s", average, state), false)
+                                    String.format("HTTP: %sms\nAPI: %sms", ping, gatewayPing), false)
                             .setColor(color)
                             .build()).queue();
                     break;

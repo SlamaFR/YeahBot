@@ -129,7 +129,7 @@ public final class BotCommand {
             String expirationCaption = LanguageUtil.getTimeExpiration(textChannel.getGuild(), 30, TimeUnit.SECONDS);
 
             String[] arguments = getArguments(textChannel.getGuild());
-            String[] argumentsDescription = LanguageUtil.getString(textChannel.getGuild(), Bundle.ARGUMENTS_DESCRIPTION, name).split("§");
+            String[] argumentsDescription = getArgumentsDescription(textChannel.getGuild());
 
             if (arguments.length > 0 && !"".equals(arguments[0])) for (int i = 0; i < arguments.length; i++)
                 arguments[i] = String.format("● `%s` %s", arguments[i], argumentsDescription[i]);

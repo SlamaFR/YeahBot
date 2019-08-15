@@ -11,8 +11,6 @@ public enum Language {
     FRENCH("fr", "Français", "\uD83C\uDDEB\uD83C\uDDF7"),
     ENGLISH("en", "English", "\uD83C\uDDEC\uD83C\uDDE7");
 
-    public static final String MISSING = "** \\*Missing value\\* **";
-
     private final String code;
     private final String name;
     private final String emote;

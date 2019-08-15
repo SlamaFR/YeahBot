@@ -84,14 +84,16 @@ public class Application extends Jooby {
                             .put("slowmode", channel.getSlowmode()))));
 
             rsp.send(new JSONObject()
-                    .put("name", guild.getName())
-                    .put("id", guild.getIdLong())
-                    .put("iconUrl", guild.getIconUrl())
-                    .put("memberCount", guild.getMemberCache().size())
-                    .put("ownerId", guild.getOwnerId())
-                    .put("channels", channels)
-                    .put("roles", roles)
-                    .toMap());
+                    .put("code", 200)
+                    .put("message", "OK")
+                    .put("content", new JSONObject()
+                            .put("name", guild.getName())
+                            .put("iconUrl", guild.getIconUrl())
+                            .put("memberCount", guild.getMemberCache().size())
+                            .put("ownerId", guild.getOwnerId())
+                            .put("channels", channels)
+                            .put("roles", roles)
+                            .toMap()).toMap());
         });
         get("/member/{guildId:\\d+}/{userId:\\d+}", (req, rsp) -> {
             Guild guild = yeahBot.getShardManager().getGuildById(req.param("guildId").longValue());
@@ -192,6 +194,7 @@ public class Application extends Jooby {
                     .put("message", "Not found").put("error", "unknown_endpoint").toMap());
         });
 
+        // STATUS SYSTEM
         head("/", (req, rsp) -> rsp.send(new JSONObject()
                 .put("code", 200)
                 .put("message", "OK").toMap()));
