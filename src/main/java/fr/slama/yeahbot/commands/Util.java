@@ -92,13 +92,9 @@ public class Util {
                         } else if (e.getMessage().getContentRaw().toLowerCase().startsWith("finish")) {
                             if (!e.getMessage().getMentionedChannels().isEmpty()) {
                                 if (!embed.isEmpty())
-                                    e.getMessage().getMentionedChannels().get(0).sendMessage(embed.setAuthor(
-                                            member.getEffectiveName(), null, member.getUser().getAvatarUrl()
-                                    ).build()).queue();
+                                    e.getMessage().getMentionedChannels().get(0).sendMessage(embed.build()).queue();
                             } else {
-                                if (!embed.isEmpty()) textChannel.sendMessage(embed.setAuthor(
-                                        member.getEffectiveName(), null, member.getUser().getAvatarUrl()
-                                ).build()).queue();
+                                if (!embed.isEmpty()) textChannel.sendMessage(embed.build()).queue();
                             }
                             textChannel.deleteMessages(Arrays.asList(e.getMessage(), waiting, msg)).queue();
                             ew.close();
@@ -164,6 +160,9 @@ public class Util {
                     return embed;
                 case "footer":
                     embed.setFooter(args[0], null);
+                    return embed;
+                case "author":
+                    embed.setAuthor(args[0], null, null);
                     return embed;
                 default:
                     return embed;
