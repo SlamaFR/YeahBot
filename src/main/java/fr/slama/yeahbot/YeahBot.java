@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import org.discordbots.api.client.DiscordBotListAPI;
+import org.jetbrains.annotations.NotNull;
 import org.jooby.Jooby;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -113,7 +114,7 @@ public class YeahBot extends ListenerAdapter implements Runnable {
     }
 
     @Override
-    public void onReady(ReadyEvent event) {
+    public void onReady(@NotNull ReadyEvent event) {
         super.onReady(event);
         if (event.getGuildAvailableCount() < event.getGuildTotalCount()) return;
         TaskScheduler.scheduleRepeating(new DatabaseUpdater(), 5 * 1000, 300 * 1000);

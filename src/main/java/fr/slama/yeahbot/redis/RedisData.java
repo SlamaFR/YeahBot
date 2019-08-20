@@ -3,7 +3,7 @@ package fr.slama.yeahbot.redis;
 import com.google.gson.Gson;
 import fr.slama.yeahbot.YeahBot;
 import fr.slama.yeahbot.redis.buckets.*;
-import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.api.entities.Guild;
 import org.redisson.api.RBucket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

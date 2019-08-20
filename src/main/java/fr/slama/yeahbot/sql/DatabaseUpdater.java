@@ -3,8 +3,8 @@ package fr.slama.yeahbot.sql;
 import fr.slama.yeahbot.YeahBot;
 import fr.slama.yeahbot.redis.RedisData;
 import fr.slama.yeahbot.redis.buckets.*;
-import net.dv8tion.jda.core.entities.Game;
-import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.entities.Guild;
 import org.redisson.client.RedisException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,7 +56,7 @@ public class DatabaseUpdater extends TimerTask {
             LOGGER.info("Synchronized database!");
 
             if (!YeahBot.isDev()) {
-                YeahBot.getInstance().getShardManager().setGame(Game.watching(
+                YeahBot.getInstance().getShardManager().setActivity(Activity.watching(
                         String.format("%d servers | %d users",
                                 YeahBot.getInstance().getShardManager().getGuilds().size(),
                                 YeahBot.getInstance().getShardManager().getUsers().stream().filter(u -> !u.isBot()).toArray().length)

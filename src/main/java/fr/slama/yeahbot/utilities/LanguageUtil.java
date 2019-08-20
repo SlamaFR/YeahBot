@@ -45,7 +45,7 @@ public class LanguageUtil {
         } catch (MissingResourceException e) {
             if (bundle.equals(Bundle.DESCRIPTION) || bundle.equals(Bundle.ARGUMENTS) || bundle.equals(Bundle.ARGUMENTS_DESCRIPTION))
                 return lang.equals(Language.ENGLISH.getCode()) ? "" : getString(Language.ENGLISH, bundle, key);
-            LOGGER.error("[FATAL] Missing {} key in {} bundle!", key, bundle);
+            LOGGER.error("[FATAL] Missing {} key in {} {} bundle!", key, lang, bundle);
             return lang.equals(Language.ENGLISH.getCode()) ? key : getString(Language.ENGLISH, bundle, key);
         }
 
