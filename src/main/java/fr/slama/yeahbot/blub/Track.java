@@ -8,9 +8,9 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 public class Track {
 
     private final AudioTrack audioTrack;
-    private final long requesterId;
+    private final String requesterId;
 
-    public Track(AudioTrack audioTrack, long requesterId) {
+    public Track(AudioTrack audioTrack, String requesterId) {
         this.audioTrack = audioTrack;
         this.requesterId = requesterId;
     }
@@ -19,7 +19,7 @@ public class Track {
         return audioTrack;
     }
 
-    public long getRequesterId() {
+    public String getRequesterId() {
         return requesterId;
     }
 

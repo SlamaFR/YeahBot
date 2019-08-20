@@ -88,6 +88,10 @@ public class Settings {
     public long joinLeaveChannel = 0L;
     @LongType(type = CHANNEL)
     public long updateChannel = 0L;
+    @IgnoreSetting
+    public long modChannel = 0L;
+    @IgnoreSetting
+    public long logChannel = 0L;
 
     @AvailableVariables(variables = {USER, GUILD, COUNT})
     public String welcomeMessage = "";

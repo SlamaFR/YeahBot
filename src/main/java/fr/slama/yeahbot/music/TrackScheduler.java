@@ -35,7 +35,7 @@ public class TrackScheduler extends AudioEventAdapter {
     private final Guild guild;
 
     private long nowPlayingMessageId = 0L;
-    private long currentRequesterId = 0L;
+    private String currentRequesterId = "";
     private boolean userPaused = false;
     private Track currentTrack;
     private List<Long> votingUsers;
@@ -78,7 +78,7 @@ public class TrackScheduler extends AudioEventAdapter {
         players.remove(guild.getIdLong());
         guild.getAudioManager().closeAudioConnection();
         currentTrack = null;
-        currentRequesterId = 0L;
+        currentRequesterId = "";
         nowPlayingMessageId = 0L;
         playedTrack = 0;
         userPaused = false;
@@ -95,7 +95,7 @@ public class TrackScheduler extends AudioEventAdapter {
         Track track = queue.pollFirst();
 
         if (track != null) {
-            long exRequesterId = currentRequesterId;
+            String exRequesterId = currentRequesterId;
             currentRequesterId = track.getRequesterId();
             currentTrack = track;
             if (!musicPlayer.getAudioPlayer().startTrack(track.getAudioTrack(), noInterrupt)) {
@@ -251,7 +251,7 @@ public class TrackScheduler extends AudioEventAdapter {
         return currentTrack;
     }
 
-    public long getCurrentRequesterId() {
+    public String getCurrentRequesterId() {
         return currentRequesterId;
     }
 }

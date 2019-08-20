@@ -52,7 +52,7 @@ public class MusicPlayer {
     }
 
     public synchronized void playTrack(AudioTrack audioTrack, Member member, boolean firstPosition) {
-        trackScheduler.addToQueue(new Track(audioTrack, member.getUser().getIdLong()), firstPosition, true);
+        trackScheduler.addToQueue(new Track(audioTrack, member.getId()), firstPosition, true);
         member.getGuild().getAudioManager().openAudioConnection(member.getVoiceState().getChannel());
     }
 

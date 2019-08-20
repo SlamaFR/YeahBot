@@ -93,7 +93,7 @@ public class Music {
 
         if (player.getAudioPlayer().getPlayingTrack() == null) return;
 
-        if (player.getTrackScheduler().getCurrentRequesterId() != member.getUser().getIdLong() &&
+        if (!player.getTrackScheduler().getCurrentRequesterId().equals(member.getUser().getId()) &&
                 !Command.CommandPermission.STAFF.test(member)) {
             List<Long> votes = player.getTrackScheduler().getVotingUsers();
             if (votes.contains(member.getUser().getIdLong())) votes.remove(member.getUser().getIdLong());
@@ -131,7 +131,7 @@ public class Music {
         }
 
         for (int i = 0; i < amount - 1; i++) {
-            if (player.getTrackScheduler().getQueue().getFirst().getRequesterId() == member.getUser().getIdLong() ||
+            if (player.getTrackScheduler().getQueue().getFirst().getRequesterId().equals(member.getUser().getId()) ||
                     Command.CommandPermission.STAFF.test(member))
                 player.removeNextTrack();
             else break;
@@ -155,7 +155,7 @@ public class Music {
         if (player.getAudioPlayer().getPlayingTrack() == null) return;
 
         if (!Command.CommandPermission.STAFF.test(member)) for (Track track : player.getTrackScheduler().getQueue()) {
-            if (track.getRequesterId() != member.getUser().getIdLong()) {
+            if (!track.getRequesterId().equals(member.getUser().getId())) {
                 textChannel.sendMessage(
                         MessageUtil.getErrorEmbed(guild, LanguageUtil.getString(guild, Bundle.CAPTION, "no_permission"))
                 ).queue();
@@ -493,7 +493,7 @@ public class Music {
             }
             long seek = seconds * 1000 + minutes * 60000 + hours * 3600000;
 
-            if (player.getTrackScheduler().getCurrentRequesterId() == member.getUser().getIdLong() ||
+            if (player.getTrackScheduler().getCurrentRequesterId().equals(member.getUser().getId()) ||
                     Command.CommandPermission.STAFF.test(member)) {
                 player.getAudioPlayer().getPlayingTrack().setPosition(seek);
                 textChannel.sendMessage(
@@ -679,7 +679,7 @@ public class Music {
 
     private boolean hasNotPermission(Guild guild, Member member, TextChannel textChannel, MusicPlayer player) {
         if (!Command.CommandPermission.STAFF.test(member)) for (Track track : player.getTrackScheduler().getQueue()) {
-            if (track.getRequesterId() != member.getUser().getIdLong()) {
+            if (!track.getRequesterId().equals(member.getUser().getId())) {
                 textChannel.sendMessage(
                         MessageUtil.getErrorEmbed(guild, LanguageUtil.getString(guild, Bundle.CAPTION, "no_permission"))
                 ).queue();
