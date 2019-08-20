@@ -112,12 +112,14 @@ public class Paginator<T> {
                     (e, ew) -> {
                         e.getReaction().removeReaction(user).queue(SUCCESS, FAILURE);
 
-                        if (e.getReactionEmote().getId().equals(EmoteUtil.NO_REACTION)) {
+                        String emote = e.getReactionEmote().isEmoji() ? e.getReactionEmote().getName() : e.getReactionEmote().getId();
+
+                        if (emote.equals(EmoteUtil.NO_REACTION)) {
                             msg.delete().queue(SUCCESS, FAILURE);
                             return;
                         }
 
-                        switch (e.getReactionEmote().getName()) {
+                        switch (emote) {
                             case EmoteUtil.PREVIOUS:
                                 if (this.page > 0) this.page--;
                                 ew.close();
@@ -128,7 +130,7 @@ public class Paginator<T> {
                                 init();
                                 return;
                             default:
-                                int index = e.getReactionEmote().getName().charAt(0) - '\u0030' - 1 + min;
+                                int index = emote.charAt(0) - '\u0030' - 1 + min;
                                 if (index < this.objectList.size()) {
                                     this.selectionResult.accept(this.objectList.get(index));
                                     msg.delete().queue(SUCCESS, FAILURE);
