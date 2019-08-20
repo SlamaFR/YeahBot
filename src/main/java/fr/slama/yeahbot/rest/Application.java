@@ -1,20 +1,26 @@
 package fr.slama.yeahbot.rest;
 
 import fr.slama.yeahbot.YeahBot;
+import fr.slama.yeahbot.blub.Track;
 import fr.slama.yeahbot.commands.core.BotCommand;
 import fr.slama.yeahbot.commands.core.Command;
 import fr.slama.yeahbot.language.Bundle;
 import fr.slama.yeahbot.language.Language;
+import fr.slama.yeahbot.music.MusicPlayer;
+import fr.slama.yeahbot.music.PlayerSequence;
 import fr.slama.yeahbot.utilities.LanguageUtil;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.User;
 import org.jooby.Jooby;
 import org.jooby.Status;
+import org.jooby.handlers.CorsHandler;
 import org.jooby.json.Jackson;
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import java.util.stream.Collectors;
 
 /**
  * Created on 30/12/2018.
@@ -26,29 +32,44 @@ public class Application extends Jooby {
     public Application() {
 
         use(new Jackson());
+        use("*", new CorsHandler());
 
         // STATS
         get("/guildCount", (req, rsp) -> rsp.send(
                 new JSONObject()
                         .put("code", 200)
-                        .put("message", "OK").put("content", yeahBot.getShardManager().getGuildCache().size())
+                        .put("message", "OK")
+                        .put("content", yeahBot.getShardManager().getGuildCache().size())
                         .toMap())
         );
         get("/userCount", (req, rsp) -> rsp.send(
                 new JSONObject()
                         .put("code", 200)
-                        .put("message", "OK").put("content", yeahBot.getShardManager().getUserCache().stream().filter(u ->
-                        !u.isBot()).toArray().length)
+                        .put("message", "OK")
+                        .put("content", yeahBot.getShardManager().getUserCache().stream().filter(u ->
+                                !u.isBot()).toArray().length)
                         .toMap())
         );
         get("/channelCount", (req, rsp) -> rsp.send(
                 new JSONObject()
                         .put("code", 200)
-                        .put("message", "OK").put("content", yeahBot.getShardManager().getTextChannelCache().size())
+                        .put("message", "OK")
+                        .put("content", yeahBot.getShardManager().getTextChannelCache().size())
                         .toMap())
         );
 
         // ENTITIES METADATA
+
+        get("/guilds", (req, rsp) -> rsp.send(
+                new JSONObject()
+                        .put("code", 200)
+                        .put("message", "OK")
+                        .put("content", yeahBot.getShardManager().getGuildCache()
+                                .stream()
+                                .map(ISnowflake::getId)
+                                .collect(Collectors.toList()))
+                        .toMap())
+        );
         get("/guild/{id:\\d+}", (req, rsp) -> {
             Guild guild = yeahBot.getShardManager().getGuildById(req.param("id").longValue());
 
@@ -56,14 +77,17 @@ public class Application extends Jooby {
                 rsp.status(Status.NOT_FOUND);
                 rsp.send(new JSONObject()
                         .put("code", 404)
-                        .put("message", "Not found").put("error", "unknown_guild").toMap());
+                        .put("message", "Not found")
+                        .put("error", "unknown_guild").toMap());
                 return;
             }
 
-            JSONObject channels = new JSONObject();
+            JSONObject channels = new JSONObject()
+                    .put("textChannels", new JSONArray())
+                    .put("voiceChannels", new JSONArray());
             JSONArray roles = new JSONArray();
 
-            guild.getRoleCache().forEach(role -> roles
+            guild.getRoles().forEach(role -> roles
                     .put(new JSONObject()
                             .put("id", role.getId())
                             .put("name", role.getName())
@@ -71,17 +95,17 @@ public class Application extends Jooby {
                             .put("color_raw", role.getColorRaw())));
 
             guild.getVoiceChannelCache().forEach(channel -> channels
-                    .put("voiceChannels", new JSONArray().put(new JSONObject()
+                    .getJSONArray("voiceChannels").put(new JSONObject()
                             .put("id", channel.getId())
                             .put("bitrate", channel.getBitrate())
-                            .put("name", channel.getName()))));
+                            .put("name", channel.getName())));
 
-            guild.getTextChannelCache().forEach(channel -> channels
-                    .put("textChannels", new JSONArray().put(new JSONObject()
+            guild.getTextChannels().forEach(channel -> channels
+                    .getJSONArray("textChannels").put(new JSONObject()
                             .put("id", channel.getId())
                             .put("name", channel.getName())
                             .put("topic", channel.getTopic())
-                            .put("slowmode", channel.getSlowmode()))));
+                            .put("slowmode", channel.getSlowmode())));
 
             rsp.send(new JSONObject()
                     .put("code", 200)
@@ -92,8 +116,9 @@ public class Application extends Jooby {
                             .put("memberCount", guild.getMemberCache().size())
                             .put("ownerId", guild.getOwnerId())
                             .put("channels", channels)
-                            .put("roles", roles)
-                            .toMap()).toMap());
+                            .put("roles", roles))
+                    .toMap()
+            );
         });
         get("/member/{guildId:\\d+}/{userId:\\d+}", (req, rsp) -> {
             Guild guild = yeahBot.getShardManager().getGuildById(req.param("guildId").longValue());
@@ -101,29 +126,78 @@ public class Application extends Jooby {
                 rsp.status(Status.NOT_FOUND);
                 rsp.send(new JSONObject()
                         .put("code", 404)
-                        .put("message", "Not found").put("error", "unknown_guild").toMap());
+                        .put("message", "Not found")
+                        .put("error", "unknown_guild").toMap());
                 return;
             }
-            User user = yeahBot.getShardManager().getUserById(req.param("userId").longValue());
-            if (user == null || guild.getMember(user) == null) {
+            Member member = guild.getMemberById(req.param("userId").longValue());
+            if (member == null) {
                 rsp.status(Status.NOT_FOUND);
                 rsp.send(new JSONObject()
                         .put("code", 404)
-                        .put("message", "Not found").put("error", "unknown_member").toMap());
+                        .put("message", "Not found")
+                        .put("error", "unknown_member").toMap());
                 return;
             }
 
-            Member member = guild.getMember(user);
-            boolean isAdmin = member.hasPermission(Permission.ADMINISTRATOR) || member.isOwner();
             rsp.send(new JSONObject()
                     .put("code", 200)
                     .put("message", "OK")
                     .put("content", new JSONObject()
-                            .put("isBot", member.getUser().isBot())
-                            .put("isAdmin", isAdmin)
-                            .put("canAddBot", isAdmin || member.hasPermission(Permission.MANAGE_SERVER)))
+                            .put("nickname", member.getEffectiveName())
+                            .put("id", member.getUser().getId())
+                            .put("name", member.getUser().getName())
+                            .put("discriminator", member.getUser().getDiscriminator())
+                            .put("isBot", member.getUser().isBot()))
                     .toMap()
             );
+        });
+
+        // MUSIC
+        get("/music/{guildId:\\d+}", (req, rsp) -> {
+            Guild guild = yeahBot.getShardManager().getGuildById(req.param("guildId").longValue());
+            if (guild == null) {
+                rsp.status(Status.NOT_FOUND);
+                rsp.send(new JSONObject()
+                        .put("code", 404)
+                        .put("message", "Not found")
+                        .put("error", "unknown_guild").toMap());
+                return;
+            }
+            MusicPlayer player = yeahBot.getMusicManager().getPlayer(guild);
+            Track track = player.getTrackScheduler().getCurrentTrack();
+            if (player.getAudioPlayer().getPlayingTrack() == null) {
+                rsp.send(new JSONObject()
+                        .put("code", 200)
+                        .put("message", "OK")
+                        .put("content", "not_playing")
+                        .toMap()
+                );
+                return;
+            }
+            if (player.getGuild().getSelfMember().getVoiceState() == null ||
+                    player.getGuild().getSelfMember().getVoiceState().getChannel() == null) {
+                rsp.send(new JSONObject()
+                        .put("code", 200)
+                        .put("message", "OK")
+                        .put("content", "not_connected")
+                        .toMap()
+                );
+                return;
+            }
+            rsp.send(new JSONObject()
+                    .put("code", 200)
+                    .put("message", "OK")
+                    .put("content", new JSONObject()
+                            .put("requesterId", track.getRequesterId())
+                            .put("channelId", player.getGuild().getSelfMember().getVoiceState().getChannel().getId())
+                            .put("title", track.getAudioTrack().getInfo().title)
+                            .put("author", track.getAudioTrack().getInfo().author)
+                            .put("url", track.getAudioTrack().getInfo().uri)
+                            .put("duration", track.getAudioTrack().getDuration())
+                            .put("paused", player.getAudioPlayer().isPaused())
+                            .put("position", player.getAudioPlayer().getPlayingTrack().getPosition())
+                    ).toMap());
         });
 
         // COMMANDS AND CATEGORIES
@@ -183,6 +257,18 @@ public class Application extends Jooby {
                 .put("content", Command.CommandCategory.values())
                 .toMap()));
 
+        // AVAILABLE VALUES
+        get("/sequences", (req, rsp) -> rsp.send(new JSONObject()
+                .put("code", 200)
+                .put("message", "OK")
+                .put("content", PlayerSequence.values())
+                .toMap()));
+        get("/languages", (req, rsp) -> rsp.send(new JSONObject()
+                .put("code", 200)
+                .put("message", "OK")
+                .put("content", Language.values())
+                .toMap()));
+
         // DEFAULT
         get("/", (req, rsp) -> rsp.send(new JSONObject()
                 .put("code", 200)
@@ -191,7 +277,8 @@ public class Application extends Jooby {
             rsp.status(Status.NOT_FOUND);
             rsp.send(new JSONObject()
                     .put("code", 404)
-                    .put("message", "Not found").put("error", "unknown_endpoint").toMap());
+                    .put("message", "Not found")
+                    .put("error", "unknown_endpoint").toMap());
         });
 
         // STATUS SYSTEM
