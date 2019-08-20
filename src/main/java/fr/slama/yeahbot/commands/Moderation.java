@@ -6,6 +6,7 @@ import fr.slama.yeahbot.commands.core.Command;
 import fr.slama.yeahbot.commands.core.CommandError;
 import fr.slama.yeahbot.language.Bundle;
 import fr.slama.yeahbot.listeners.SelectionListener;
+import fr.slama.yeahbot.managers.LogManager;
 import fr.slama.yeahbot.managers.SanctionManager;
 import fr.slama.yeahbot.redis.RedisData;
 import fr.slama.yeahbot.redis.buckets.Mutes;
@@ -38,7 +39,7 @@ public class Moderation {
             permission = Command.CommandPermission.STAFF,
             category = Command.CommandCategory.MODERATION,
             executor = Command.CommandExecutor.USER)
-    private void prune(Guild guild, TextChannel textChannel, Message message, String[] args, BotCommand command) {
+    private void prune(Guild guild, TextChannel textChannel, Member member, Message message, String[] args, BotCommand command) {
 
         if (guild == null) return;
 
@@ -98,6 +99,7 @@ public class Moderation {
                     } catch (ErrorResponseException e) {
                         textChannel.sendMessage(embed).queue(timeout);
                     }
+                    LogManager.prune(member, textChannel, messages.size() - 1);
                 })
         );
 
