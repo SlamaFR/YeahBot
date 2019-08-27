@@ -201,16 +201,23 @@ public class TrackScheduler extends AudioEventAdapter {
                 .setFooter(LanguageUtil.getArguedString(guild, Bundle.STRINGS, "music_submitted_by", requesterName) + (!queue.isEmpty() && !isLoopingQueue() ? " • " + LanguageUtil.getArguedString(guild, Bundle.CAPTION, "remaining_tracks", queue.size()) : ""), requesterAvatarUrl)
                 .build();
 
-        if (nowPlayingMessageId > 0 && musicPlayer.getTextChannel().getLatestMessageIdLong() == nowPlayingMessageId) {
+        try {
+            if (nowPlayingMessageId > 0 && musicPlayer.getTextChannel().getLatestMessageIdLong() == nowPlayingMessageId) {
+                musicPlayer.getTextChannel().retrieveMessageById(nowPlayingMessageId).queue(
+                        msg -> msg.editMessage(embed).queue(),
+                        t -> musicPlayer.getTextChannel().sendMessage(embed).queue(message -> nowPlayingMessageId = message.getIdLong())
+                );
+            } else {
+                if (guild.getSelfMember().hasPermission(Permission.MESSAGE_HISTORY, Permission.MESSAGE_MANAGE))
+                    musicPlayer.getTextChannel().retrieveMessageById(nowPlayingMessageId).queue(message -> message.delete().queue(), t -> {
+                    });
+                musicPlayer.getTextChannel().sendMessage(embed).queue(message -> nowPlayingMessageId = message.getIdLong());
+            }
+        } catch (IllegalStateException e) {
             musicPlayer.getTextChannel().retrieveMessageById(nowPlayingMessageId).queue(
                     msg -> msg.editMessage(embed).queue(),
                     t -> musicPlayer.getTextChannel().sendMessage(embed).queue(message -> nowPlayingMessageId = message.getIdLong())
             );
-        } else {
-            if (guild.getSelfMember().hasPermission(Permission.MESSAGE_HISTORY, Permission.MESSAGE_MANAGE))
-                musicPlayer.getTextChannel().retrieveMessageById(nowPlayingMessageId).queue(message -> message.delete().queue(), t -> {
-                });
-            musicPlayer.getTextChannel().sendMessage(embed).queue(message -> nowPlayingMessageId = message.getIdLong());
         }
     }
 
